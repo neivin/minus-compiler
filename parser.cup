@@ -1,0 +1,145 @@
+import absyn.*;
+import java_cup.runtime.*;
+
+terminal ID, NUM;
+terminal IF, ELSE, WHILE;
+terminal INTEGER, VOID, RETURN;
+terminal PLUS, MINUS, MUL, DIV, EQU;
+terminal LESS, GREATER, LEQUIV,GEQUIV, EQUIV, NEQUIV;
+terminal SEMI, COMMA, LPAREN, RPAREN, LSQUARE, RSQUARE, LCURLY, RCURLY;
+
+non terminal program;
+non terminal type_specifier;
+non terminal decl_list, decl, var_decl, fun_decl, local_decls;
+non terminal params, param_list, param;
+non terminal compound_stmt, stmt_list, stmt, expr_stmt, selection_stmt, iteration_stmt, else_stmt, return_stmt;
+non terminal expr, simple_expr, additive_expr;
+non terminal var, term, factor, call, args, arg_list, relop, addop, mulop;
+
+start with program;
+
+program     ::= decl_list:s
+              {:  RESULT = s;
+                  System.outprintln("Something");
+              :}
+            ;
+
+decl_list   ::= decl_list decl
+              | decl
+              ;
+
+decl        ::= var_decl
+              | fun_decl
+              ;
+
+var_decl    ::= type_specifier ID SEMI
+              | type_specifier ID LSQUARE NUM RSQUARE SEMI
+              ;
+
+type_specifier  ::= INTEGER
+                  | VOID
+                  ;
+
+fun_decl    ::= type_specifier  ID  LSQUARE params RSQUARE  compound_stmt
+              ;
+
+params      ::= param_list
+              | VOID
+              ;
+
+param_list  ::= param_list  COMMA  param
+              | param
+              ;
+
+param       ::= type_specifier  ID
+              | type_specifier  ID  LSQUARE RSQUARE
+              ;
+
+compound_stmt ::= LCURLY  local_decls stmt_list RCURLY
+                ;
+
+local_decls   ::= local_decls var_decl
+                |
+                ;
+
+stmt_list   ::= stmt_list stmt
+              |
+              ;
+
+stmt        ::= expr_stmt
+              | compound_stmt
+              | selection_stmt
+              | iteration_stmt
+              | return_stmt
+              ;
+
+expr_stmt   ::= expr  SEMI
+              | SEMI
+              ;
+
+selection_stmt  ::= IF  LPAREN  expr  RPAREN  stmt
+                  | IF  else_stmt
+                  ;
+
+else_stmt       ::= ELSE  stmt
+                  ;
+
+iteration_stmt  ::= WHILE LPAREN  expr  RPAREN  stmt
+                  ;
+
+return_stmt     ::= RETURN  SEMI
+                  | RETURN expr SEMI
+                  ;
+
+expr            ::= var EQU expr
+                  | simple_expr
+                  ;
+
+var             ::= ID
+                  | ID  LSQUARE expr RSQUARE
+                  ;
+
+simple_expr     ::= additive_expr relop additive_expr
+                  | additive_expr
+                  ;
+
+relop           ::= LEQUIV
+                  | LESS
+                  | GREATER
+                  | GEQUIV
+                  | EQUIV
+                  | NEQUIV
+                  ;
+
+additive_expr   ::= additive_expr addop term
+                  | term
+                  ;
+
+addop           ::= PLUS
+                  | MINUS
+                  ;
+
+term            ::= term  mulop factor
+                  | factor
+                  ;
+
+mulop           ::= MUL
+                  | DIV
+                  ;
+
+factor          ::= LPAREN  expr  RPAREN
+                  | var
+                  | call
+                  | NUM
+                  ;
+
+call            ::= ID  LPAREN  args  RPAREN
+                  ;
+
+args            ::= arg_list
+                  |
+                  ;
+
+arg_list         ::=  arg_list  COMMA expr
+                  | expr
+                  ;
