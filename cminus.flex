@@ -3,7 +3,7 @@
 
 */
 
-import java_cup.runtime;
+import java_cup.runtime.*;
 
 %%
 
@@ -28,18 +28,18 @@ import java_cup.runtime;
 	Macro Declarations
 */
 LineTerminator = \r|\n|\r\n
-WhiteSpace = {LineTerminator}|[\t\f]
+WhiteSpace = {LineTerminator}|[" "\t\f]
 letter = [a-zA-Z]
 digit = [0-9]
-ID = [letter][letter]*
-NUM = [digit][digit]*
+ID = {letter}{letter}*
+NUM = {digit}{digit}*
 
 %%
 
 "if"				{ return symbol(sym.IF);}
 "else"			{ return symbol(sym.ELSE); }
 "while"			{ return symbol(sym.WHILE); }
-"int"				{ return symbol(sym.INT); }
+"int"				{ return symbol(sym.INTEGER); }
 "void"			{ return symbol(sym.VOID); }
 "+"					{ return symbol(sym.PLUS); }
 "-"					{ return symbol(sym.MINUS); }
@@ -60,8 +60,8 @@ NUM = [digit][digit]*
 "]"					{ return symbol(sym.RSQUARE); }
 "{"					{ return symbol(sym.LCURLY); }
 "}"					{ return symbol(sym.RCURLY); }
-{NUM}		{ return symbol(sym.NUM); }
-{ID}				{ return symbol(sym.ID); }
+{NUM}		{ return symbol(sym.NUM, yytext()); }
+{ID}				{ return symbol(sym.ID, yytext()); }
 {WhiteSpace}	{ /* Do Nothing */ }
 \/\*.*\*\/	{ /* Do Nothing */ }
 .						{ return symbol(sym.ERROR); }

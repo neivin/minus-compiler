@@ -1,3 +1,5 @@
+import java.io.*;
+
 class Main{
   static public void main(String argv[]){
     try {
