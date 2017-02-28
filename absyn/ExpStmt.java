@@ -7,7 +7,8 @@ public ExpStmt extends Stmt{
 		this.expr = null;
 	}
 
-	public Exp(Exp expr){
+	public Exp(int pos, Exp expr){
+		this.pos = pos;
 		this.expr = expr;
 	}
 }
