@@ -4,16 +4,16 @@
 /* Parser code to change the way the parser reports errors (include
    line and column number of the error). */
 parser code {:
-    
+
     /* Change the method report_error so it will display the line and
        column of where the error occurred in the input as well as the
        reason for the error which is passed into the method in the
        String 'message'. */
     public void report_error(String message, Object info) {
-   
+
         /* Create a StringBuffer called 'm' with the string 'Error' in it. */
         StringBuffer m = new StringBuffer("Error");
-   
+
         /* Check if the information passed to the method is the same
            type as the type java_cup.runtime.Symbol. */
         if (info instanceof java_cup.runtime.Symbol) {
@@ -21,31 +21,31 @@ parser code {:
                information in the object info that is being typecasted
                as a java_cup.runtime.Symbol object. */
             java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
-   
+
             /* Check if the line number in the input is greater or
                equal to zero. */
-            if (s.left >= 0) {                
+            if (s.left >= 0) {
                 /* Add to the end of the StringBuffer error message
                    the line number of the error in the input. */
-                m.append(" in line "+(s.left+1));   
+                m.append(" in line "+(s.left+1));
                 /* Check if the column number in the input is greater
                    or equal to zero. */
-                if (s.right >= 0)                    
+                if (s.right >= 0)
                     /* Add to the end of the StringBuffer error message
                        the column number of the error in the input. */
                     m.append(", column "+(s.right+1));
             }
         }
-   
+
         /* Add to the end of the StringBuffer error message created in
            this method the message that was passed into this method. */
         m.append(" : "+message);
-   
+
         /* Print the contents of the StringBuffer 'm', which contains
            an error message, out on a line. */
         System.err.println(m);
     }
-   
+
     /* Change the method report_fatal_error so when it reports a fatal
        error it will display the line and column number of where the
        fatal error occurred in the input as well as the reason for the
@@ -83,59 +83,84 @@ program     ::= decl_list:s
               :}
             ;
 
-decl_list   ::= decl_list decl
-              | decl
+decl_list   ::= decl_list:d1 decl:d2
+              {: RESULT = new DecList(d1, d2); :}
+              | decl:d
+              {: RESULT = new DecList(d, null); :}
               ;
 
-decl        ::= var_decl
-              | fun_decl
+decl        ::= var_decl:s
+              {: RESULT = s; :}
+              | fun_decl:f
+              {: RESULT = f; :}
               ;
 
-var_decl    ::= type_specifier:t ID:i SEMI:s
-              {:  System.out.println(ileft);
-              :}
-              | type_specifier ID LSQUARE NUM RSQUARE SEMI
+var_decl    ::= type_specifier:t ID:i SEMI
+              {:  RESULT = new VarDec(tleft, t, i); :}
+              | type_specifier:t ID:i LSQUARE NUM:n RSQUARE SEMI
+              {: RESULT = new VarDec(tleft,t, i, n); :}
               ;
 
 type_specifier  ::= INTEGER
+                  {:RESULT = INTEGER; :}
                   | VOID
+                  {: RESULT = VOID; :}
                   ;
 
-fun_decl    ::= type_specifier  ID  LPAREN params RPAREN  compound_stmt
+fun_decl    ::= type_specifier:t  ID:i  LPAREN params:p RPAREN  compound_stmt:c
+              {: RESULT = new FunDec(tleft, t, i, p, c); :}
               ;
 
-params      ::= param_list
+params      ::= param_list:p
+              {: RESULT = p :}
               | VOID
+              {: RESULT = VOID :}
               ;
 
-param_list  ::= param_list  COMMA  param
+param_list  ::= param_list:l  COMMA  param:p
+              {: RESULT = new ParamList(p, l); :}
               | param
+              {: RESULT = new ParamList(p, null); :}
               ;
 
-param       ::= type_specifier  ID
+param       ::= type_specifier:t  ID:i
+              {: RESULT = new Param(tleft, t, i, 0); :}
               | type_specifier  ID  LSQUARE RSQUARE
+              {: RESULT = new Param(tleft, t, i, 1); :}
               ;
 
-compound_stmt ::= LCURLY  local_decls stmt_list RCURLY
+compound_stmt ::= LCURLY:c  local_decls:l stmt_list:s RCURLY
+                {: RESULT = new CompStmt(cleft, l, s); :}
                 ;
 
-local_decls   ::= local_decls var_decl
+local_decls   ::= local_decls:l var_decl:v
+                {: RESULT = new LocalDecs(lleft, v, l); :}
                 |
+                {: RESULT = new LocalDecs() :}
                 ;
 
-stmt_list   ::= stmt_list stmt
+stmt_list   ::= stmt_list:l stmt:s
+              {: RESULT = new StmtList(lleft, s, l); :}
               |
+              {: RESULT = new StmtList(); :}
               ;
 
-stmt        ::= expr_stmt
-              | compound_stmt
-              | selection_stmt
-              | iteration_stmt
-              | return_stmt
+stmt        ::= expr_stmt:e
+              {: RESULT = e; :}
+              | compound_stmt:c
+              {: RESULT = c; :}
+              | selection_stmt:s
+              {: RESULT = s; :}
+              | iteration_stmt:i
+              {: RESULT = i; :}
+              | return_stmt:r
+              {: RESULT = r; :}
               ;
 
-expr_stmt   ::= expr  SEMI
+expr_stmt   ::= expr:e  SEMI
+              {: RESULT = new ExpStmt(eleft, e); :}
               | SEMI
+              {: RESULT = new ExpStmt() :}
               ;
 
 selection_stmt  ::= IF  LPAREN  expr  RPAREN  stmt
