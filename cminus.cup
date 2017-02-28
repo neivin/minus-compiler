@@ -163,26 +163,36 @@ expr_stmt   ::= expr:e  SEMI
               {: RESULT = new ExpStmt() :}
               ;
 
-selection_stmt  ::= IF  LPAREN  expr  RPAREN  stmt
+selection_stmt  ::= IF:i  LPAREN  expr:e  RPAREN  stmt:s
+                  {: RESULT = new SelStmt(ileft, e, s, null); :}
                   | IF  else_stmt
+                  {: RESULT = new SelStmt(ileft, e, s, else_stmt) :}
                   ;
 
-else_stmt       ::= ELSE  stmt
+else_stmt       ::= ELSE  stmt:s
+                  {: RESULT = s; :}
                   ;
 
-iteration_stmt  ::= WHILE LPAREN  expr  RPAREN  stmt
+iteration_stmt  ::= WHILE:w LPAREN  expr:e  RPAREN  stmt:s
+                  {: RESULT = new IterStmt(wleft, e, s); :}
                   ;
 
-return_stmt     ::= RETURN  SEMI
-                  | RETURN expr SEMI
+return_stmt     ::= RETURN:r  SEMI
+                  {: RESULT = new RetStmt(rleft, null); :}
+                  | RETURN:r expr:e SEMI
+                  {: RESULT = new RetStmt(rleft, e); :}
                   ;
 
-expr            ::= var EQU expr
-                  | simple_expr
+expr            ::= var:v EQU expr:e
+                  {: RESULT = new Exp(vleft, v, e); :}
+                  | simple_expr:s
+                  {: RESULT = new Exp(sleft, s); :}
                   ;
 
-var             ::= ID
-                  | ID  LSQUARE expr RSQUARE
+var             ::= ID:i
+                  {: RESULT = new Var(ileft, i); :}
+                  | ID:i  LSQUARE expr:e RSQUARE
+                  {: RESULT = new Var(ileft, i, e); :}
                   ;
 
 simple_expr     ::= additive_expr relop additive_expr
