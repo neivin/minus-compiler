@@ -71,9 +71,11 @@ non terminal program;
 non terminal type_specifier;
 non terminal decl_list, decl, var_decl, fun_decl, local_decls;
 non terminal params, param_list, param;
-non terminal compound_stmt, stmt_list, stmt, expr_stmt, selection_stmt, iteration_stmt, else_stmt, return_stmt;
+non terminal compound_stmt, stmt_list, stmt, expr_stmt, selection_stmt, iteration_stmt, return_stmt;
 non terminal expr, simple_expr, additive_expr;
 non terminal var, term, factor, call, args, arg_list, relop, addop, mulop;
+
+precedence  right  ELSE;
 
 start with program;
 
@@ -165,12 +167,8 @@ expr_stmt   ::= expr:e  SEMI
 
 selection_stmt  ::= IF:i  LPAREN  expr:e  RPAREN  stmt:s
                   {: RESULT = new SelStmt(ileft, e, s, null); :}
-                  | IF  else_stmt
-                  {: RESULT = new SelStmt(ileft, e, s, else_stmt) :}
-                  ;
-
-else_stmt       ::= ELSE  stmt:s
-                  {: RESULT = s; :}
+                  | IF:i  LPAREN  expr:e  RPAREN  stmt:s1  ELSE  stmt:s2
+                  {: RESULT = new SelStmt(ileft, e, s1, s2) :}
                   ;
 
 iteration_stmt  ::= WHILE:w LPAREN  expr:e  RPAREN  stmt:s
