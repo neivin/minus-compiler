@@ -4,8 +4,6 @@ public class Call extends Absyn{
   public String id;
   public ArgList arglist;
 
-  /* Arguments empty */
-
   public Call (int pos, String id, ArgList arglist){
     this.pos = pos;
     this.id = id;

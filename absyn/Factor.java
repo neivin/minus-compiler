@@ -1,7 +1,7 @@
 package absyn;
 
 public class Factor extends Absyn {
-  public int num = -1;
+  public String num = "";
   public Var var;
   public Call call;
   public Exp exp;
@@ -37,7 +37,7 @@ public class Factor extends Absyn {
   }
 
   /* Number */
-  public Factor(int pos, int num){
+  public Factor(int pos, String num){
     this.pos = pos;
     this.num = num;
 
