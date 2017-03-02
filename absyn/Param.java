@@ -1,18 +1,18 @@
 package absyn;
 
 public class Param extends Absyn{
-	static final int ARRAYPARAM = 1;
 	static final int INTPARAM = 0;
-	
-	public int type;
-	public String id;
-	public int param_type;
+	static final int ARRAYPARAM = 1;
 
-	public Param (int pos, int type, String id, int param_type ){
+	public int decl;
+	public String id;
+	public Type type;
+
+	public Param (int pos, Type type, String id, int decl ){
 		this.pos = pos;
 		this.type = type;
 		this.id = id;
-		this.param_type = param_type;
+		this.decl = decl;
 	}
 
 }

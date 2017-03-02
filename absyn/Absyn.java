@@ -100,4 +100,21 @@ abstract public class Absyn {
 		System.out.println("Size: " + tree.num);
 	}
 
+	public static showTree (Param tree, int spaces){
+		indent(spaces);
+		System.out.println("Param:");
+		spaces+=SPACES;
+		showTree(tree.type, spaces);
+		indent(spaces);
+		System.out.print("ID: " + tree.id);
+		
+		indent(spaces);
+		if(tree.decl == Param.ARRAYPARAM) {
+			System.out.println(" [ ]");
+		}
+		
+		System.out.println();
+
+	}
+
 }
