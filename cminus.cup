@@ -193,47 +193,72 @@ var             ::= ID:i
                   {: RESULT = new Var(ileft, i, e); :}
                   ;
 
-simple_expr     ::= additive_expr relop additive_expr
-                  | additive_expr
+simple_expr     ::= additive_expr:a1 relop:r additive_expr:a2
+                  {:  RESULT = new SimpleExp(a1left, a1, r, a2);  :}
+                  | additive_expr:a
+                  {:  RESULT = new SimpleExp(aleft, a);  :}
                   ;
 
 relop           ::= LEQUIV
+                  {:  RESULT = LEQUIV;  :}
                   | LESS
+                  {:  RESULT = LESS;  :}
                   | GREATER
+                  {:  RESULT = GREATER;  :}
                   | GEQUIV
+                  {:  RESULT = GEQUIV;  :}
                   | EQUIV
+                  {:  RESULT = EQUIV;  :}
                   | NEQUIV
+                  {:  RESULT = NEQUIV;  :}
                   ;
 
-additive_expr   ::= additive_expr addop term
-                  | term
+additive_expr   ::= additive_expr:a addop:o term:t
+                  {:  RESULT = new AddExp(aleft, a, o, t);  :}
+                  | term:t
+                  {:  RESULT = new AddExp(tleft, t);  :}
                   ;
 
 addop           ::= PLUS
+                  {:  RESULT = PLUS;  :}
                   | MINUS
+                  {:  RESULT = MINUS;  :}
                   ;
 
-term            ::= term  mulop factor
-                  | factor
+term            ::= term:t  mulop:m factor:f
+                  {: RESULT = new Term(tleft, t, m, f);   :}
+                  | factor:f
+                  {:  RESULT = new Term(fleft, f);  :}
                   ;
 
 mulop           ::= MUL
+                  {:  RESULT = MUL;  :}
                   | DIV
+                  {:  RESULT = DIV;  :}
                   ;
 
-factor          ::= LPAREN  expr  RPAREN
-                  | var
-                  | call
-                  | NUM
+factor          ::= LPAREN:l  expr:e  RPAREN
+                  {:  RESULT = new Factor(lleft, e);  :}
+                  | var:v
+                  {:  RESULT = new Factor(vleft, v);  :}
+                  | call:c
+                  {:  RESULT = new Factor(cleft, c);  :}
+                  | NUM:n
+                  {:  RESULT = new Factor(nleft, n);  :}
                   ;
 
-call            ::= ID  LPAREN  args  RPAREN
+call            ::= ID:i  LPAREN  args:a  RPAREN
+                  {:  RESULT = new Call(ileft, i, a);  :}
                   ;
 
-args            ::= arg_list
+args            ::= arg_list:a
+                  {:  RESULT = a;  :}
                   |
+                  {:  RESULT = null;  :}
                   ;
 
-arg_list         ::=  arg_list  COMMA expr
-                  | expr
+arg_list         ::=  arg_list:a  COMMA expr:e
+                  {:  RESULT = new ArgList(e, a);  :}
+                  | expr:e
+                  {:  RESULT = new ArgList(e);  :}
                   ;
