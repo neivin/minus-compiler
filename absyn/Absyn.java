@@ -68,9 +68,36 @@ abstract public class Absyn {
 
 	// TODO: Add types of var declarations
 	private static void showTree (VarDec tree, int spaces){
+		if (tree instanceof SimpleDec){
+			showTree((SimpleDec) tree, spaces);
+		}
+		else if (tree instanceof ArrayDec){
+			showTree((ArrayDec) tree, spaces);
+		}
+		else{
+			indent(spaces);
+			System.out.println("Illegal expression at line " + tree.pos);
+		}
+	}
+
+	public static showTree (SimpleDec tree, int spaces){
 		indent(spaces);
+		System.out.println("SimpleDec:");
+		spaces += SPACES;
+		showTree(tree.type, spaces);
+		indent(spaces);
+		System.out.println("ID: " + tree.id);
+	}
 
-
+	public static showTree (ArrayDec tree, int spaces) {
+		indent(spaces);
+		System.out.println("ArrayDec:");
+		spaces += SPACES;
+		showTree(tree.type, spaces);
+		indent(spaces);
+		System.out.println("ID: " + tree.id);
+		indent(spaces);
+		System.out.println("Size: " + tree.num);
 	}
 
 }
