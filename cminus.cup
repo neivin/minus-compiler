@@ -59,7 +59,7 @@ parser code {:
 
 /* Terminal and Non terminal declaration */
 
-terminal ID, NUM;
+terminal String ID, NUM;
 terminal IF, ELSE, WHILE;
 terminal INTEGER, VOID, RETURN;
 terminal PLUS, MINUS, MUL, DIV, EQU;
@@ -104,7 +104,7 @@ var_decl    ::= type_specifier:t ID:i SEMI
               ;
 
 type_specifier  ::= INTEGER
-                  {:RESULT = INTEGER; :}
+                  {:  RESULT = INTEGER;   :}
                   | VOID
                   {: RESULT = VOID; :}
                   ;
@@ -127,7 +127,7 @@ param_list  ::= param_list:l  COMMA  param:p
 
 param       ::= type_specifier:t  ID:i
               {: RESULT = new Param(tleft, t, i, 0); :}
-              | type_specifier  ID  LSQUARE RSQUARE
+              | type_specifier:t  ID:i  LSQUARE RSQUARE
               {: RESULT = new Param(tleft, t, i, 1); :}
               ;
 
