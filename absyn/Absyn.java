@@ -56,6 +56,16 @@ abstract public class Absyn {
 		}
 	}
 
+	/* Type */
+	public static void showTree(Type tree, int spaces){
+		indent(spaces);
+
+		if(tree.type == Type.INT)
+			System.out.println("Type: INT");
+		else
+			System.out.println("Type: VOID");
+	}
+
 	private static void showTree (FunDec tree, int spaces){
 		indent(spaces);
 		System.out.println("FunctionDec: ");
