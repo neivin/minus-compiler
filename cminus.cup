@@ -103,10 +103,10 @@ var_decl    ::= type_specifier:t ID:i SEMI
               {: RESULT = new VarDec(tleft,t, i, n); :}
               ;
 
-type_specifier  ::= INTEGER
-                  {:  RESULT = INTEGER;   :}
-                  | VOID
-                  {: RESULT = VOID; :}
+type_specifier  ::= INTEGER:i
+                  {:  RESULT = new Type(ileft, Type.INTEGER);   :}
+                  | VOID:v
+                  {: RESULT = new Type(vleft, Type.VOID); :}
                   ;
 
 fun_decl    ::= type_specifier:t  ID:i  LPAREN params:p RPAREN  compound_stmt:c
