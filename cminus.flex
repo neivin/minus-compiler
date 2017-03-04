@@ -42,32 +42,32 @@ comment = \/\*(.|[\r\n])*\*\/
 
 %%
 
-"if"						{ return symbol(sym.IF);}
+"if"					{ return symbol(sym.IF);}
 "else"					{ return symbol(sym.ELSE); }
 "while"					{ return symbol(sym.WHILE); }
-"int"						{ return symbol(sym.INTEGER); }
+"int"					{ return symbol(sym.INTEGER); }
 "void"					{ return symbol(sym.VOID); }
-"+"							{ return symbol(sym.PLUS); }
-"-"							{ return symbol(sym.MINUS); }
-"*"							{ return symbol(sym.MUL); }
-"/"							{ return symbol(sym.DIV); }
-"<"							{ return symbol(sym.LESS); }
-"<="						{ return symbol(sym.LEQUIV); }
-">"							{ return symbol(sym.GREATER); }
-">="						{ return symbol(sym.GEQUIV); }
-"=="						{ return symbol(sym.EQUIV); }
-"!="						{ return symbol(sym.NEQUIV); }
-"="							{ return symbol(sym.EQU); }
-";"							{ return symbol(sym.SEMI); }
-","							{ return symbol(sym.COMMA); }
-"("							{ return symbol(sym.LPAREN); }
-")"							{ return symbol(sym.RPAREN); }
-"["							{ return symbol(sym.LSQUARE); }
-"]"							{ return symbol(sym.RSQUARE); }
-"{"							{ return symbol(sym.LCURLY); }
-"}"							{ return symbol(sym.RCURLY); }
-{num}						{ return symbol(sym.NUM, yytext()); }
-{id}						{ return symbol(sym.ID, yytext()); }
-{whitespace}		{ /* Do Nothing */ }
+"+"						{ return symbol(sym.PLUS); }
+"-"						{ return symbol(sym.MINUS); }
+"*"						{ return symbol(sym.MUL); }
+"/"						{ return symbol(sym.DIV); }
+"<"						{ return symbol(sym.LESS); }
+"<="					{ return symbol(sym.LEQUIV); }
+">"						{ return symbol(sym.GREATER); }
+">="					{ return symbol(sym.GEQUIV); }
+"=="					{ return symbol(sym.EQUIV); }
+"!="					{ return symbol(sym.NEQUIV); }
+"="						{ return symbol(sym.EQU); }
+";"						{ return symbol(sym.SEMI); }
+","						{ return symbol(sym.COMMA); }
+"("						{ return symbol(sym.LPAREN); }
+")"						{ return symbol(sym.RPAREN); }
+"["						{ return symbol(sym.LSQUARE); }
+"]"						{ return symbol(sym.RSQUARE); }
+"{"						{ return symbol(sym.LCURLY); }
+"}"						{ return symbol(sym.RCURLY); }
+{num}					{ return symbol(sym.NUM, yytext()); }
+{id}					{ return symbol(sym.ID, yytext()); }
+{whitespace}			{ /* Do Nothing */ }
 {comment}				{ /* Do Nothing */ }
-.								{ return symbol(sym.ERROR); }
+.						{ return symbol(sym.ERROR); }
