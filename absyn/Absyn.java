@@ -42,23 +42,86 @@ abstract public class Absyn {
 	}
 
 
-	// TODO
-
-	/* Declarations - Function or Variable*/
-	public static void showTree (Dec tree, int spaces){
-		if (tree instanceof VarDec){
-			showTree((VarDec) tree, spaces);
+	/* ==== Abstract classes ==== */
+	// Variable 
+	public static void showTree (Var tree, int spaces){
+		if (tree instanceof SimpleVar){
+			showTree((SimpleVar) tree, spaces);
 		}
-		else if (tree instanceof FunDec){
-			showTree((FunDec) tree, spaces);
-		}
-		else{
-			indent(spaces);
-			System.out.println("Illegal expression at line " + tree.pos);
+		else if (tree instanceof IndexVar){
+			showTree((IndexVar) tree, spaces);
 		}
 	}
 
-	/* Type */
+	// Declaration
+	public static void showTree (Dec tree, int spaces){
+		if(tree instanceof FunctionDec){
+			showTree((FunctionDec) tree, spaces);
+		}
+		else if (tree instanceof VarDec){
+			showTree((VarDec) tree, spaces);
+		}
+		else {
+			indent(spaces);
+			System.out.println("(Dec) Illegal expression at line " + tree.pos);
+		}
+	}
+
+	// Variable Declaration
+	public static void showTree(VarDec tree, int spaces){
+		if (tree instanceof SimpleDec){
+			showTree((SimpleDec) tree, spaces);
+		}
+		else if (tree instanceof ArrayDec){
+			showTree((ArrayDec) tree, spaces);
+		}
+		else {
+			indent(spaces);
+			System.out.println("(VarDec) Illegal expression at line " + tree.pos)
+		}
+	}
+
+	// General Expression
+	public static void showTree (Exp tree, int spaces){
+		if (tree instanceof NilExp){
+			showTree((NilExp) tree, spaces);
+		}
+		else if (tree instanceof VarExp){
+			showTree((VarExp) tree, spaces);	
+		}
+		else if (tree instanceof VarExp){
+			showTree((VarExp) tree, spaces);
+		}
+		else if (tree instanceof CallExp){
+			showTree((CallExp) tree, spaces);
+		}
+		else if (tree instanceof OpExp){
+			showTree((OpExp) tree, spaces);
+		}
+		else if (tree instanceof AssignExp){
+			showTree((AssignExp) tree, spaces);
+		}
+		else if (tree instanceof IfExp){
+			showTree((IfExp) tree, spaces);
+		}
+		else if (tree instanceof WhileExp){
+			showTree((WhileExp) tree, spaces);
+		}
+		else if (tree instanceof ReturnExp){
+			showTree((ReturnExp) tree, spaces);
+		}
+		else if (tree instanceof CompoundExp){
+			showTree((CompoundExp) tree, spaces);
+		}
+		else {
+			indent(spaces);
+			System.out.println("(Exp) Illegal expression at line " + tree.pos);
+		}
+	}
+
+
+	/* ==== Concrete classes ==== */
+	// Type 
 	public static void showTree(Type tree, int spaces){
 		indent(spaces);
 
@@ -68,6 +131,10 @@ abstract public class Absyn {
 			System.out.println("Type: VOID");
 	}
 
+
+
+
+/*
 	private static void showTree (FunDec tree, int spaces){
 		indent(spaces);
 		System.out.println("FunctionDec: ");
@@ -128,5 +195,6 @@ abstract public class Absyn {
 		System.out.println();
 
 	}
+	*/
 
 }
