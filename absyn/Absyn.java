@@ -206,5 +206,95 @@ abstract public class Absyn {
 		showTree(tree.size, spaces);
 	}
 
+	// Exp subclasses
+	// NilExp
+	public static void showTree(NilExp tree, int spaces){
+		indent(spaces);
+		System.out.println("NilExp");
+	}
 
+	// VarExp
+	public static void showTree(VarExp tree, int spaces){
+		indent(spaces);
+		System.out.println("VarExp:");
+		spaces+=SPACES;
+		showTree(tree.variable, spaces);
+	}
+
+	// IntExp
+	public static void showTree(IntExp tree, int spaces){
+		indent(spaces);
+		System.out.println("IntExp:");
+		
+		spaces+=SPACES;
+		indent(spaces);
+		System.out.println("Value: " + tree.value);
+	}
+
+	// CallExp
+	public static void showTree(CallExp tree, int spaces){
+		indent(spaces);
+		System.out.println("CallExp:");
+		spaces+=SPACES;
+
+		// Name
+		indent(spaces);
+		System.out.println("Name: " + tree.func);
+
+		// Args
+		showTree(tree.args, spaces);
+	}
+
+	// OpExp
+	public static void showTree(OpExp tree, int spaces){
+		indent(spaces);
+		System.out.print("OpExp: ");
+		
+		// Operator
+		switch(tree.op){
+			case OpExp.PLUS:
+				System.out.println("+");
+				break;
+			case OpExp.MINUS:
+				System.out.println("-");
+				break;
+			case OpExp.MUL:
+				System.out.println("*");
+				break;
+			case OpExp.DIV:
+				System.out.println("/");
+				break;
+			case OpExp.EQ:
+				System.out.println("==");
+				break;
+			case OpExp.NE:
+				System.out.println("!=");
+				break;
+			case OpExp.LT:
+				System.out.println("<");
+				break;
+			case OpExp.GT:
+				System.out.println(">");
+				break;
+			case OpExp.LE:
+				System.out.println("<=");
+				break;
+			case OpExp.GE:
+				System.out.println(">=");
+				break;
+			default:
+				System.out.println( "Unrecognized operator at line " + tree.pos);
+				break;
+		}
+
+		spaces+=SPACES;
+		showTree( tree.left, spaces ); // Left operand
+    	showTree( tree.right, spaces ); // Right operand
+	}
+
+	// AssignExp
+	public static void showTree(AssignExp tree, int spaces){
+		indent(spaces);
+		System.out.println("AssignExp:");
+	}
 }
