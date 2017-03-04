@@ -60,12 +60,16 @@ parser code {:
 /* Terminal and Non terminal declaration */
 
 terminal String ID, NUM;
-terminal IF, ELSE, WHILE;
-terminal INTEGER, VOID, RETURN;
+terminal IF, ELSE, WHILE, INTEGER, VOID, RETURN;
 terminal PLUS, MINUS, MUL, DIV, EQU;
 terminal LESS, GREATER, LEQUIV,GEQUIV, EQUIV, NEQUIV;
 terminal SEMI, COMMA, LPAREN, RPAREN, LSQUARE, RSQUARE, LCURLY, RCURLY;
-terminal ERROR;
+
+/* TODO: Add types otherwise you have to cast everything */
+
+
+
+
 
 non terminal program;
 non terminal type_specifier;
