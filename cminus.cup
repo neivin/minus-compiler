@@ -134,7 +134,7 @@ param_list  ::= param_list:l  COMMA  param:p
                   while(decs.tail != null)
                     decs = decs.tail;
                   decs.tail = new VarDecList(p, null);
-                  RESULT = l 
+                  RESULT = l;
                 :}
               | param:p
                 {: RESULT = new VarDecList(p, null); :}
@@ -157,14 +157,14 @@ compound_stmt ::= LCURLY:c  local_decls:l stmt_list:s RCURLY
 
 local_decls   ::= local_decls:l var_decl:v
                   {: 
-                    VarDecList decs = l
+                    VarDecList decs = l;
                     while (decs.tail != null)
                       decs = decs.tail;
-                    decs.tail = new VarDecList(lleft, v, null)
+                    decs.tail = new VarDecList(lleft, v, null);
                     RESULT = l; 
                   :}
                 |
-                  {: RESULT = null :}
+                  {: RESULT = null; :}
                 | error:e var_decl:v
                   {:
                     parser.report_error ("Invalid syntax in variable declarations", e);
@@ -176,8 +176,8 @@ stmt_list   ::= stmt_list:l stmt:s
                 {:
                   ExpList exps = l;
                   while (exps.tail != null)
-                    exps = exps.tail
-                  exps.tail = new ExpList(s, null) 
+                    exps = exps.tail;
+                  exps.tail = new ExpList(s, null);
                   RESULT = l; :}
               |
                 {: RESULT = null; :}
@@ -200,16 +200,16 @@ stmt        ::= expr_stmt:e
               ;
 
 expr_stmt   ::= expr:e  SEMI
-                {: RESULT = e :}
+                {: RESULT = e; :}
               | SEMI:s
-                {: RESULT = new NilExp(sleft) :}
+                {: RESULT = new NilExp(sleft); :}
               ;
 
 
 selection_stmt  ::= IF:i  LPAREN  expr:e  RPAREN  stmt:s
                     {: RESULT = new IfExp(ileft, e, s, new NilExp(sleft)); :}
                   | IF:i  LPAREN  expr:e  RPAREN  stmt:s1  ELSE  stmt:s2
-                    {: RESULT = new IfExp(ileft, e, s1, s2) :}
+                    {: RESULT = new IfExp(ileft, e, s1, s2); :}
                   ;
 
 iteration_stmt  ::= WHILE:w LPAREN  expr:e  RPAREN  stmt:s
