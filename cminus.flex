@@ -67,4 +67,4 @@ comment = \/\*(.|[\r\n])*\*\/
 {id}					{ return symbol(sym.ID, yytext()); }
 {whitespace}			{ /* Do Nothing */ }
 {comment}				{ /* Do Nothing */ }
-.						{ System.err.println("ERROR: Unrecognized character \'" + yytect() +"\' on line " + yyline); }
+.						{ System.err.println("ERROR: Unrecognized character \'" + yytext() +"\' on line " + yyline); }

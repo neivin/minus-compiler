@@ -79,7 +79,7 @@ non terminal VarDec param, var_decl;
 non terminal Exp compound_stmt, stmt, expr_stmt, selection_stmt, iteration_stmt, return_stmt;
 non terminal Exp expr, simple_expr, additive_expr, factor, term, call;
 
-non terminal relop, addop, mulop;
+non terminal Integer relop, addop, mulop;
 
 /* --------------- Precedences --------------- */
 
@@ -245,47 +245,47 @@ var             ::= ID:i
                   ;
 
 simple_expr     ::= additive_expr:a1 relop:r additive_expr:a2
-                    {:  RESULT = new OpExp(a1left, a1, r, a2);  :}
+                    {:  RESULT = new OpExp(a1left, a1, r.intValue(), a2);  :}
                   | additive_expr:a
                     {:  RESULT = a;  :}
                   ;
 
 relop           ::= LEQUIV
-                    {:  RESULT = OpExp.LE;  :}
+                    {:  RESULT = new Integer(OpExp.LE);  :}
                   | LESS
-                    {:  RESULT = OpExp.LT;  :}
+                    {:  RESULT = new Integer(OpExp.LT);  :}
                   | GREATER
-                    {:  RESULT = OpExp.GT;  :}
+                    {:  RESULT = new Integer(OpExp.GT);  :}
                   | GEQUIV
-                    {:  RESULT = OpExp.GE;  :}
+                    {:  RESULT = new Integer(OpExp.GE);  :}
                   | EQUIV
-                    {:  RESULT = OpExp.EQ;  :}
+                    {:  RESULT = new Integer(OpExp.EQ);  :}
                   | NEQUIV
-                    {:  RESULT = OpExp.NE;  :}
+                    {:  RESULT = new Integer(OpExp.NE);  :}
                   ;
 
 additive_expr   ::= additive_expr:a addop:o term:t
-                    {:  RESULT = new OpExp(aleft, a, o, t);  :}
+                    {:  RESULT = new OpExp(aleft, a, o.intValue(), t);  :}
                   | term:t
                     {:  RESULT = t;  :}
                   ;
 
 addop           ::= PLUS
-                    {:  RESULT = OpExp.PLUS;  :}
+                    {:  RESULT = new Integer(OpExp.PLUS);  :}
                   | MINUS
-                    {:  RESULT = OpExp.MINUS;  :}
+                    {:  RESULT = new Integer(OpExp.MINUS);  :}
                   ;
 
 term            ::= term:t  mulop:m factor:f
-                    {: RESULT = new OpExp(tleft, t, m, f);   :}
+                    {: RESULT = new OpExp(tleft, t, m.intValue(), f);   :}
                   | factor:f
                     {:  RESULT = f;  :}
                   ;
 
 mulop           ::= MUL
-                    {:  RESULT = OpExp.MUL;  :}
+                    {:  RESULT = new Integer(OpExp.MUL);  :}
                   | DIV
-                    {:  RESULT = OpExp.DIV;  :}
+                    {:  RESULT = new Integer(OpExp.DIV);  :}
                   ;
 
 factor          ::= LPAREN:l  expr:e  RPAREN
