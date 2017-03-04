@@ -116,24 +116,19 @@ var_decl    ::= type_specifier:t ID:i SEMI
               ;
 
 
-//TODO:
-
-              
 type_specifier  ::= INTEGER:i
-                  {:  RESULT = new Type(ileft, Type.INTEGER);   :}
+                    {: RESULT = new Type(ileft, Type.INT); :}
                   | VOID:v
-                  {: RESULT = new Type(vleft, Type.VOID); :}
+                    {: RESULT = new Type(vleft, Type.VOID); :}
                   ;
 
-fun_decl    ::= type_specifier:t  ID:i  LPAREN params:p RPAREN  compound_stmt:c
-              {: RESULT = new FunDec(tleft, t, i, p, c); :}
+fun_decl    ::= type_specifier:t  ID:i  LPAREN param_list:p RPAREN  compound_stmt:c
+                {: RESULT = new FunctionDec(tleft, t, i, p, c); :}
+              | type_specifier:t  ID:i  LPAREN VOID RPAREN  compound_stmt:c
+                {: RESULT = new FunctionDec(tleft, t, i, null, c); :}
               ;
 
-params      ::= param_list:p
-              {: RESULT = p :}
-              | VOID
-              {: RESULT = VOID :}
-              ;
+//TODO
 
 param_list  ::= param_list:l  COMMA  param:p
               {: RESULT = new ParamList(p, l); :}
