@@ -132,6 +132,24 @@ abstract public class Absyn {
 	}
 
 
+	// Var subclasses
+	// SimpleVar
+	public static void showTree(SimpleVar tree, int spaces){
+		indent(spaces);
+		System.out.println("SimpleVar: " + tree.name);
+	}
+
+	// IndexVar
+	public static void showTree(IndexVar tree, int spaces){
+		indent(spaces);
+		System.out.println("IndexVar:");
+
+		spaces+=SPACES;
+		indent(spaces);
+		System.out.println("Name: " + tree.name);
+		showTree(tree.index, spaces); // index is Exp object
+	}
+
 
 
 /*
