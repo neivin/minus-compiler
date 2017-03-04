@@ -289,12 +289,60 @@ abstract public class Absyn {
 
 		spaces+=SPACES;
 		showTree( tree.left, spaces ); // Left operand
-    	showTree( tree.right, spaces ); // Right operand
+		showTree( tree.right, spaces ); // Right operand
 	}
 
 	// AssignExp
 	public static void showTree(AssignExp tree, int spaces){
 		indent(spaces);
 		System.out.println("AssignExp:");
+		spaces+=SPACES;
+
+		// Var = left
+		showTree(tree.lhs, spaces);
+
+		// Exp = right;
+		showTree(tree.rhs, spaces);
+	}
+
+	// IfExp
+	public static void showTree(IfExp tree, int spaces){
+		indent(spaces);
+		System.out.println("IfExp:");
+		spaces+=SPACES;
+
+		showTree(tree.test, spaces); // Test Exp
+		showTree(tree.thenpart, spaces); // Then Exp
+		showTree(tree.elsepart, spaces); // Else Exp (NilExp)
+	}
+
+	// WhileExp
+	public static void showTree(WhileExp tree, int spaces){
+		indent(spaces);
+		System.out.println("WhileExp:");
+		spaces+=SPACES;
+
+		showTree(tree.test, spaces); // While condition Exp
+		showTree(tree.body, spaces); // Loop body Exp
+	}
+
+	// ReturnExp
+	public static void showTree(ReturnExp tree, int spaces){
+		indent(spaces);
+		System.out.println("ReturnExp:");
+		spaces+=SPACES;
+		if(tree.exp != null){
+			showTree(tree.exp, spaces); // Return Exp
+		}
+	}
+
+	// CompoundExp
+	public static void showTree(CompoundExp tree, int spaces){
+		indent(spaces);
+		System.out.println("CompoundExp:");
+		spaces+=SPACES;
+
+		showTree(tree.decs, spaces); // VarDecList
+		showTree(tree.exps, spaces); //ExpList
 	}
 }
