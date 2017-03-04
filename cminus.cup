@@ -152,7 +152,7 @@ param       ::= type_specifier:t  ID:i
 
 
 compound_stmt ::= LCURLY:c  local_decls:l stmt_list:s RCURLY
-                  {: RESULT = new CompundExp(cleft, l, s); :}
+                  {: RESULT = new CompoundExp(cleft, l, s); :}
                 ;
 
 local_decls   ::= local_decls:l var_decl:v
@@ -285,7 +285,7 @@ factor          ::= LPAREN:l  expr:e  RPAREN
                   | call:c
                     {:  RESULT = c;  :}
                   | NUM:n
-                    {:  RESULT = new IntExp(nleft, n);  :}
+                    {:  RESULT = new IntExp(nleft, Integer.parseInt(n));  :}
                   ;
 
 call            ::= ID:i  LPAREN  args:a  RPAREN

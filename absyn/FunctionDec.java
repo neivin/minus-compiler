@@ -6,10 +6,10 @@ public class FunctionDec extends Dec {
 	public VarDecList params;
 	public CompoundExp body;
 
-	public FunctionDec (int pos, Type result, String name, VarDecList params, CompoundExp body){
+	public FunctionDec (int pos, Type result, String func, VarDecList params, CompoundExp body){
 		this.pos = pos;
 		this.result = result;
-		this.name = name;
+		this.func = func;
 		this.params = params;
 		this.body = body;
 	}
