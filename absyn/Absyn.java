@@ -2,45 +2,47 @@ package absyn;
 
 abstract public class Absyn {
 	public int pos;
-
-	final static int SPACES = 4;
+	public final static int SPACES = 4;
 
 	private static void indent (int spaces) {
 		for(int i =0; i < spaces; i++)
 			System.out.print(" ");
 	}
 
-	/* Argument List */
-	public static void showTree(ArgList tree, int spaces) {
-		while (tree != null){
-			showTree(tree.head, spaces);
-			tree = tree.tail;
-		}
-	}
+	/* ==== List Structures ==== */
 
-	/* Parameters List */
-	public static void showTree (ParamList tree, int spaces){
-		while (tree != null){
-			showTree(tree.head, spaces);
-			tree = tree.tail;
-		}
-	}
-
-	/* Declaration List */
+	// Declaration List
 	public static void showTree (DecList tree, int spaces){
 		while (tree != null){
-			showTree(tree.head, spaces);
+			if (tree.head != null){
+				showTree(tree.head, spaces);
+			}
 			tree = tree.tail;
 		}
 	}
 
-	/* Local Declarations List */
-	public static void showTree (LocalDecs tree, int spaces){
+	// Variable Declaration List
+	public static void showTree (VarDecList tree, int spaces){
 		while (tree != null){
-			showTree(tree.head, spaces);
+			if (tree.head != null){
+				showTree(tree.head, spaces);
+			}
 			tree = tree.tail;
 		}
 	}
+
+	// Expression List
+	public static void showTree (ExpList tree, int spaces){
+		while (tree != null){
+			if (tree.head != null){
+				showTree(tree.head, spaces);
+			}
+			tree = tree.tail;
+		}
+	}
+
+
+	// TODO
 
 	/* Declarations - Function or Variable*/
 	public static void showTree (Dec tree, int spaces){
