@@ -86,23 +86,39 @@ program     ::= decl_list:s
             ;
 
 decl_list   ::= decl_list:d1 decl:d2
-              {: RESULT = new DecList(d1, d2); :}
+                {: 
+                  DecList decs = d1;
+                  while(decs.tail != null)
+                    decs = decs.tail;
+                  decs.tail = new DecList(d2, null);
+                  RESULT = d1; 
+                :}
               | decl:d
-              {: RESULT = new DecList(d, null); :}
+                {: 
+                  RESULT = new DecList(d, null); 
+                :}
+              | error:e
+                {:
+                  parser.report_error ("Invalid syntax in Declaration List (DecList)", e);
+                :}
               ;
 
-decl        ::= var_decl:s
-              {: RESULT = s; :}
+decl        ::= var_decl:v
+                {: RESULT = v; :}
               | fun_decl:f
-              {: RESULT = f; :}
+                {: RESULT = f; :}
               ;
 
 var_decl    ::= type_specifier:t ID:i SEMI
-              {:  RESULT = new VarDec(tleft, t, i); :}
+                {:  RESULT = new SimpleDec(tleft, t, i); :}
               | type_specifier:t ID:i LSQUARE NUM:n RSQUARE SEMI
-              {: RESULT = new VarDec(tleft,t, i, n); :}
+                {: RESULT = new ArrayDec(tleft,t, i, new IntExp(nleft, n)); :}
               ;
 
+
+//TODO:
+
+              
 type_specifier  ::= INTEGER:i
                   {:  RESULT = new Type(ileft, Type.INTEGER);   :}
                   | VOID:v
