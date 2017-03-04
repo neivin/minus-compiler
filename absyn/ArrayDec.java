@@ -1,13 +1,13 @@
 package absyn;
 
 public class ArrayDec extends VarDec {
-	public String num = "";
+	public IntExp size;
 
 	/* Array variable declarations*/
-	public VarDec(int pos, Type type, String id, String num){
+	public VarDec(int pos, Type type, String name, IntExp size){
 		this.pos = pos;
 		this.type = type;
-		this.id = id;
-		this.num = num;
+		this.name = name;
+		this.size = size;
 	}
 }
