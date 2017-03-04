@@ -1,6 +1,6 @@
 package absyn;
 
-public IfExp extends Exp{
+public class IfExp extends Exp{
 	public Exp test;
   	public Exp thenpart;
   	public Exp elsepart;

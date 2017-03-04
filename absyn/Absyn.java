@@ -77,7 +77,7 @@ abstract public class Absyn {
 		}
 		else {
 			indent(spaces);
-			System.out.println("(VarDec) Illegal expression at line " + tree.pos)
+			System.out.println("(VarDec) Illegal expression at line " + tree.pos);
 		}
 	}
 

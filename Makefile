@@ -6,8 +6,8 @@ CLASSPATH=-classpath /usr/share/java/cup.jar:.
 CUP=cup
 
 all: Main.class
-#absyn.*.java
-Main.class: parser.java sym.java Lexer.java Main.java
+
+Main.class: absyn/*.java parser.java sym.java Lexer.java Main.java
 
 %.class: %.java
 	$(JAVAC) $(CLASSPATH)  $^
