@@ -151,6 +151,61 @@ abstract public class Absyn {
 	}
 
 
+	// Dec subclasses : FunctionDec, VarDec (SimpleDec, ArrayDec)
+	//FunctionDec
+	public static void showTree(FunctionDec tree, int spaces){
+		indent(spaces);
+		System.out.println("FunctionDec:");
+
+		spaces+=SPACES;
+		
+		// Function return type
+		showTree(tree.result, spaces);
+
+		// Function name
+		indent(spaces);
+		System.out.println("Name: " + tree.func);
+
+		// Parameters
+		showTree(tree.params, spaces);
+
+		// Body
+		showTree(tree.body, spaces);
+	}
+
+	// SimpleDec
+	public static void showTree (SimpleDec tree, int spaces){
+		indent(spaces);
+		System.out.println("SimpleDec:");
+		
+		spaces+=SPACES;
+
+		// Type		
+		showTree(tree.type, spaces);
+
+		// Variable name
+		indent(spaces);
+		System.out.println("Name: " + tree.name);
+	}
+
+	// ArrayDec
+	public static void showTree (ArrayDec tree, int spaces){
+		indent(spaces);
+		System.out.println("ArrayDec:");
+		
+		spaces+=SPACES;
+
+		// Type		
+		showTree(tree.type, spaces);
+
+		// Variable name
+		indent(spaces);
+		System.out.println("Name: " + tree.name);
+
+		// Array size
+		showTree(tree.size, spaces);
+	}
+
 
 /*
 	private static void showTree (FunDec tree, int spaces){
