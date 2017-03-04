@@ -217,99 +217,99 @@ iteration_stmt  ::= WHILE:w LPAREN  expr:e  RPAREN  stmt:s
                   ;
 
 return_stmt     ::= RETURN:r  SEMI
-                  {: RESULT = new ReturnExp(rleft, null); :}
+                    {: RESULT = new ReturnExp(rleft, null); :}
                   | RETURN:r expr:e SEMI
-                  {: RESULT = new ReturnExp(rleft, e); :}
+                    {: RESULT = new ReturnExp(rleft, e); :}
                   ;
 
 expr            ::= var:v EQU expr:e
-                  {: RESULT = new AssignExp(vleft, v, e); :}
+                    {: RESULT = new AssignExp(vleft, v, e); :}
                   | simple_expr:s
-                  {: RESULT = s; :}
+                    {: RESULT = s; :}
                   ;
 
 var             ::= ID:i
-                  {: RESULT = new SimpleVar(ileft, i); :}
+                    {: RESULT = new SimpleVar(ileft, i); :}
                   | ID:i  LSQUARE expr:e RSQUARE
-                  {: RESULT = new IndexVar(ileft, i, e); :}
+                    {: RESULT = new IndexVar(ileft, i, e); :}
                   ;
 
-
-
-
-
-
-
-
-
-
-
 simple_expr     ::= additive_expr:a1 relop:r additive_expr:a2
-                  {:  RESULT = new SimpleExp(a1left, a1, r, a2);  :}
+                    {:  RESULT = new OpExp(a1left, a1, r, a2);  :}
                   | additive_expr:a
-                  {:  RESULT = new SimpleExp(aleft, a);  :}
+                    {:  RESULT = a;  :}
                   ;
 
 relop           ::= LEQUIV
-                  {:  RESULT = LEQUIV;  :}
+                    {:  RESULT = OpExp.LE;  :}
                   | LESS
-                  {:  RESULT = LESS;  :}
+                    {:  RESULT = OpExp.LT;  :}
                   | GREATER
-                  {:  RESULT = GREATER;  :}
+                    {:  RESULT = OpExp.GT;  :}
                   | GEQUIV
-                  {:  RESULT = GEQUIV;  :}
+                    {:  RESULT = OpExp.GE;  :}
                   | EQUIV
-                  {:  RESULT = EQUIV;  :}
+                    {:  RESULT = OpExp.EQ;  :}
                   | NEQUIV
-                  {:  RESULT = NEQUIV;  :}
+                    {:  RESULT = OpExp.NE;  :}
                   ;
 
 additive_expr   ::= additive_expr:a addop:o term:t
-                  {:  RESULT = new AddExp(aleft, a, o, t);  :}
+                    {:  RESULT = new OpExp(aleft, a, o, t);  :}
                   | term:t
-                  {:  RESULT = new AddExp(tleft, t);  :}
+                    {:  RESULT = t;  :}
                   ;
 
 addop           ::= PLUS
-                  {:  RESULT = PLUS;  :}
+                    {:  RESULT = OpExp.PLUS;  :}
                   | MINUS
-                  {:  RESULT = MINUS;  :}
+                    {:  RESULT = OpExp.MINUS;  :}
                   ;
 
 term            ::= term:t  mulop:m factor:f
-                  {: RESULT = new Term(tleft, t, m, f);   :}
+                    {: RESULT = new OpExp(tleft, t, m, f);   :}
                   | factor:f
-                  {:  RESULT = new Term(fleft, f);  :}
+                    {:  RESULT = f;  :}
                   ;
 
 mulop           ::= MUL
-                  {:  RESULT = MUL;  :}
+                    {:  RESULT = OpExp.MUL;  :}
                   | DIV
-                  {:  RESULT = DIV;  :}
+                    {:  RESULT = OpExp.DIV;  :}
                   ;
 
 factor          ::= LPAREN:l  expr:e  RPAREN
-                  {:  RESULT = new Factor(lleft, e);  :}
+                    {:  RESULT = e;  :}
                   | var:v
-                  {:  RESULT = new Factor(vleft, v);  :}
+                    {:  RESULT = new VarExp(vleft, v);  :}
                   | call:c
-                  {:  RESULT = new Factor(cleft, c);  :}
+                    {:  RESULT = c;  :}
                   | NUM:n
-                  {:  RESULT = new Factor(nleft, n);  :}
+                    {:  RESULT = new IntExp(nleft, n);  :}
                   ;
 
 call            ::= ID:i  LPAREN  args:a  RPAREN
-                  {:  RESULT = new Call(ileft, i, a);  :}
+                    {:  RESULT = new CallExp(ileft, i, a);  :}
                   ;
 
 args            ::= arg_list:a
-                  {:  RESULT = a;  :}
+                    {:  RESULT = a;  :}
                   |
-                  {:  RESULT = null;  :}
+                    {:  RESULT = null;  :}
                   ;
 
 arg_list         ::=  arg_list:a  COMMA expr:e
-                  {:  RESULT = new ArgList(e, a);  :}
+                    {:  
+                      ExpList args = a;
+                      while (args.tail != null)
+                        args = args.tail;
+                      args.tail = new ExpList(e, null);
+                      RESULT = a;  
+                    :}
                   | expr:e
-                  {:  RESULT = new ArgList(e);  :}
+                    {:  RESULT = new ExpList(e, null);  :}
+                  | error:e
+                    {:
+                      parser.report_error("Invalid syntax in function call arguments", e);
+                    :}
                   ;
