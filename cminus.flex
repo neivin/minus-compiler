@@ -7,12 +7,9 @@ import java_cup.runtime.*;
 
 %%
 
-/* Class name for the lexer*/
 %class Lexer
 %line
 %column
-
-/* CUP compatibility */
 %cup
 
 /* Return null on EOF */
@@ -57,7 +54,7 @@ comment = \/\*(.|[\r\n])*\*\/
 ">="					{ return symbol(sym.GEQUIV); }
 "=="					{ return symbol(sym.EQUIV); }
 "!="					{ return symbol(sym.NEQUIV); }
-"="						{ return symbol(sym.EQU); }
+"="						{ return symbol(sym.EQ); }
 ";"						{ return symbol(sym.SEMI); }
 ","						{ return symbol(sym.COMMA); }
 "("						{ return symbol(sym.LPAREN); }
@@ -70,4 +67,4 @@ comment = \/\*(.|[\r\n])*\*\/
 {id}					{ return symbol(sym.ID, yytext()); }
 {whitespace}			{ /* Do Nothing */ }
 {comment}				{ /* Do Nothing */ }
-.						{ return symbol(sym.ERROR); }
+.						{ System.err.println("ERROR: Unrecognized character \'" + yytect() +"\' on line " + yyline); }

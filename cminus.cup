@@ -61,7 +61,7 @@ parser code {:
 
 terminal String ID, NUM;
 terminal IF, ELSE, WHILE, INTEGER, VOID, RETURN;
-terminal PLUS, MINUS, MUL, DIV, EQU;
+terminal PLUS, MINUS, MUL, DIV, EQ;
 terminal LESS, GREATER, LEQUIV,GEQUIV, EQUIV, NEQUIV;
 terminal SEMI, COMMA, LPAREN, RPAREN, LSQUARE, RSQUARE, LCURLY, RCURLY;
 
@@ -74,7 +74,7 @@ non terminal ExpList stmt_list, args, arg_list;
 non terminal Type type_specifier;
 non terminal Var var;
 non terminal Dec decl, fun_decl;
-non terminal VarDec param, var_decl
+non terminal VarDec param, var_decl;
 
 non terminal Exp compound_stmt, stmt, expr_stmt, selection_stmt, iteration_stmt, return_stmt;
 non terminal Exp expr, simple_expr, additive_expr, factor, term, call;
@@ -88,7 +88,6 @@ precedence nonassoc LESS, GREATER, LEQUIV,GEQUIV, EQUIV, NEQUIV;
 
 /* --------------- Grammar Section --------------- */
 
-start with program;
 
 program     ::= decl_list:s
               {:  RESULT = s;
@@ -233,7 +232,7 @@ return_stmt     ::= RETURN:r  SEMI
                     {: RESULT = new ReturnExp(rleft, e); :}
                   ;
 
-expr            ::= var:v EQU expr:e
+expr            ::= var:v EQ expr:e
                     {: RESULT = new AssignExp(vleft, v, e); :}
                   | simple_expr:s
                     {: RESULT = s; :}
