@@ -1,6 +1,6 @@
 package absyn;
 
-public class IndexVar {
+public class IndexVar extends Var{
 	public Exp index;
 
 	public IndexVar (int pos, String name, Exp index){
