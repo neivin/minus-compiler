@@ -1,5 +1,5 @@
-//import absyn.*;
-//import java_cup.runtime.*;
+import absyn.*;
+import java_cup.runtime.*;
 
 /* Parser code to change the way the parser reports errors (include
    line and column number of the error). */
@@ -128,81 +128,121 @@ fun_decl    ::= type_specifier:t  ID:i  LPAREN param_list:p RPAREN  compound_stm
                 {: RESULT = new FunctionDec(tleft, t, i, null, c); :}
               ;
 
-//TODO
-
 param_list  ::= param_list:l  COMMA  param:p
-              {: RESULT = new ParamList(p, l); :}
-              | param
-              {: RESULT = new ParamList(p, null); :}
+                {: 
+                  VarDecList decs = l;
+                  while(decs.tail != null)
+                    decs = decs.tail;
+                  decs.tail = new VarDecList(p, null);
+                  RESULT = l 
+                :}
+              | param:p
+                {: RESULT = new VarDecList(p, null); :}
+              | error:e
+                {:
+                  parser.report_error("Invalid syntax in parameters of function declaration", e);
+                :}
               ;
 
 param       ::= type_specifier:t  ID:i
-              {: RESULT = new Param(tleft, t, i, 0); :}
+                {: RESULT = new SimpleDec(tleft, t, i); :}
               | type_specifier:t  ID:i  LSQUARE RSQUARE
-              {: RESULT = new Param(tleft, t, i, 1); :}
+                {: RESULT = new SimpleDec(tleft, t, i); :}
               ;
 
+
 compound_stmt ::= LCURLY:c  local_decls:l stmt_list:s RCURLY
-                {: RESULT = new CompStmt(cleft, l, s); :}
+                  {: RESULT = new CompundExp(cleft, l, s); :}
                 ;
 
 local_decls   ::= local_decls:l var_decl:v
-                {: RESULT = new LocalDecs(lleft, v, l); :}
+                  {: 
+                    VarDecList decs = l
+                    while (decs.tail != null)
+                      decs = decs.tail;
+                    decs.tail = new VarDecList(lleft, v, null)
+                    RESULT = l; 
+                  :}
                 |
-                {: RESULT = new LocalDecs() :}
+                  {: RESULT = null :}
+                | error:e var_decl:v
+                  {:
+                    parser.report_error ("Invalid syntax in variable declarations", e);
+                    RESULT = new VarDecList(v, null);
+                  :}
                 ;
 
 stmt_list   ::= stmt_list:l stmt:s
-              {: RESULT = new StmtList(lleft, s, l); :}
+                {:
+                  ExpList exps = l;
+                  while (exps.tail != null)
+                    exps = exps.tail
+                  exps.tail = new ExpList(s, null) 
+                  RESULT = l; :}
               |
-              {: RESULT = new StmtList(); :}
+                {: RESULT = null; :}
+              | error:e
+                {:
+                  parser.report_error("Invalid syntax in statement list",e);
+                :}
               ;
 
 stmt        ::= expr_stmt:e
-              {: RESULT = e; :}
+                {: RESULT = e; :}
               | compound_stmt:c
-              {: RESULT = c; :}
+                {: RESULT = c; :}
               | selection_stmt:s
-              {: RESULT = s; :}
+                {: RESULT = s; :}
               | iteration_stmt:i
-              {: RESULT = i; :}
+                {: RESULT = i; :}
               | return_stmt:r
-              {: RESULT = r; :}
+                {: RESULT = r; :}
               ;
 
 expr_stmt   ::= expr:e  SEMI
-              {: RESULT = new ExpStmt(eleft, e); :}
-              | SEMI
-              {: RESULT = new ExpStmt() :}
+                {: RESULT = e :}
+              | SEMI:s
+                {: RESULT = new NilExp(sleft) :}
               ;
 
+
 selection_stmt  ::= IF:i  LPAREN  expr:e  RPAREN  stmt:s
-                  {: RESULT = new SelStmt(ileft, e, s, null); :}
+                    {: RESULT = new IfExp(ileft, e, s, new NilExp(sleft)); :}
                   | IF:i  LPAREN  expr:e  RPAREN  stmt:s1  ELSE  stmt:s2
-                  {: RESULT = new SelStmt(ileft, e, s1, s2) :}
+                    {: RESULT = new IfExp(ileft, e, s1, s2) :}
                   ;
 
 iteration_stmt  ::= WHILE:w LPAREN  expr:e  RPAREN  stmt:s
-                  {: RESULT = new IterStmt(wleft, e, s); :}
+                    {: RESULT = new WhileExp(wleft, e, s); :}
                   ;
 
 return_stmt     ::= RETURN:r  SEMI
-                  {: RESULT = new RetStmt(rleft, null); :}
+                  {: RESULT = new ReturnExp(rleft, null); :}
                   | RETURN:r expr:e SEMI
-                  {: RESULT = new RetStmt(rleft, e); :}
+                  {: RESULT = new ReturnExp(rleft, e); :}
                   ;
 
 expr            ::= var:v EQU expr:e
-                  {: RESULT = new Exp(vleft, v, e); :}
+                  {: RESULT = new AssignExp(vleft, v, e); :}
                   | simple_expr:s
-                  {: RESULT = new Exp(sleft, s); :}
+                  {: RESULT = s; :}
                   ;
 
 var             ::= ID:i
-                  {: RESULT = new Var(ileft, i); :}
+                  {: RESULT = new SimpleVar(ileft, i); :}
                   | ID:i  LSQUARE expr:e RSQUARE
-                  {: RESULT = new Var(ileft, i, e); :}
+                  {: RESULT = new IndexVar(ileft, i, e); :}
                   ;
+
+
+
+
+
+
+
+
+
+
 
 simple_expr     ::= additive_expr:a1 relop:r additive_expr:a2
                   {:  RESULT = new SimpleExp(a1left, a1, r, a2);  :}
