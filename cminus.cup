@@ -57,7 +57,7 @@ parser code {:
     }
 :};
 
-/* Terminal and Non terminal declaration */
+/* --------------- Terminals --------------- */
 
 terminal String ID, NUM;
 terminal IF, ELSE, WHILE, INTEGER, VOID, RETURN;
@@ -65,21 +65,28 @@ terminal PLUS, MINUS, MUL, DIV, EQU;
 terminal LESS, GREATER, LEQUIV,GEQUIV, EQUIV, NEQUIV;
 terminal SEMI, COMMA, LPAREN, RPAREN, LSQUARE, RSQUARE, LCURLY, RCURLY;
 
-/* TODO: Add types otherwise you have to cast everything */
+/* --------------- Non Terminals --------------- */
 
+non terminal DecList program, decl_list;
+non terminal VarDecList param_list, local_decls;
+non terminal ExpList stmt_list, args, arg_list;
 
+non terminal Type type_specifier;
+non terminal Var var;
+non terminal Dec decl, fun_decl;
+non terminal VarDec param, var_decl
 
+non terminal Exp compound_stmt, stmt, expr_stmt, selection_stmt, iteration_stmt, return_stmt;
+non terminal Exp expr, simple_expr, additive_expr, factor, term, call;
 
+non terminal relop, addop, mulop;
 
-non terminal program;
-non terminal type_specifier;
-non terminal decl_list, decl, var_decl, fun_decl, local_decls;
-non terminal params, param_list, param;
-non terminal compound_stmt, stmt_list, stmt, expr_stmt, selection_stmt, iteration_stmt, return_stmt;
-non terminal expr, simple_expr, additive_expr;
-non terminal var, term, factor, call, args, arg_list, relop, addop, mulop;
+/* --------------- Precedences --------------- */
 
-precedence  right  ELSE;
+precedence right EQ;
+precedence nonassoc LESS, GREATER, LEQUIV,GEQUIV, EQUIV, NEQUIV;
+
+/* --------------- Grammar Section --------------- */
 
 start with program;
 
