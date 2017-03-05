@@ -91,7 +91,8 @@ precedence nonassoc LESS, GREATER, LEQUIV,GEQUIV, EQUIV, NEQUIV;
 
 program     ::= decl_list:s
               {:  RESULT = s;
-                  System.out.println("Something");
+                  System.out.println("Abstract Syntax Tree:");
+                  Absyn.showTree(RESULT, 0);
               :}
             ;
 
@@ -122,7 +123,7 @@ decl        ::= var_decl:v
 var_decl    ::= type_specifier:t ID:i SEMI
                 {:  RESULT = new SimpleDec(tleft, t, i); :}
               | type_specifier:t ID:i LSQUARE NUM:n RSQUARE SEMI
-                {: RESULT = new ArrayDec(tleft,t, i, new IntExp(nleft, n)); :}
+                {: RESULT = new ArrayDec(tleft,t, i, new IntExp(nleft, Integer.parseInt(n))); :}
               ;
 
 
@@ -170,11 +171,11 @@ local_decls   ::= local_decls:l var_decl:v
                     VarDecList decs = l;
                     while (decs.tail != null)
                       decs = decs.tail;
-                    decs.tail = new VarDecList(lleft, v, null);
+                    decs.tail = new VarDecList(v, null);
                     RESULT = l; 
                   :}
-                |
-                  {: RESULT = null; :}
+                | var_decl: v
+                  {: RESULT = new VarDecList(v, null); :}
                 | error:e var_decl:v
                   {:
                     parser.report_error ("Invalid syntax in variable declarations", e);
