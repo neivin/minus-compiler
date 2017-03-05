@@ -1,0 +1,23 @@
+/* --------------------------------------------------------------------------
+This programs tests the compiler's ability to recover from simple lexical errors
+The errors include:
+in x; - Missing t on int type specifier
+while(1) - Missing a stmt section after while(1)
+esle  - Misspelled else statement after if statement
+ -------------------------------------------------------------------------- */
+
+void main(void)
+{
+  int x;
+  x = 20
+
+  if( x < 30)
+  {
+    print(x);
+  }
+  esle
+  {
+    print(30);
+  }
+
+}
