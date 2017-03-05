@@ -111,6 +111,7 @@ decl_list   ::= decl_list:d1 decl:d2
               | error:e
                 {:
                   parser.report_error ("Invalid syntax in Declaration List (DecList)", e);
+                  RESULT = new DecList(new ErrorDec(eleft), null);
                 :}
               ;
 
@@ -152,6 +153,7 @@ param_list  ::= param_list:l  COMMA  param:p
               | error:e
                 {:
                   parser.report_error("Invalid syntax in parameters of function declaration", e);
+                  RESULT = new VarDecList(new ErrorVarDec(eleft), null);
                 :}
               ;
 
@@ -190,11 +192,12 @@ stmt_list   ::= stmt_list:l stmt:s
                     exps = exps.tail;
                   exps.tail = new ExpList(s, null);
                   RESULT = l; :}
-              |
-                {: RESULT = null; :}
+              | stmt:s
+                {: RESULT = new ExpList(s, null); :}
               | error:e
                 {:
                   parser.report_error("Invalid syntax in statement list",e);
+                  RESULT = new ExpList(new ErrorExp(eleft), null);
                 :}
               ;
 
@@ -322,5 +325,6 @@ arg_list         ::=  arg_list:a  COMMA expr:e
                   | error:e
                     {:
                       parser.report_error("Invalid syntax in function call arguments", e);
+                      RESULT = new ExpList(new ErrorExp(eleft), null);
                     :}
                   ;

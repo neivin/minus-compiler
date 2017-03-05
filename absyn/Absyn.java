@@ -63,7 +63,7 @@ abstract public class Absyn {
 		}
 		else {
 			indent(spaces);
-			System.out.println("(Dec) Illegal expression at line " + tree.pos);
+			System.out.println("(Dec) Illegal expression at line " + ((ErrorDec)tree).pos);
 		}
 	}
 
@@ -77,7 +77,7 @@ abstract public class Absyn {
 		}
 		else {
 			indent(spaces);
-			System.out.println("(VarDec) Illegal expression at line " + tree.pos);
+			System.out.println("(VarDec) Illegal expression at line " + ((ErrorVarDec)tree).pos);
 		}
 	}
 
@@ -115,7 +115,7 @@ abstract public class Absyn {
 		}
 		else {
 			indent(spaces);
-			System.out.println("(Exp) Illegal expression at line " + tree.pos);
+			System.out.println("(Exp) Illegal expression at line " + ((ErrorExp)tree).pos);
 		}
 	}
 
