@@ -1,5 +1,11 @@
-int y,z;
+int z;
 void main ( void ) {
+	int y;
 	int x;
-	; /* ttest /* fff */ */
+	/* /*****/*/
+
+	return;
+}
+
+int gg(int x){
 }
