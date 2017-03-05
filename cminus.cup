@@ -160,7 +160,7 @@ param_list  ::= param_list:l  COMMA  param:p
 param       ::= type_specifier:t  ID:i
                 {: RESULT = new SimpleDec(tleft, t, i); :}
               | type_specifier:t  ID:i  LSQUARE RSQUARE
-                {: RESULT = new SimpleDec(tleft, t, i); :}
+                {: RESULT = new ArrayDec(tleft, t, i, null); :}
               ;
 
 
