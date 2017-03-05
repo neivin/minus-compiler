@@ -1,0 +1,24 @@
+/* --------------------------------------------------------------------------
+
+ -------------------------------------------------------------------------- */
+
+void main(void)
+{
+
+  /* Tests issues with improper comment recognition */
+  return;
+}
+
+/* Test the compound_stmt grammar when no variables are declared*/
+void noVariables(void)
+{
+
+}
+
+/*Test compound_stmt grammar when no statements exists*/
+void noStmts(void)
+{
+  int y;
+  int x;
+
+}
