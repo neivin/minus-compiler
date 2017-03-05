@@ -43,7 +43,7 @@ abstract public class Absyn {
 
 
 	/* ==== Abstract classes ==== */
-	// Variable 
+	// Variable
 	public static void showTree (Var tree, int spaces){
 		if (tree instanceof SimpleVar){
 			showTree((SimpleVar) tree, spaces);
@@ -87,7 +87,7 @@ abstract public class Absyn {
 			showTree((NilExp) tree, spaces);
 		}
 		else if (tree instanceof VarExp){
-			showTree((VarExp) tree, spaces);	
+			showTree((VarExp) tree, spaces);
 		}
 		else if (tree instanceof VarExp){
 			showTree((VarExp) tree, spaces);
@@ -113,6 +113,9 @@ abstract public class Absyn {
 		else if (tree instanceof CompoundExp){
 			showTree((CompoundExp) tree, spaces);
 		}
+		else if (tree instanceof IntExp){
+			showTree((IntExp) tree, spaces);
+		}
 		else {
 			indent(spaces);
 			System.out.println("(Exp) Illegal expression at line " + ((ErrorExp)tree).pos);
@@ -121,7 +124,7 @@ abstract public class Absyn {
 
 
 	/* ==== Concrete classes ==== */
-	// Type 
+	// Type
 	public static void showTree(Type tree, int spaces){
 		indent(spaces);
 
@@ -158,7 +161,7 @@ abstract public class Absyn {
 		System.out.println("FunctionDec:");
 
 		spaces+=SPACES;
-		
+
 		// Function return type
 		showTree(tree.result, spaces);
 
@@ -177,10 +180,10 @@ abstract public class Absyn {
 	public static void showTree (SimpleDec tree, int spaces){
 		indent(spaces);
 		System.out.println("SimpleDec:");
-		
+
 		spaces+=SPACES;
 
-		// Type		
+		// Type
 		showTree(tree.type, spaces);
 
 		// Variable name
@@ -192,10 +195,10 @@ abstract public class Absyn {
 	public static void showTree (ArrayDec tree, int spaces){
 		indent(spaces);
 		System.out.println("ArrayDec:");
-		
+
 		spaces+=SPACES;
 
-		// Type		
+		// Type
 		showTree(tree.type, spaces);
 
 		// Variable name
@@ -225,7 +228,7 @@ abstract public class Absyn {
 	public static void showTree(IntExp tree, int spaces){
 		indent(spaces);
 		System.out.println("IntExp:");
-		
+
 		spaces+=SPACES;
 		indent(spaces);
 		System.out.println("Value: " + tree.value);
@@ -249,7 +252,7 @@ abstract public class Absyn {
 	public static void showTree(OpExp tree, int spaces){
 		indent(spaces);
 		System.out.print("OpExp: ");
-		
+
 		// Operator
 		switch(tree.op){
 			case OpExp.PLUS:
