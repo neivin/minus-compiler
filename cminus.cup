@@ -83,7 +83,7 @@ non terminal Integer relop, addop, mulop;
 
 /* --------------- Precedences --------------- */
 
-precedence right EQ;
+precedence right EQ, ELSE;
 precedence nonassoc LESS, GREATER, LEQUIV,GEQUIV, EQUIV, NEQUIV;
 
 /* --------------- Grammar Section --------------- */
@@ -97,16 +97,16 @@ program     ::= decl_list:s
             ;
 
 decl_list   ::= decl_list:d1 decl:d2
-                {: 
+                {:
                   DecList decs = d1;
                   while(decs.tail != null)
                     decs = decs.tail;
                   decs.tail = new DecList(d2, null);
-                  RESULT = d1; 
+                  RESULT = d1;
                 :}
               | decl:d
-                {: 
-                  RESULT = new DecList(d, null); 
+                {:
+                  RESULT = new DecList(d, null);
                 :}
               | error:e
                 {:
@@ -141,7 +141,7 @@ fun_decl    ::= type_specifier:t  ID:i  LPAREN param_list:p RPAREN  compound_stm
               ;
 
 param_list  ::= param_list:l  COMMA  param:p
-                {: 
+                {:
                   VarDecList decs = l;
                   while(decs.tail != null)
                     decs = decs.tail;
@@ -166,15 +166,21 @@ param       ::= type_specifier:t  ID:i
 
 compound_stmt ::= LCURLY:c  local_decls:l stmt_list:s RCURLY
                   {: RESULT = new CompoundExp(cleft, l, s); :}
+                  | LCURLY:c  stmt_list:s RCURLY
+                  {:  RESULT = new CompoundExp(cleft, null, s);  :}
+                  | LCURLY:c local_decls:l RCURLY
+                  {:  RESULT = new CompoundExp(cleft, l, null);  :}
+                  | LCURLY:c  RCURLY
+                  {:  RESULT = new CompoundExp(cleft, null, null);  :}
                 ;
 
 local_decls   ::= local_decls:l var_decl:v
-                  {: 
+                  {:
                     VarDecList decs = l;
                     while (decs.tail != null)
                       decs = decs.tail;
                     decs.tail = new VarDecList(v, null);
-                    RESULT = l; 
+                    RESULT = l;
                   :}
                 | var_decl: v
                   {: RESULT = new VarDecList(v, null); :}
@@ -313,12 +319,12 @@ args            ::= arg_list:a
                   ;
 
 arg_list         ::=  arg_list:a  COMMA expr:e
-                    {:  
+                    {:
                       ExpList args = a;
                       while (args.tail != null)
                         args = args.tail;
                       args.tail = new ExpList(e, null);
-                      RESULT = a;  
+                      RESULT = a;
                     :}
                   | expr:e
                     {:  RESULT = new ExpList(e, null);  :}
