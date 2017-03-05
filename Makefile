@@ -1,4 +1,4 @@
-VA=java
+JAVA=java
 JAVAC=javac
 JFLEX=jflex
 CLASSPATH=-classpath /usr/share/java/cup.jar:.
