@@ -88,38 +88,35 @@ Using Git for version control and collaboration also taught us the importance of
 
 \section{Assumptions and Limitations}
 Some of the assumptions and limitations of the project are as follows:
-\begin{itemize}
+\begin{itemize}[leftmargin=12pt]
 \item The scanner simply uses a regular expression to recognize comment blocks, rather than macro states. This could result in unexpected behaviour when comment blocks are nested within each other.
 \item The parser will try to consume invalid input until it find the next valid block. As such, it will display the location of the error by line number and abstract structure.
 \end{itemize}
 
 \section{Potential Improvements}
 Some possible improvements that could me made are as follows:
-\begin{itemize}
+\begin{itemize}[leftmargin=12pt]
 \item Using macro states to recognize comment blocks from normal blocks could be a more robust way to recognize comments.
-\item Errors could display more detailed messages about column number at lower levels of the list hierarchy.
-
+\item Errors could display more detailed messages about column number at lower levels of the abstract list hierarchy.
 \end{itemize}
 
 \section{Contributions}
-
-
-\clearpage
-\section{Acknowledgments}
-\begin{flushleft}
+\subsection{Braydon Johnson}
 \begin{itemize}[leftmargin=12pt]
-
-\item World Food Programme (2016). \emph{Malawi.}
- Retrieved from \texttt{https://www.wfp.org/countries/malawi}
-
-\item Agricultural Research and Extension Trust of Malawi (2016). \emph{About ARET Malawi.}
-Retrieved from \texttt{http://www.aret.org.mw/index.php/about-us/profile}
-
-\item Agricultural Research and Extension Trust of Malawi (2016, January). \emph{ARET Strategic Plan 2016-2021.}
-
-
+\item Writing Scanner regular expressions
+\item Writing Parser grammar rules
+\item Creating test files
 \end{itemize}
-\end{flushleft}   
+
+\subsection{Neivin Mathew}
+\begin{itemize}[leftmargin=12pt]
+\item Writing Parser grammar rules
+\item Building syntax tree classes, display methods and main program
+\item Writing documentation for the project
+\end{itemize}
+
+\section{Acknowledgments}
+For this project, we used some of Professor Song's starter code from \texttt{java\_tiny.tgz} as well as followed the recommended syntax tree structure for the C- language from the course slides.
 
 
 
