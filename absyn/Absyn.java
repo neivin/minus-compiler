@@ -226,12 +226,11 @@ abstract public class Absyn {
 
 	// IntExp
 	public static void showTree(IntExp tree, int spaces){
-		indent(spaces);
-		System.out.println("IntExp:");
-
-		spaces+=SPACES;
-		indent(spaces);
-		System.out.println("Value: " + tree.value);
+		// Check if null for function declarations/calls of the form int x[]
+		if (tree != null){
+			indent(spaces);
+			System.out.println("IntExp:" + tree.value);
+		}
 	}
 
 	// CallExp

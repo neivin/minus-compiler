@@ -44,6 +44,7 @@ comment = \/\*[^"*/"]*\*\/
 "while"					{ return symbol(sym.WHILE); }
 "int"					{ return symbol(sym.INTEGER); }
 "void"					{ return symbol(sym.VOID); }
+"return"				{ return symbol(sym.RETURN); }
 "+"						{ return symbol(sym.PLUS); }
 "-"						{ return symbol(sym.MINUS); }
 "*"						{ return symbol(sym.MUL); }
