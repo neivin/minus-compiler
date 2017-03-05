@@ -4,8 +4,8 @@ import java.util.*;
 class Main{
   public static void main(String [] argv){
     
-    public boolean astMode;
-    public String file;
+    boolean astMode = false ;
+    String file = "";
 
     if (argv.length > 2 ){
     	System.err.println("Error: Invalid number of arguments");

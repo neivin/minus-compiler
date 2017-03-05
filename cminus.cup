@@ -5,7 +5,7 @@ import java_cup.runtime.*;
    line and column number of the error). */
 parser code {:
 
-    public boolean astMode;
+    public static boolean astMode;
     /* Change the method report_error so it will display the line and
        column of where the error occurred in the input as well as the
        reason for the error which is passed into the method in the
@@ -78,21 +78,21 @@ non terminal Dec decl, fun_decl;
 non terminal VarDec param, var_decl;
 
 non terminal Exp compound_stmt, stmt, expr_stmt, selection_stmt, iteration_stmt, return_stmt;
-non terminal Exp expr, simple_expr, additive_expr, factor, term, call;
+non terminal Exp expr, simple_expr, call;
 
-non terminal Integer relop, addop, mulop;
+/* --------------- Precedence Rules --------------- */
 
-/* --------------- Precedences --------------- */
-
-precedence right EQ, ELSE;
 precedence nonassoc LESS, GREATER, LEQUIV,GEQUIV, EQUIV, NEQUIV;
+precedence left PLUS, MINUS;
+precedence left DIV, MUL;
+precedence right EQ, ELSE;
 
 /* --------------- Grammar Section --------------- */
 
 
 program     ::= decl_list:s
               {:  RESULT = s;
-                  if (astMode){
+                  if (parser.astMode){
                      System.out.println("Abstract Syntax Tree:");
                     Absyn.showTree(RESULT, 0);
                   }
@@ -258,59 +258,35 @@ var             ::= ID:i
                     {: RESULT = new IndexVar(ileft, i, e); :}
                   ;
 
-simple_expr     ::= additive_expr:a1 relop:r additive_expr:a2
-                    {:  RESULT = new OpExp(a1left, a1, r.intValue(), a2);  :}
-                  | additive_expr:a
-                    {:  RESULT = a;  :}
-                  ;
-
-relop           ::= LEQUIV
-                    {:  RESULT = new Integer(OpExp.LE);  :}
-                  | LESS
-                    {:  RESULT = new Integer(OpExp.LT);  :}
-                  | GREATER
-                    {:  RESULT = new Integer(OpExp.GT);  :}
-                  | GEQUIV
-                    {:  RESULT = new Integer(OpExp.GE);  :}
-                  | EQUIV
-                    {:  RESULT = new Integer(OpExp.EQ);  :}
-                  | NEQUIV
-                    {:  RESULT = new Integer(OpExp.NE);  :}
-                  ;
-
-additive_expr   ::= additive_expr:a addop:o term:t
-                    {:  RESULT = new OpExp(aleft, a, o.intValue(), t);  :}
-                  | term:t
-                    {:  RESULT = t;  :}
-                  ;
-
-addop           ::= PLUS
-                    {:  RESULT = new Integer(OpExp.PLUS);  :}
-                  | MINUS
-                    {:  RESULT = new Integer(OpExp.MINUS);  :}
-                  ;
-
-term            ::= term:t  mulop:m factor:f
-                    {: RESULT = new OpExp(tleft, t, m.intValue(), f);   :}
-                  | factor:f
-                    {:  RESULT = f;  :}
-                  ;
-
-mulop           ::= MUL
-                    {:  RESULT = new Integer(OpExp.MUL);  :}
-                  | DIV
-                    {:  RESULT = new Integer(OpExp.DIV);  :}
-                  ;
-
-factor          ::= LPAREN:l  expr:e  RPAREN
-                    {:  RESULT = e;  :}
-                  | var:v
-                    {:  RESULT = new VarExp(vleft, v);  :}
-                  | call:c
-                    {:  RESULT = c;  :}
-                  | NUM:n
-                    {:  RESULT = new IntExp(nleft, Integer.parseInt(n));  :}
-                  ;
+simple_expr     ::= simple_expr:s1 PLUS simple_expr:s2
+                      {: RESULT = new OpExp(s1left, s1, OpExp.PLUS, s2); :}
+                    | simple_expr:s1 MINUS simple_expr:s2
+                         {: RESULT = new OpExp(s1left, s1, OpExp.MINUS, s2); :}
+                    | simple_expr:s1 MUL simple_expr:s2
+                         {: RESULT = new OpExp(s1left, s1, OpExp.MUL, s2); :}
+                    | simple_expr:s1 DIV simple_expr:s2
+                         {: RESULT = new OpExp(s1left, s1, OpExp.DIV, s2); :}                      
+                    | simple_expr:s1 EQUIV simple_expr:s2
+                         {: RESULT = new OpExp(s1left, s1, OpExp.EQUIV, s2); :}
+                    | simple_expr:s1 LESS simple_expr:s2
+                         {: RESULT = new OpExp(s1left, s1, OpExp.LT, s2); :}
+                    | simple_expr:s1 GREATER simple_expr:s2
+                         {: RESULT = new OpExp(s1left, s1, OpExp.GT, s2); :}
+                    | simple_expr:s1 GEQUIV simple_expr:s2
+                         {: RESULT = new OpExp(s1left, s1, OpExp.GE, s2); :}
+                    | simple_expr:s1 LEQUIV simple_expr:s2
+                         {: RESULT = new OpExp(s1left, s1, OpExp.LE, s2); :}                      
+                    | simple_expr:s1 NEQUIV simple_expr:s2
+                         {: RESULT = new OpExp(s1left, s1, OpExp.NE, s2); :}
+                    | LPAREN simple_expr:s1 RPAREN
+                         {: RESULT = s1; :}
+                    | var:v
+                         {: RESULT = new VarExp(vleft,v); :}
+                    | call:c
+                         {: RESULT = c; :}
+                    | NUM:n
+                      {: RESULT = new IntExp(nleft, Integer.parseInt(n)); :}
+                        ;
 
 call            ::= ID:i  LPAREN  args:a  RPAREN
                     {:  RESULT = new CallExp(ileft, i, a);  :}
