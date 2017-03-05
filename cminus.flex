@@ -35,7 +35,7 @@ letter = [a-zA-Z]
 digit = [0-9]
 id = {letter}{letter}*
 num = {digit}{digit}*
-comment = \/\*(.|[\r\n])*\*\/
+comment = \/\*[^"*/"]*\*\/
 
 %%
 

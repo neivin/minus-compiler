@@ -9,10 +9,10 @@ void main(void)
   int z;
   int a;
 
-  x = 5;
+/*  x = 5;
   y = 10;
   z = y + x;
-  a = add(x);
+  a = add(x);*/
   return;
 }
 
