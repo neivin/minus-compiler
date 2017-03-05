@@ -5,6 +5,7 @@ import java_cup.runtime.*;
    line and column number of the error). */
 parser code {:
 
+    public boolean astMode;
     /* Change the method report_error so it will display the line and
        column of where the error occurred in the input as well as the
        reason for the error which is passed into the method in the
@@ -91,8 +92,11 @@ precedence nonassoc LESS, GREATER, LEQUIV,GEQUIV, EQUIV, NEQUIV;
 
 program     ::= decl_list:s
               {:  RESULT = s;
-                  System.out.println("Abstract Syntax Tree:");
-                  Absyn.showTree(RESULT, 0);
+                  if (astMode){
+                     System.out.println("Abstract Syntax Tree:");
+                    Absyn.showTree(RESULT, 0);
+                  }
+                  
               :}
             ;
 
