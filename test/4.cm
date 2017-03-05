@@ -1,8 +1,22 @@
 /* --------------------------------------------------------------------------
-
+This programs tests the compiler's ability to recover from syntax errors to do
+with function calls and expressions
+The errors include:
+void main() - Missing function parameters in function declaration, should be void
+if no parameters are present
+x = y%2;  - No token to match '%'
+int foo - Missing parenthesis on the function call (unrecoverable)
  -------------------------------------------------------------------------- */
 
-void main(void)
+void main()
+{
+  int x;
+  int y;
+
+  x = y%2;
+}
+
+int foo
 {
 
 }

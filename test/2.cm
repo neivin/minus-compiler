@@ -3,22 +3,23 @@ This program tests the compiler's ability to recover from some syntactical error
 to do with variable declarations
 These errors include:
 int y = 4; - Cannot assign a variable a value and declare it at the same time
-int x, z; - Cannot declare multiple variables on the same line
-int a[] - Missing a number inside the square brackets for the size of the array
+int a, b; - Cannot declare multiple variables on the same line
+int c[] - Missing a number inside the square brackets for the size of the array
  -------------------------------------------------------------------------- */
 
 
 void main(void)
 {
   int y = 4;
-  int x, z;
-  int a[];
+  int x;
+  int a, b;
+  int c[];
 
   if (x < 4 )
   {
     x = x + 1;
   }
   print(x);
-  
+
   return;
 }
