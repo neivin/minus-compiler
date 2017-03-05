@@ -48,7 +48,7 @@
     \vspace*{\baselineskip}
     \rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt}
     \rule{\textwidth}{0.4pt}\\[1.5\baselineskip]
-    {\LARGE \textsc{Compilers \\ Checkpoint I Report}}\\[\baselineskip]
+    {\LARGE \textsc{Compilers \\ Checkpoint One Report}}\\[\baselineskip]
 	\rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{4pt}    
     \rule{\textwidth}{2pt}\\[2\baselineskip]
    
@@ -70,33 +70,41 @@
 \clearpage
 \pagenumbering{arabic} %pagenumbering in arabic numbers
     
+\section{Summary}
+For the Checkpoint One, we implemented scanning, and parsing for the C- language. The scanner can recognize valid tokens according to the C- specification and the parser will analyze the syntactic correctness of the programs. The compiler builds an Abstract Syntax Tree and can print out the structure of the program.\par
+The compiler can also recover from syntax errors by consuming invalid input until it reaches a valid structure according to the specification. It will try to output the structure which caused the error in most cases, or at least mention the line number of the error.
+
+\section{Design Process}
+\subsection{Implementation}
+The compiler project for Checkpoint One was built in an incremental process.\par
+To build the scanning and parsing portions of the compiler, we began by analyzing the C- specification document. First, we outlined the scanner to recognize tokens for the language, then we listed out all the grammar rules from the specification exactly how they were outlined, without simplifying the unambiguous grammars.\par
+Next, we followed the recommended syntax tree structures for the C- language to create the necessary classes required to represent the syntax tree. After writing all the required classes, we defined the methods to display the syntax tree.\par
+With the structure of the tree completed, we added the embedded code into the parser to actually build the tree. After the tree was able to build successfully, we introduced three new classes that would consume errors for their corresponding types. These enabled the parser to recover from syntax errors gracefully.\par
+Finally, we simplified some of the grammar rules by using the directives for precedence and associativities of mathematical operations.\par
+
+\subsection{Lessons Learned}
+We really understood the importance of building the project incrementally, since it allowed us to break down a large problem into multiple smaller problems. It also allowed us to pinpoint where our errors were, since we knew the project was building successfully before adding new functionality.\par
+Using Git for version control and collaboration also taught us the importance of version control, which gave us the ability to roll back mistakes we made and enabled other group members to see what new parts had been added to the project since we last saw it.\par
+
+\section{Assumptions and Limitations}
+Some of the assumptions and limitations of the project are as follows:
+\begin{itemize}
+\item The scanner simply uses a regular expression to recognize comment blocks, rather than macro states. This could result in unexpected behaviour when comment blocks are nested within each other.
+\item The parser will try to consume invalid input until it find the next valid block. As such, it will display the location of the error by line number and abstract structure.
+\end{itemize}
+
+\section{Potential Improvements}
+Some possible improvements that could me made are as follows:
+\begin{itemize}
+\item Using macro states to recognize comment blocks from normal blocks
+
+\end{itemize}
+
+\section{Contributions}
+
+
 \clearpage
-\section{Requirements}
-\subsection{Definitions}
-The terms used in the requirements document are defined as follows:\\
-1. \textbf{ARET -- } The Agricultural Research and Extension Trust of Malawi. \\
-2. \textbf{SMS -- } Short Message Service. A service on cell phones that allows the exchange of short text messages.\\
-3. \textbf{API -- } Application Programming Interface. A set of tools that allows applications to interact with each other.\\
-4. \textbf{SQL -- } Structured Query Language. A language that allows the definition and manipulation of data.\\
-5. \textbf{GUI -- } Graphical User Interface. A visual framework that enables easy interaction with an application.\\
-6. \textbf{System Administrator --} A member of ARET responsible for administering user profiles and maintaining the database and API. They also will have communication with the development team, and report structural changes the database and/or API.\\
-7. \textbf{Researcher --} A member of ARET responsible for creating and managing research projects within the system. Additionally, they will be reviewing the materials created by the Extension Officer to make sure they are scientific.\\
-8. \textbf{Extension Group --} A member of ARET responsible for using the results from the research projects and creating information that will be disseminated to the farmers from Agents and Officers.\\
-9. \textbf{Extension Officer --} A member of ARET responsible for communicating with the Extension Service within the system and disseminating information to their respective Agents.\\
-10. \textbf{Extension Agent --} A member of ARET responsible for communicating with their Extension Officer within the system and disseminating information to the Farmers within their region.\\
-11. \textbf{Farmer --} A farmer of Malawi responsible for using the mobile application to track their farm statistics, receive notifications from ARET members, and send responses to surveys from ARET.\\
-12. \textbf{Public --} Anyone who is using the web application but is not one of the defined users. This could be potential donors, partners etc.\\
-13. \textbf{System --} The entire system as a whole, including the web portal, mobile application, database and API.\\
-14. \textbf{API Key--}A unique string generated by the system and distributed to an external application, that allows the system to authenticate the application and provide it access to the API.\\
-15. \textbf{Notifications --} Push notifications from the system to the mobile application on the user's device.\\
-16. \textbf{Field Size --} The length and width of the farmers field. Measured in square meters. \\
-17. \textbf{Security criteria --} Constraints that the user's passwords must satisfy, such as the presence of capital letters, or numbers.
-
-
-
-
-\clearpage
-\section{References}
+\section{Acknowledgments}
 \begin{flushleft}
 \begin{itemize}[leftmargin=12pt]
 

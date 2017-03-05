@@ -1,5 +1,5 @@
 int y,z;
 void main ( void ) {
 	int x;
-	;;;;
+	; /* ttest /* fff */ */
 }
