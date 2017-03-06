@@ -71,24 +71,28 @@
 \pagenumbering{arabic} %pagenumbering in arabic numbers
     
 \section{Summary}
-For the Checkpoint One, we implemented scanning, and parsing for the C- language. The scanner can recognize valid tokens according to the C- specification and the parser will analyze the syntactic correctness of the programs. The compiler builds an Abstract Syntax Tree and can print out the structure of the program.\par
+For the first checkpoint, we implemented scanning and parsing for the C- language.
+
+The scanner can recognize valid tokens according to the C- specification and the parser will analyze the syntactic correctness of the programs. The compiler builds an Abstract Syntax Tree and can print out the structure of the program.
+
 The compiler can also recover from syntax errors by consuming invalid input until it reaches a valid structure according to the specification. It will try to output the structure which caused the error in most cases, or at least mention the line number of the error.
 
 \section{Design Process}
 \subsection{Implementation}
-The compiler project for Checkpoint One was built in an incremental process.\par
-To build the scanning and parsing portions of the compiler, we began by analyzing the C- specification document. First, we outlined the scanner to recognize tokens for the language, then we listed out all the grammar rules from the specification exactly how they were outlined, without simplifying the unambiguous grammars.\par
-Next, we followed the recommended syntax tree structures for the C- language to create the necessary classes required to represent the syntax tree. After writing all the required classes, we defined the methods to display the syntax tree.\par
-With the structure of the tree completed, we added the embedded code into the parser to actually build the tree. After the tree was able to build successfully, we introduced three new classes that would consume errors for their corresponding types. These enabled the parser to recover from syntax errors gracefully.\par
-Finally, we simplified some of the grammar rules by using the directives for precedence and associativities of mathematical operations.\par
+The compiler project for Checkpoint One was built using an incremental process.\par
+To build the scanning and parsing portions of the compiler, we began by analyzing the C- specification document. First, we built the scanner to recognize tokens for the language, and wrote all the grammar rules without simplifying them into ambiguous grammars.\par
+Next, we followed the recommended syntax tree structures for the C- language to create the necessary classes required to represent the syntax tree. After writing all the required classes, we defined the methods to display the elements of the syntax tree.\par
+With the structure of the tree completed, we added the embedded code into the parser to actually build the syntax tree. After the program was able to build the syntax tree successfully, we introduced new classes that would consume errors for their corresponding types. These enabled the parser to recover from syntax errors gracefully.\par
+Finally, we simplified some of the grammar rules by using the CUP directives for precedence and associativities of mathematical operations.\par
 
 \subsection{Lessons Learned}
-We really understood the importance of building the project incrementally, since it allowed us to break down a large problem into multiple smaller problems. It also allowed us to pinpoint where our errors were, since we knew the project was building successfully before adding new functionality.\par
-Using Git for version control and collaboration also taught us the importance of version control, which gave us the ability to roll back mistakes we made and enabled other group members to see what new parts had been added to the project since we last saw it.\par
+We really understood the importance of building the project incrementally, since it allowed us to break down a large problem into multiple smaller problems. It also allowed us to pinpoint where our errors were, since we knew the project was building successfully before adding new features that did not work.\par
+Using Git for version control and collaboration also taught us the importance of version control, which gave us the ability to roll back mistakes we made and enabled group members to see what new parts had been added to the project since we last saw it.\par
 
 \section{Assumptions and Limitations}
 Some of the assumptions and limitations of the project are as follows:
 \begin{itemize}[leftmargin=12pt]
+\setlength\itemsep{0em}
 \item The scanner simply uses a regular expression to recognize comment blocks, rather than macro states. This could result in unexpected behaviour when comment blocks are nested within each other.
 \item The parser will try to consume invalid input until it find the next valid block. As such, it will display the location of the error by line number and abstract structure.
 \end{itemize}
@@ -96,13 +100,16 @@ Some of the assumptions and limitations of the project are as follows:
 \section{Potential Improvements}
 Some possible improvements that could me made are as follows:
 \begin{itemize}[leftmargin=12pt]
+\setlength\itemsep{0em}
 \item Using macro states to recognize comment blocks from normal blocks could be a more robust way to recognize comments.
-\item Errors could display more detailed messages about column number at lower levels of the abstract list hierarchy.
+\item Error messages could be more detailed and show the exact structure in which the syntax error occurred rather than just the list structure.
+
 \end{itemize}
 
 \section{Contributions}
 \subsection{Braydon Johnson}
 \begin{itemize}[leftmargin=12pt]
+\setlength\itemsep{0em}
 \item Writing Scanner regular expressions
 \item Writing Parser grammar rules
 \item Creating test files
@@ -110,6 +117,7 @@ Some possible improvements that could me made are as follows:
 
 \subsection{Neivin Mathew}
 \begin{itemize}[leftmargin=12pt]
+\setlength\itemsep{0em}
 \item Writing Parser grammar rules
 \item Building syntax tree classes, display methods and main program
 \item Writing documentation for the project
