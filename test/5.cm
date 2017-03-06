@@ -8,9 +8,10 @@ void main(void)
 {
   int var;
   void variable;
+  /* Identifiers only consist of letters */
   int var2;
 
-  /* Lexer does not recognize floating point numbers '.' will result in an error*/
+  /* Lexer does not recognize floating point numbers, the '.' will result in an error*/
   var = 3.3;
   /* Tests recovery from improper if statement declaration */
   if()
@@ -35,6 +36,13 @@ void main(void)
 void paramsError(int a int b)
 {
 
+}
+
+/* If no parameters are given to a function then "void" must be inserted into
+the parameter list */
+void foo()
+{
+  int _variable;
 }
 
 /* Function declaration with no type specifier */
