@@ -1,24 +1,58 @@
 /* --------------------------------------------------------------------------
-
+This program contains an assortment of errors that test different parts of the
+grammar and lexical errors to see if the compiler is able to recover or at least
+fail gracefully
  -------------------------------------------------------------------------- */
 
 void main(void)
 {
+  int var;
+  void variable;
+  /* Identifiers only consist of letters */
+  int var2;
 
-  /* Tests issues with improper comment recognition */
-  return;
+  /* Lexer does not recognize floating point numbers, the '.' will result in an error*/
+  var = 3.3;
+  /* Tests recovery from improper if statement declaration */
+  if()
+  {
+    var = 10 - 6 * 8;
+  }
+
+  while(1)
+  {
+    int max;
+    /* Missing semi colon at the end of the stmt */
+    max = max + 1
+  }
+
+  2%2;
+  ~;
+
+  4 - - 3;
+
+  /* tests the use of function calls in a return stmt */
+  return paramsError(var, variable);
+
 }
-
-/* Test the compound_stmt grammar when no variables are declared*/
-void noVariables(void)
+/* Function declaration with improper parameters */
+void paramsError(int a int b)
 {
 
 }
 
-/*Test compound_stmt grammar when no statements exists*/
-void noStmts(void)
+/* If no parameters are given to a function then "void" must be inserted into
+the parameter list */
+void foo()
 {
-  int y;
-  int x;
+  int _variable;
+}
 
+/* Function declaration with no type specifier */
+f(void)
+{
+  while
+  {
+
+  }
 }
