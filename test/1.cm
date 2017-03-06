@@ -1,18 +1,20 @@
 /* --------------------------------------------------------------------------
 This is a program that contains no errors, it is designed to show that with
 proper spelling and syntax that all aspects of the C- language are properly
-identified and an abstract syntax tree will be constructed
+identified and an abstract syntax tree will be constructed.
+It will also test that the program can ignore comments properly.
  -------------------------------------------------------------------------- */
 
+/* This is a function declaration comment */
 void main(void)
-{
+{ /* Comment inside function */
   int x;
   int y;
   int z;
-  int a;
+  int a; /* Comment at the end of a line */
   int b[10];
 
-  x = 5;
+  /* Comment at the start of a line */x = 5;
   y = 10;
   z = y + x;
   b[2] = 5;
@@ -30,6 +32,12 @@ void main(void)
   a = add(x, b);
   return;
 }
+
+/*
+ * A really long comment that may perhaps
+ * span multiple lines
+ * just for the purposes of demonstration
+*/
 
 int add(int x, int b[])
 {

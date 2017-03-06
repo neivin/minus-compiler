@@ -201,7 +201,8 @@ stmt_list   ::= stmt_list:l stmt:s
                   while (exps.tail != null)
                     exps = exps.tail;
                   exps.tail = new ExpList(s, null);
-                  RESULT = l; :}
+                  RESULT = l; 
+                :}
               | stmt:s
                 {: RESULT = new ExpList(s, null); :}
               | error:e
