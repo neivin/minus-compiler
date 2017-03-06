@@ -26,6 +26,9 @@ void main(void)
     max = max + 1
   }
 
+  2%2;
+  ~;
+
   4 - - 3;
 
   /* tests the use of function calls in a return stmt */
