@@ -34,9 +34,9 @@ void main(void)
 }
 
 /*
- * A really long comment that may perhaps
- * span multiple lines
- * just for the purposes of demonstration
+ * A multi 
+ * line 
+ * comment
 */
 
 int add(int x, int b[])
