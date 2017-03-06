@@ -29,7 +29,7 @@ void main(void)
       y = y + 1;
     }
   }
-  a = add(x, b);
+  a = add(x, b=5);
   return;
 }
 
@@ -42,5 +42,5 @@ void main(void)
 int add(int x, int b[])
 {
   x = 1;
-  return;
+  return x;
 }
