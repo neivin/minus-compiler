@@ -236,12 +236,8 @@ abstract public class Absyn {
 	// CallExp
 	public static void showTree(CallExp tree, int spaces){
 		indent(spaces);
-		System.out.println("CallExp:");
+		System.out.println("CallExp: " + tree.func);
 		spaces+=SPACES;
-
-		// Name
-		indent(spaces);
-		System.out.println("Name: " + tree.func);
 
 		// Args
 		showTree(tree.args, spaces);
