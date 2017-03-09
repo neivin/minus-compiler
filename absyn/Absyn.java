@@ -263,6 +263,9 @@ abstract public class Absyn {
 				System.out.println("/");
 				break;
 			case OpExp.EQ:
+				System.out.println("=");
+				break;
+			case OpExp.EQUALEQUAL:
 				System.out.println("==");
 				break;
 			case OpExp.NE:

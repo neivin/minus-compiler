@@ -63,7 +63,7 @@ parser code {:
 terminal String ID, NUM;
 terminal IF, ELSE, WHILE, INTEGER, VOID, RETURN;
 terminal PLUS, MINUS, MUL, DIV, EQ;
-terminal LESS, GREATER, LEQUIV,GEQUIV, EQUIV, NEQUIV;
+terminal LESS, GREATER, LEQUIV,GEQUIV, EQUALEQUAL, NEQUIV;
 terminal SEMI, COMMA, LPAREN, RPAREN, LSQUARE, RSQUARE, LCURLY, RCURLY;
 
 /* --------------- Non Terminals --------------- */
@@ -82,7 +82,7 @@ non terminal Exp expr, simple_expr, call;
 
 /* --------------- Precedence Rules --------------- */
 
-precedence nonassoc LESS, GREATER, LEQUIV,GEQUIV, EQUIV, NEQUIV;
+precedence nonassoc LESS, GREATER, LEQUIV,GEQUIV, EQUALEQUAL, NEQUIV;
 precedence left PLUS, MINUS;
 precedence left DIV, MUL;
 precedence right EQ, ELSE;
@@ -267,8 +267,8 @@ simple_expr     ::= simple_expr:s1 PLUS simple_expr:s2
                          {: RESULT = new OpExp(s1left, s1, OpExp.MUL, s2); :}
                     | simple_expr:s1 DIV simple_expr:s2
                          {: RESULT = new OpExp(s1left, s1, OpExp.DIV, s2); :}                      
-                    | simple_expr:s1 EQUIV simple_expr:s2
-                         {: RESULT = new OpExp(s1left, s1, OpExp.EQUIV, s2); :}
+                    | simple_expr:s1 EQUALEQUAL simple_expr:s2
+                         {: RESULT = new OpExp(s1left, s1, OpExp.EQUALEQUAL, s2); :}
                     | simple_expr:s1 LESS simple_expr:s2
                          {: RESULT = new OpExp(s1left, s1, OpExp.LT, s2); :}
                     | simple_expr:s1 GREATER simple_expr:s2

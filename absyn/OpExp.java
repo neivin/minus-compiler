@@ -12,7 +12,7 @@ public class OpExp extends Exp {
   public static final int LE = 7;
   public static final int GT = 8;
   public static final int GE = 9;
-  public static final int EQUIV = 10;
+  public static final int EQUALEQUAL = 10;
 
   public Exp left;
   public Exp right;

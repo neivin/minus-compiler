@@ -49,13 +49,13 @@ comment = \/\*[^*]*[*]+([^/*][^*]*[*]+)*\/
 "-"						{ return symbol(sym.MINUS); }
 "*"						{ return symbol(sym.MUL); }
 "/"						{ return symbol(sym.DIV); }
+"="						{ return symbol(sym.EQ); }
+"=="					{ return symbol(sym.EQUALEQUAL); }
 "<"						{ return symbol(sym.LESS); }
 "<="					{ return symbol(sym.LEQUIV); }
 ">"						{ return symbol(sym.GREATER); }
 ">="					{ return symbol(sym.GEQUIV); }
-"=="					{ return symbol(sym.EQUIV); }
 "!="					{ return symbol(sym.NEQUIV); }
-"="						{ return symbol(sym.EQ); }
 ";"						{ return symbol(sym.SEMI); }
 ","						{ return symbol(sym.COMMA); }
 "("						{ return symbol(sym.LPAREN); }
