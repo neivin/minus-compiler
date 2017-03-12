@@ -179,16 +179,12 @@ abstract public class Absyn {
 	// SimpleDec
 	public static void showTree (SimpleDec tree, int spaces){
 		indent(spaces);
-		System.out.println("SimpleDec:");
+		System.out.println("SimpleDec: " + tree.name);
 
 		spaces+=SPACES;
 
 		// Type
 		showTree(tree.type, spaces);
-
-		// Variable name
-		indent(spaces);
-		System.out.println("Name: " + tree.name);
 	}
 
 	// ArrayDec
