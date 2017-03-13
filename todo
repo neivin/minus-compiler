@@ -1,0 +1,8 @@
+TODO:
+
+For semantic checking:
+- variable not declared multiple times in same scope (can be in different scopes)
+- var declared before assignment
+- var assigned before referencing
+- value assigned to matching var type
+- math operations on vars compatible with type
