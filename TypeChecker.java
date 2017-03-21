@@ -1,4 +1,6 @@
 import java.lang.StringBuilder;
+import java.util.*;
+import absyn.*;
 
 public class TypeChecker{
 	private SymbolTable symTable;
@@ -80,6 +82,13 @@ public class TypeChecker{
 			checkTypes((FunctionDec) tree);
 	}	
 
+	public void checkTypes(VarDec tree){
+		if (tree instanceof SimpleDec)
+			checkTypes((SimpleDec) tree);
+		else if (tree instanceof ArrayDec)
+			checkTypes((ArrayDec) tree);
+	}
+
 	public void checkTypes(Var tree){
 		if(tree instanceof SimpleVar)
 			checkTypes((SimpleVar)tree);
@@ -118,5 +127,28 @@ public class TypeChecker{
 
 	/* ---------- Concrete Classes ----------*/
 
-	
+	public void checkTypes(SimpleDec tree){
+		String id = tree.name;
+		int ty = tree.type.type;
+
+		if(symTable.existsInCurrentScope(id)){
+			System.err.println("Error: Redeclaration of variable \'" + id + "\' on line " + tree.pos);
+			return;
+		}
+
+		if(ty != Type.INT){
+			System.err.println("Error: Variable \'" + id +"\' declared as void on line " + tree.pos);	
+			return;
+		}
+
+		symTable.addSymbol(id,ty);
+	}	
+
+	public void checkTypes(ArrayDec tree){
+		String id = tree.name;
+		int ty = tree.type.type;
+		int arraySize = tree.
+	}
+		
+
 }

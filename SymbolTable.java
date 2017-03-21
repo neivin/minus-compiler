@@ -6,7 +6,7 @@ public class SymbolTable {
 	private ArrayList<HashMap<String, Integer>> table;
 
 	public SymbolTable(){
-		table = new ArrayList<HashMap<String,Type>>(); 
+		table = new ArrayList<HashMap<String,Integer>>(); 
 	}
 
 	
@@ -48,6 +48,20 @@ public class SymbolTable {
 
 		// Return -1 if the id is undefined
 		return -1;
+	}
+
+	/* Checks if the String symbol exists in the most recent scope
+	 * Returns true if it exists, false otherwise
+	 */
+	public boolean symbolExistsInCurrentScope(String symbol){
+		return table.get(table.size()-1).containsKey(symbol);
 	} 
+
+
+	public void addSymbol(String id, int type){
+		Integer ty = type;
+
+		table.get(table.size()-1).put(id, ty);
+	}
 
 }
