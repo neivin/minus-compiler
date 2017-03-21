@@ -3,10 +3,10 @@ import java.util.HashMap;
 
 
 public class SymbolTable {
-	private ArrayList<HashMap<String, Integer>> table;
+	private ArrayList<HashMap<String, Symbol>> table;
 
 	public SymbolTable(){
-		table = new ArrayList<HashMap<String,Integer>>(); 
+		table = new ArrayList<HashMap<String,Symbol>>(); 
 	}
 
 	
@@ -14,7 +14,7 @@ public class SymbolTable {
 	 * A new scope is created on entering new blocks
 	 */
 	public void enterNewScope(){
-		table.add(new HashMap<String,Type>());
+		table.add(new HashMap<String,Symbol>());
 		System.out.println("Entering scope " + (table.size()-1));
 	}
 
@@ -62,6 +62,18 @@ public class SymbolTable {
 		Integer ty = type;
 
 		table.get(table.size()-1).put(id, ty);
+	}
+
+	
+	public void getSymbol(String symbol){
+		int curSize = table.size()-1;
+		
+		// Return the most recent scope where the symbol was found
+		for(i = curSize ; i >= 0; i--){
+			if(table.get(i).containsKey(symbol)){ // If symbol exists in table, return
+				return table.get(i).get(symbol);
+			}	
+		}
 	}
 
 }

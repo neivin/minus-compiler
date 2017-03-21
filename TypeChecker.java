@@ -141,14 +141,102 @@ public class TypeChecker{
 			return;
 		}
 
-		symTable.addSymbol(id,ty);
+		Symbol s = new VarSymbol(ty, id);
+		symTable.addSymbol(id,s);
 	}	
 
+	// TODO: If error in ArrayDec, make it zero in cup file
 	public void checkTypes(ArrayDec tree){
 		String id = tree.name;
 		int ty = tree.type.type;
-		int arraySize = tree.
+		int arraySize;
+
+		if (tree.size != null)
+			arraySize = tree.size.value;
+		else
+			arraySize = -1;
+
+		if(symTable.existsInCurrentScope(id)){
+			System.err.println("Error: Redeclaration of variable \'" + id + "\' on line " + tree.pos);
+			return;
+		}
+
+		if(ty != Type.INT){
+			System.err.println("Error: Variable \'" + id +"\' declared as void on line " + tree.pos);	
+			return;
+		}
+
+		Symbol s = new ArraySymbol(ty, id, arraySize);
+
+		symTable.addSymbol(id, s);
 	}
+
+
+	public void checkTypes(SimpleVar tree){
+
+	}
+	
+
+	public void checkTypes(IndexVar tree){
 		
+	}
+
+	// Assume that params wont be declared as void (e.g. void xyz, void arr[])
+	public void checkTypes(FunctionDec tree){
+		String id = tree.func;
+		int ty = tree.result.type;
+
+		ArrayList<Symbol> parameters = new Arraylist<Symbol>();
+
+		// Iterate through list of params and add them as Symbols
+		// If p is null -> Params = VOID
+		VarDecList p = tree.params;
+		while(p != null ){
+			if (p.head instanceof ArrayDec)
+				parameters.add(new ArraySymbol(p.head.type.type, p.head.name, -1));
+			else if (p.head instanceof SimpleDec)
+				parameters.add(new VarSymbol(p.head.type.type, p.head.name));
+		
+			p = p.tail;
+		}
+
+		Symbol s = new FunctionSymbol(ty, id, p);
+		symTable.addSymbol(id, s);
+
+		// Make new scope for function
+		symTable.enterNewScope();
+
+		// Add param list into scope and check types
+		checkTypes(p);
+		
+		// Check the body of the function
+		checkTypes((CompoundExp)tree.body, s);
+	}
+
+
+
+
+
+	// If compound Exp belongs to a function
+	public void checkTypes(CompoundExp tree, FunctionSymbol func){
+		// Establish return type
+		boolean needsReturn = false;
+
+		if (func.type == Type.INT)
+			needsReturn = true;
+
+		// Go through local declarations
+		if (tree.decs != null)
+			checkTypes(tree.decs);
+
+		// Go through statement list
+		// Pass in if return statement is required
+		if (tree.exps != null)
+			checkTypes(tree.exps, needsReturn);
+
+		// Exit scope
+		symTable.exitScope();		
+	}
+
 
 }
