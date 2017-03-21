@@ -6,7 +6,7 @@ public class TypeChecker{
 	private DecList program;
 
 	/* Create indentation */
-	public String indent(int scopeLevel){
+	private String indent(int scopeLevel){
 		StringBuilder spaces;
 
 		for(int i=0; i<scopeLevel*4;i++)
@@ -26,17 +26,52 @@ public class TypeChecker{
 		checkTypes(program); 
 	}
 
+/**
+ * Lists: DecList, VarDecList, ExpList
+ * Abstract classes: Var, Dec, VarDec, Exp
+ * Concrete:
+ * 			Var: SimpleVar, IndexVar
+ *		Dec: FunctionDec, VarDec (SimpleDec, ArrayDec)
+ *		Exp: VarExp, IntExp, CallExp, OpExp, AssignExp, IfExp, WhileExp, Return
+ * 				CompoundExp
+ *
+ * Enter new scopes: DecList, CompoundExp
+ *
+ */
+
+	/* ---------- List Structures ----------- */
+
 	/* Check the whole program by delegating type checking */
 	private void checkTypes(DecList tree){
 		// Enter new global scope
 		symTable.enterNewScope();
 		
 		while(tree != null){
-			checkTypes(tree.head);
+			if(tree.head != null)
+				checkTypes(tree.head);
 			tree = tree.tail;
 		}
 	}
 
+	private void checkTypes(VarDecList tree){
+		while (tree != null){
+			if (tree.head != null)
+				checkTypes(tree.head);
+			tree = tree.tail;
+		}
+	}
+
+	private void checkTypes(ExpList tree){
+		while (tree != null){
+			if (tree.head != null)
+				checkTypes(tree.head);
+			tree = tree.tail;
+		}
+	}
+
+
+	/* ---------- Abstract Classes ---------*/
+	
 	public void checkTypes(Var tree){
 		if(tree instanceof SimpleVar)
 			checkTypes((SimpleVar)tree);
