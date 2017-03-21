@@ -71,7 +71,15 @@ public class TypeChecker{
 
 
 	/* ---------- Abstract Classes ---------*/
-	
+	/* Dec, Var, VarDec, Exp */
+
+	public void checkTypes(Dec tree){
+		if (tree instanceof VarDec)
+			checkTypes((VarDec) tree);
+		else if (tree instanceof FunctionDec)
+			checkTypes((FunctionDec) tree);
+	}	
+
 	public void checkTypes(Var tree){
 		if(tree instanceof SimpleVar)
 			checkTypes((SimpleVar)tree);
@@ -79,8 +87,36 @@ public class TypeChecker{
 			checkTypes((IndexVar) tree)
 	}
 
-	public void checkTypes(Exp tree){
-		if (tree instanceof )
+	public void checkTypes(VarDec tree){
+		if (tree instanceof SimpleDec)
+			checkTypes((SimpleDec) tree)
+		else if (tree instanceof ArrayDec)
+			checkTypes((ArrayDec) tree)
 	}
 
+	public void checkTypes(Exp tree){
+		if (tree instanceof VarExp)
+			checkTypes((VarExp) tree)
+		else if (tree instanceof CallExp)
+			checkTypes((CallExp) tree)
+		else if (tree instanceof OpExp)
+			checkTypes((OpExp) tree)
+		else if (tree instanceof AssignExp)
+			checkTypes((AssignExp) tree)
+		else if (tree instanceof IfExp)
+			checkTypes((IfExp) tree)
+		else if (tree instanceof WhileExp)
+			checkTypes((WhileExp) tree)
+		else if (tree instanceof ReturnExp)
+			checkTypes((ReturnExp) tree)
+		else if (tree instanceof CompoundExp)
+			checkTypes((CompoundExp) tree)
+		else if (tree instanceof IntExp)
+			checkTypes((IntExp) tree)
+	}
+
+
+	/* ---------- Concrete Classes ----------*/
+
+	
 }
