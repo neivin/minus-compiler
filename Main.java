@@ -4,7 +4,8 @@ import java.util.*;
 class Main{
   public static void main(String [] argv){
     
-    boolean astMode = false ;
+    boolean astMode = false;
+    boolean typeMode = false;
     String file = "";
 
     if (argv.length > 2 ){
@@ -18,6 +19,9 @@ class Main{
     	if (arg.equals("-a")){
     		astMode = true;
     	}
+      else if (arg.equals("-s")){
+        typeMode = true;
+      }
     	else{
     		file = arg;
     	}
@@ -26,6 +30,7 @@ class Main{
     try {
       parser p = new parser(new Lexer(new FileReader(file)));
       p.astMode = astMode;
+      p.typeMode = typeMode;
       Object result = p.parse().value;
     } catch (Exception e) {
       /* do cleanup here -- possibly rethrow e */

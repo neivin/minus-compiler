@@ -6,6 +6,8 @@ import java_cup.runtime.*;
 parser code {:
 
     public static boolean astMode;
+    public static boolean typeMode;
+
     /* Change the method report_error so it will display the line and
        column of where the error occurred in the input as well as the
        reason for the error which is passed into the method in the
@@ -92,11 +94,20 @@ precedence right EQ, ELSE;
 
 program     ::= decl_list:s
               {:  RESULT = s;
+                  
+                  if (parser.typeMode){
+                      System.out.println("Displaying variable scopes:")
+                  }
+
+                  TypeChecker checker = new TypeChecker(RESULT, parser.typeMode);
+                  checker.init();
+                   
+
                   if (parser.astMode){
                      System.out.println("Abstract Syntax Tree:");
-                    Absyn.showTree(RESULT, 0);
+                     Absyn.showTree(RESULT, 0);
                   }
-                  
+                     
               :}
             ;
 
