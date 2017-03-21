@@ -96,7 +96,7 @@ program     ::= decl_list:s
                      System.out.println("Abstract Syntax Tree:");
                     Absyn.showTree(RESULT, 0);
                   }
-                  
+
               :}
             ;
 
@@ -201,7 +201,7 @@ stmt_list   ::= stmt_list:l stmt:s
                   while (exps.tail != null)
                     exps = exps.tail;
                   exps.tail = new ExpList(s, null);
-                  RESULT = l; 
+                  RESULT = l;
                 :}
               | stmt:s
                 {: RESULT = new ExpList(s, null); :}
@@ -235,10 +235,22 @@ selection_stmt  ::= IF:i  LPAREN  expr:e  RPAREN  stmt:s
                     {: RESULT = new IfExp(ileft, e, s, new NilExp(sleft)); :}
                   | IF:i  LPAREN  expr:e  RPAREN  stmt:s1  ELSE  stmt:s2
                     {: RESULT = new IfExp(ileft, e, s1, s2); :}
+                  | IF:i LPAREN error:e RPAREN stmt:s
+                    {: parser.report_error("Invalid expression in selection statement", e);
+                       RESULT = new IfExp(ileft, new ErrorExp(eleft), s, new NilExp(sleft));
+                    :}
+                  | IF:i LPAREN error:e RPAREN stmt:s ELSE stmt:s2
+                    {: parser.report_error("Invalid expression in selection statement", e);
+                       RESULT = new IfExp(ileft, new ErrorExp(eleft), s, s2);
+                    :}
                   ;
 
 iteration_stmt  ::= WHILE:w LPAREN  expr:e  RPAREN  stmt:s
                     {: RESULT = new WhileExp(wleft, e, s); :}
+                    | WHILE:w LPAREN error:e RPAREN stmt:s
+                      {: parser.report_error("Invalid expression in iteration statement", e);
+                         RESULT = new WhileExp(wleft, new ErrorExp(eleft), s);
+                      :}
                   ;
 
 return_stmt     ::= RETURN:r  SEMI
@@ -266,7 +278,7 @@ simple_expr     ::= simple_expr:s1 PLUS simple_expr:s2
                     | simple_expr:s1 MUL simple_expr:s2
                          {: RESULT = new OpExp(s1left, s1, OpExp.MUL, s2); :}
                     | simple_expr:s1 DIV simple_expr:s2
-                         {: RESULT = new OpExp(s1left, s1, OpExp.DIV, s2); :}                      
+                         {: RESULT = new OpExp(s1left, s1, OpExp.DIV, s2); :}
                     | simple_expr:s1 EQUALEQUAL simple_expr:s2
                          {: RESULT = new OpExp(s1left, s1, OpExp.EQUALEQUAL, s2); :}
                     | simple_expr:s1 LESS simple_expr:s2
@@ -276,7 +288,7 @@ simple_expr     ::= simple_expr:s1 PLUS simple_expr:s2
                     | simple_expr:s1 GEQUIV simple_expr:s2
                          {: RESULT = new OpExp(s1left, s1, OpExp.GE, s2); :}
                     | simple_expr:s1 LEQUIV simple_expr:s2
-                         {: RESULT = new OpExp(s1left, s1, OpExp.LE, s2); :}                      
+                         {: RESULT = new OpExp(s1left, s1, OpExp.LE, s2); :}
                     | simple_expr:s1 NEQUIV simple_expr:s2
                          {: RESULT = new OpExp(s1left, s1, OpExp.NE, s2); :}
                     | LPAREN simple_expr:s1 RPAREN
