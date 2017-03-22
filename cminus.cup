@@ -95,14 +95,14 @@ precedence right EQ, ELSE;
 
 program     ::= decl_list:s
               {:  RESULT = s;
-                  
+
                   if (parser.typeMode){
                       System.out.println("Displaying variable scopes:");
                   }
 
                   TypeChecker checker = new TypeChecker(RESULT, parser.typeMode);
                   checker.init();
-                   
+
 
                   if (parser.astMode){
                      System.out.println("Abstract Syntax Tree:");
@@ -317,11 +317,8 @@ var             ::= ID:i
 
 call            ::= ID:i  LPAREN  args:a  RPAREN
                     {:  RESULT = new CallExp(ileft, i, a);  :}
-                  | ID:i LPAREN error:e RPAREN
-                    {: parser.report_error("Invalid syntax in function call arguments", e);
-                       RESULT = new CallExp(ileft, i, null);:}
                   ;
-
+                  
 args            ::= arg_list:a
                     {:  RESULT = a;  :}
                   |
@@ -338,4 +335,7 @@ arg_list         ::=  arg_list:a  COMMA expr:e
                     :}
                   | expr:e
                     {:  RESULT = new ExpList(e, null);  :}
+                  | error:e
+                    {: parser.report_error("Invalid syntax in function arguments", e);
+                       RESULT = new ExpList(new ErrorExp(eleft), null); :}
                   ;
