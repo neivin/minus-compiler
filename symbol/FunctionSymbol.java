@@ -1,8 +1,12 @@
-public class FunctionSymbol extends Symbol {
-	
-	public ArrayList<Symbol> parameters;
+package symbol;
 
-	public FunctionSymbol(int type, String id, ArrayList<Symbol> parameters){
+import java.util.ArrayList;
+
+public class FunctionSymbol extends Symb {
+	
+	public ArrayList<Symb> parameters;
+
+	public FunctionSymbol(int type, String id, ArrayList<Symb> parameters){
 		this.type = type;
 		this.id = id;
 		this.parameters = parameters;

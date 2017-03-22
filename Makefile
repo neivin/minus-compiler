@@ -7,7 +7,7 @@ CUP=cup
 
 all: Main.class
 
-Main.class: absyn/*.java parser.java sym.java Lexer.java SymbolTable.java TypeChecker.java Main.java
+Main.class: absyn/*.java parser.java sym.java Lexer.java symbol/*.java SymbolTable.java TypeChecker.java Main.java
 
 # -Xdiags:verbose
 %.class: %.java
@@ -20,5 +20,5 @@ parser.java: cminus.cup
 	$(CUP) -dump -expect 3 cminus.cup
 
 clean:
-	rm -f parser.java Lexer.java sym.java *.class absyn/*.class *~
+	rm -f parser.java Lexer.java sym.java *.class absyn/*.class symbol/*.class *~
 

@@ -1,4 +1,6 @@
-public class VarSymbol extends Symbol {
+package symbol;
+
+public class VarSymbol extends Symb {
 
 	public VarSymbol(int type, String id){
 		this.type = type;

@@ -1,26 +1,15 @@
-import java.lang.StringBuilder;
-import java.util.*;
+import java.util.ArrayList;
 import absyn.*;
+import symbol.*;
 
 public class TypeChecker{
 	private SymbolTable symTable;
-	private boolean showScopes;
 	private DecList program;
 	private int currentReturnType;
 
-	/* Create indentation */
-	private String indent(int scopeLevel){
-		StringBuilder spaces;
-
-		for(int i=0; i<scopeLevel*4;i++)
-			spaces.append(' ');
-
-		return spaces.toString();
-	}
 
 	public TypeChecker(DecList program, boolean showScopes){
-		symTable = new SymbolTable();
-		this.showScopes = showScopes;
+		symTable = new SymbolTable(showScopes);
 		this.program = program;
 	}
 
@@ -29,7 +18,7 @@ public class TypeChecker{
 		checkTypes(program); 
 	}
 
-/**
+/** Symbol
  * Lists: DecList, VarDecList, ExpList
  * Abstract classes: Var, Dec, VarDec, Exp
  * Concrete:
@@ -54,6 +43,8 @@ public class TypeChecker{
 				checkTypes(tree.head);
 			tree = tree.tail;
 		}
+
+		symTable.exitScope();
 	}
 
 	private void checkTypes(VarDecList tree){
@@ -93,36 +84,30 @@ public class TypeChecker{
 	public void checkTypes(Var tree){
 		if(tree instanceof SimpleVar)
 			checkTypes((SimpleVar)tree);
-		else if (head instanceof IndexVar)
-			checkTypes((IndexVar) tree)
+		else if (tree instanceof IndexVar)
+			checkTypes((IndexVar) tree);
 	}
 
-	public void checkTypes(VarDec tree){
-		if (tree instanceof SimpleDec)
-			checkTypes((SimpleDec) tree)
-		else if (tree instanceof ArrayDec)
-			checkTypes((ArrayDec) tree)
-	}
 
 	public void checkTypes(Exp tree){
 		if (tree instanceof VarExp)
-			checkTypes((VarExp) tree)
+			checkTypes((VarExp) tree);
 		else if (tree instanceof CallExp)
-			checkTypes((CallExp) tree)
+			checkTypes((CallExp) tree);
 		else if (tree instanceof OpExp)
-			checkTypes((OpExp) tree)
+			checkTypes((OpExp) tree);
 		else if (tree instanceof AssignExp)
-			checkTypes((AssignExp) tree)
+			checkTypes((AssignExp) tree);
 		else if (tree instanceof IfExp)
-			checkTypes((IfExp) tree)
+			checkTypes((IfExp) tree);
 		else if (tree instanceof WhileExp)
-			checkTypes((WhileExp) tree)
+			checkTypes((WhileExp) tree);
 		else if (tree instanceof ReturnExp)
-			checkTypes((ReturnExp) tree)
+			checkTypes((ReturnExp) tree);
 		else if (tree instanceof CompoundExp)
-			checkTypes((CompoundExp) tree)
+			checkTypes((CompoundExp) tree);
 		else if (tree instanceof IntExp)
-			checkTypes((IntExp) tree)
+			checkTypes((IntExp) tree);
 	}
 
 
@@ -132,17 +117,16 @@ public class TypeChecker{
 		String id = tree.name;
 		int ty = tree.type.type;
 
-		if(symTable.existsInCurrentScope(id)){
+		if(symTable.symbolExistsInCurrentScope(id)){
 			System.err.println("Error: Redeclaration of variable \'" + id + "\' on line " + tree.pos);
 			return;
 		}
 
 		if(ty != Type.INT){
 			System.err.println("Error: Variable \'" + id +"\' declared as void on line " + tree.pos);	
-			return;
 		}
 
-		Symbol s = new VarSymbol(ty, id);
+		Symb s = new VarSymbol(ty, id);
 		symTable.addSymbol(id,s);
 	}	
 
@@ -157,7 +141,7 @@ public class TypeChecker{
 		else
 			arraySize = -1;
 
-		if(symTable.existsInCurrentScope(id)){
+		if(symTable.symbolExistsInCurrentScope(id)){
 			System.err.println("Error: Redeclaration of variable \'" + id + "\' on line " + tree.pos);
 			return;
 		}
@@ -167,7 +151,7 @@ public class TypeChecker{
 			return;
 		}
 
-		Symbol s = new ArraySymbol(ty, id, arraySize);
+		Symb s = new ArraySymbol(ty, id, arraySize);
 
 		symTable.addSymbol(id, s);
 	}
@@ -177,26 +161,26 @@ public class TypeChecker{
 	public void checkTypes(SimpleVar tree){
 
 		// If symbol exists
-		if(symbolExists(tree.name) != -1){
+		if(symTable.symbolExists(tree.name) != -1){
 			if(!(symTable.getSymbol(tree.name) instanceof VarSymbol)){
 				System.err.println("Error: Cannot convert array type \'"+tree.name+"\' to int on line " + tree.pos);
 			}
 		}
 		else {
-			System.err.println("Error: Undefined variale \'" + tree.name +"\' on line " + tree.pos);
+			System.err.println("Error: Undefined variable \'" + tree.name +"\' on line " + tree.pos);
 		}
 	}
 	
 
 	public void checkTypes(IndexVar tree){
 		// If symbol exists
-		if(symbolExists(tree.name) != -1){
+		if(symTable.symbolExists(tree.name) != -1){
 			if(!(symTable.getSymbol(tree.name) instanceof ArraySymbol)){
 				System.err.println("Error: \'"+tree.name+"\' defined as int but referenced as array on line " + tree.pos);
 			}
 		}
 		else {
-			System.err.println("Error: Undefined array variale \'" + tree.name +"\' on line " + tree.pos);
+			System.err.println("Error: Undefined array variable \'" + tree.name +"\' on line " + tree.pos);
 		}
 
 		// Check valdity of index
@@ -209,7 +193,7 @@ public class TypeChecker{
 		String id = tree.func;
 		int ty = tree.result.type;
 
-		ArrayList<Symbol> parameters = new Arraylist<Symbol>();
+		ArrayList<Symb> parameters = new ArrayList<Symb>();
 
 		// Iterate through list of params and add them as Symbols
 		// If p is null -> Params = VOID
@@ -223,7 +207,7 @@ public class TypeChecker{
 			p = p.tail;
 		}
 
-		Symbol s = new FunctionSymbol(ty, id, p);
+		Symb s = new FunctionSymbol(ty, id, parameters);
 		symTable.addSymbol(id, s);
 
 		// Set return type for checker
@@ -233,13 +217,11 @@ public class TypeChecker{
 		symTable.enterNewScope();
 
 		// Add param list into scope and check types
-		checkTypes(p);
+		checkTypes(tree.params);
 		
 		// Check the body of the function
-		checkTypes((CompoundExp)tree.body, s);
+		checkTypes((CompoundExp)tree.body, (FunctionSymbol) s);
 	}
-
-
 
 
 
@@ -258,14 +240,14 @@ public class TypeChecker{
 		// Go through statement list
 		// Pass in if return statement is required
 		if (tree.exps != null)
-			checkTypes(tree.exps, needsReturn);
+			checkTypes(tree.exps);
 
 		// Exit scope
 		symTable.exitScope();		
 	}
 
 	public void checkTypes(VarExp tree){
-		checkTypes(tree.name);	
+		checkTypes(tree.variable);	
 	}
 
 	public void checkTypes(OpExp tree){
@@ -317,35 +299,36 @@ public class TypeChecker{
 		
 		// Check if function exists
 		if(!symTable.functionExists(id)){
-			System.err.println("Error: Undefined function \'" + id "\' on line " + tree.pos);
+			System.err.println("Error: Undefined function \'" + id + "\' on line " + tree.pos);
 			return;
 		}
 
 		// Check that the symbol is a function
 		if (!(symTable.getFunction(id) instanceof FunctionSymbol)){
-			System.err.println("Error: Symbol \'" + id "\' defined as variable, but used as function on line " + tree.pos);
+			System.err.println("Error: Symbol \'" + id +"\' defined as variable, but used as function on line " + tree.pos);
 			return;
 		}
 
 		FunctionSymbol f = (FunctionSymbol) symTable.getFunction(id);
 
 		// Validate number of arguments from function definition
-		if (f.paramCount() != tree.argsCount()){
-			System.err.println("Error: Incorrect number of arguments to function \'" + id "\' on line " + tree.pos);
+		if (f.paramCount() != tree.argsCount()) {
+			System.err.println("Error: Incorrect number of arguments to function \'" + id + "\' on line " + tree.pos);
 			return;
 		}
 
 		// Compare arguments
 		ExpList funcArgs = tree.args;
 		for(int i =0; i < f.paramCount(); i ++){
-			Symbol s = f.parameters.get(i);
+			Symb s = f.parameters.get(i);
 			Exp e = funcArgs.head;
 
 			if (s instanceof VarSymbol){
 				checkTypes(e);
 			}
 			else if (s instanceof ArraySymbol){
-
+				
+				//if (e instanceof)
 			}
 
 			funcArgs = funcArgs.tail;
@@ -362,7 +345,7 @@ public class TypeChecker{
 		symTable.exitScope();
 	}
 
-	public void checkTypes(IntExp){
+	public void checkTypes(IntExp tree){
 		
 	}
 }

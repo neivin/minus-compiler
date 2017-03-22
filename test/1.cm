@@ -5,6 +5,19 @@ identified and an abstract syntax tree will be constructed.
 It will also test that the program can ignore comments properly.
  -------------------------------------------------------------------------- */
 
+int x;
+void y;
+int arr[34];
+
+int add(int x, int b[])
+{
+  x = 1;
+  return x;
+  if(z>2){
+    x = 3;
+  }
+}
+
 /* This is a function declaration comment */
 void main(void)
 { /* Comment inside function */
@@ -20,6 +33,7 @@ void main(void)
   b[2] = 5;
   while(x < z)
   {
+    int ddd;
     if(x == y)
     {
       x = x + 1;
@@ -39,8 +53,4 @@ void main(void)
  * comment
 */
 
-int add(int x, int b[])
-{
-  x = 1;
-  return x;
-}
+

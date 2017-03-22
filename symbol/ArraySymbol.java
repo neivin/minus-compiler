@@ -1,4 +1,6 @@
-public class ArraySymbol extends Symbol {
+package symbol;
+
+public class ArraySymbol extends Symb {
 	public int size;
 
 	public ArraySymbol(int type, String id, int size){

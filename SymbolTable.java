@@ -1,35 +1,80 @@
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.HashMap;
+import java.lang.StringBuilder;
+import absyn.*;
+import symbol.*;
 
 
 public class SymbolTable {
-	private ArrayList<HashMap<String, Symbol>> table;
+	private ArrayList<HashMap<String, Symb>> table;
+	private boolean displayScopes;
 
-	public SymbolTable(){
-		table = new ArrayList<HashMap<String,Symbol>>(); 
+	public SymbolTable(boolean displayScopes){
+		table = new ArrayList<HashMap<String,Symb>>(); 
+		this.displayScopes = displayScopes;
 	}
 
 	
+		/* Create indentation */
+	private String indent(int scopeLevel){
+		StringBuilder spaces = new StringBuilder();
+
+		for(int i=0; i<scopeLevel*4;i++)
+			spaces.append(' ');
+
+		return spaces.toString();
+	}
+
+	private String getType(int type){
+		if (type == Type.INT)
+			return "INT";
+		return "VOID";
+	}
+
+
+	public void printScope(){
+		Set<String> keys = table.get(table.size()-1).keySet();
+		String spaces = indent(table.size()-1);
+
+		for (String key : keys){
+			Symb s = table.get(table.size()-1).get(key);
+
+			if(s instanceof VarSymbol){
+				System.out.println(spaces + "Variable: " + getType(s.type) + " " + key);
+			}
+			else if (s instanceof ArraySymbol){
+				ArraySymbol as = (ArraySymbol) s;
+				System.out.println(spaces + "Array: " + getType(s.type) + " " + key + "[" + as.size +"]");
+			}
+			else if (s instanceof FunctionSymbol){
+				System.out.println(spaces + "Function: " + getType(s.type) + " " + key + "()");
+			}
+		}	
+	}
+
 	/* Enters a new scope by creating a new HashMap.
 	 * A new scope is created on entering new blocks
 	 */
 	public void enterNewScope(){
-		table.add(new HashMap<String,Symbol>());
-		System.out.println("Entering scope " + (table.size()-1));
+		table.add(new HashMap<String,Symb>());
+		if(displayScopes)
+			System.out.println(indent(table.size()-1) + "<< ENTER SCOPE " + (table.size()-1) + " >>");
 	}
 
 	/* Exits the most recent scope, and deletes 
 	 * everything in the current HashMap.
 	 */
 	public void exitScope(){
-		System.out.println("Exiting scope " + (table.size()-1));
+		if(displayScopes)
+			printScope();
+
+		if(displayScopes)
+			System.out.println(indent(table.size()-1) + "<< EXIT SCOPE " + (table.size()-1) + " >>");
+		
 		if(table.size()>0){
 			table.remove(table.size()-1);
 		}
-	}
-
-	public void printScope(){
-		
 	}
 
 	/* Checks if the given String symbol exists in
@@ -40,7 +85,7 @@ public class SymbolTable {
 		int curSize = table.size()-1;
 		
 		// Return the most recent scope where the symbol was found
-		for(i = curSize ; i >= 0; i--){
+		for(int i = curSize ; i >= 0; i--){
 			if(table.get(i).containsKey(symbol)){ // If symbol exists in table, return
 				return i;
 			}	
@@ -54,7 +99,7 @@ public class SymbolTable {
 		return table.get(0).containsKey(symbol);
 	}
 
-	public Symbol getFunction(String symbol){
+	public Symb getFunction(String symbol){
 		return table.get(0).get(symbol);
 	}
 
@@ -66,22 +111,21 @@ public class SymbolTable {
 	} 
 
 
-	public void addSymbol(String id, int type){
-		Integer ty = type;
-
+	public void addSymbol(String id, Symb ty){
 		table.get(table.size()-1).put(id, ty);
 	}
 
 	
-	public Symbol getSymbol(String symbol){
+	public Symb getSymbol(String symbol){
 		int curSize = table.size()-1;
 		
 		// Return the most recent scope where the symbol was found
-		for(i = curSize ; i >= 0; i--){
+		for(int i = curSize ; i >= 0; i--){
 			if(table.get(i).containsKey(symbol)){ // If symbol exists in table, return
 				return table.get(i).get(symbol);
 			}	
 		}
+		return null;
 	}
 
 }

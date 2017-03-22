@@ -1,4 +1,5 @@
 import absyn.*;
+import symbol.*;
 import java_cup.runtime.*;
 
 /* Parser code to change the way the parser reports errors (include
@@ -96,7 +97,7 @@ program     ::= decl_list:s
               {:  RESULT = s;
                   
                   if (parser.typeMode){
-                      System.out.println("Displaying variable scopes:")
+                      System.out.println("Displaying variable scopes:");
                   }
 
                   TypeChecker checker = new TypeChecker(RESULT, parser.typeMode);
