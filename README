@@ -1,7 +1,7 @@
 University of Guelph
 CIS 4650 - Compilers
-Checkpoint One
-March 6, 2017
+Checkpoint Two 
+March 22, 2017
 
 
 ---------- Authors ----------
@@ -34,6 +34,11 @@ the location of CUP on your machine:
 To print out the Abstract Syntax Tree, use the command line option -a:
 
 	java -classpath /usr/share/java/cup.jar:. Main -a input.cm
+
+To print out the Symbol Table that is generated when parsing, use the
+command line option -s:
+
+	java -classpath /usr/share/java/cup.jar:. Main -s input.cm
 
 
 ---------- Testing ----------
