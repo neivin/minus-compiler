@@ -2,7 +2,8 @@
 
 void main (void) {
   int x; void y;
+  int d;
 
   if (x) x = 1;
-  if (y) x = 3;
+  if (d=x) x = 3;
 }

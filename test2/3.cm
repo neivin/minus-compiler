@@ -1,6 +1,6 @@
 /* Match two operands */
 
-int fun1(int fff){
+int fun(int fff){
   int x; int y; void z;
 
   x = x * 2 + 1;

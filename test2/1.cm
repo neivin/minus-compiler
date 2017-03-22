@@ -1,6 +1,6 @@
 /* Array range must be an integer */
 
-void main(){
+void main(void){
   int a[2]; int x; void y;
 
   a[x] = 1;

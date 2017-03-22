@@ -162,9 +162,15 @@ public class TypeChecker{
 
 		// If symbol exists
 		if(symTable.symbolExists(tree.name) != -1){
-			if(!(symTable.getSymbol(tree.name) instanceof VarSymbol)){
+			if(symTable.getSymbol(tree.name) instanceof VarSymbol){
+				// Check that all variables used are ints and not void
+				if (symTable.getSymbol(tree.name).type != Type.INT)
+				System.err.println("Error: Use of void variable \'" + tree.name + "\' when integer expected on line " + tree.pos);
+			}
+			else {
 				System.err.println("Error: Cannot convert array type \'"+tree.name+"\' to int on line " + tree.pos);
 			}
+
 		}
 		else {
 			System.err.println("Error: Undefined variable \'" + tree.name +"\' on line " + tree.pos);
