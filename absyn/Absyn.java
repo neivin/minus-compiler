@@ -125,13 +125,13 @@ abstract public class Absyn {
 
 	/* ==== Concrete classes ==== */
 	// Type
-	public static void showTree(Type tree, int spaces){
-		indent(spaces);
+	public static String showTree(Type tree, int spaces){
+		//indent(spaces);
 
 		if(tree.type == Type.INT)
-			System.out.println("Type: INT");
+			return "Type: INT";
 		else
-			System.out.println("Type: VOID");
+			return "Type: VOID";
 	}
 
 
@@ -145,11 +145,9 @@ abstract public class Absyn {
 	// IndexVar
 	public static void showTree(IndexVar tree, int spaces){
 		indent(spaces);
-		System.out.println("IndexVar:");
+		System.out.println("IndexVar: " + tree.name);
 
 		spaces+=SPACES;
-		indent(spaces);
-		System.out.println("Name: " + tree.name);
 		showTree(tree.index, spaces); // index is Exp object
 	}
 
@@ -158,19 +156,16 @@ abstract public class Absyn {
 	//FunctionDec
 	public static void showTree(FunctionDec tree, int spaces){
 		indent(spaces);
-		System.out.println("FunctionDec:");
+		System.out.println("FunctionDec: Name: " + tree.func + ", " + showTree(tree.result, spaces));
 
 		spaces+=SPACES;
-
-		// Function return type
-		showTree(tree.result, spaces);
-
-		// Function name
 		indent(spaces);
-		System.out.println("Name: " + tree.func);
 
 		// Parameters
+		System.out.println("Params:");
+		spaces+=SPACES;
 		showTree(tree.params, spaces);
+		spaces-=SPACES;
 
 		// Body
 		showTree(tree.body, spaces);
@@ -179,30 +174,16 @@ abstract public class Absyn {
 	// SimpleDec
 	public static void showTree (SimpleDec tree, int spaces){
 		indent(spaces);
-		System.out.println("SimpleDec: " + tree.name);
-
-		spaces+=SPACES;
-
-		// Type
-		showTree(tree.type, spaces);
+		System.out.println("SimpleDec: Name: " + tree.name + ", " + showTree(tree.type, spaces));
 	}
 
 	// ArrayDec
 	public static void showTree (ArrayDec tree, int spaces){
 		indent(spaces);
-		System.out.println("ArrayDec:");
-
-		spaces+=SPACES;
-
-		// Type
-		showTree(tree.type, spaces);
-
-		// Variable name
-		indent(spaces);
-		System.out.println("Name: " + tree.name);
-
-		// Array size
-		showTree(tree.size, spaces);
+		if(tree.size != null)
+			System.out.println("ArrayDec: Name: " + tree.name + ", " + showTree(tree.type, spaces) + ", Size: " + tree.size.value);
+		else
+			System.out.println("ArrayDec: Name: " + tree.name + ", " + showTree(tree.type, spaces));
 	}
 
 	// Exp subclasses
@@ -303,6 +284,7 @@ abstract public class Absyn {
 	}
 
 	// IfExp
+	// Expression should be printed on the same line
 	public static void showTree(IfExp tree, int spaces){
 		indent(spaces);
 		System.out.println("IfExp:");
@@ -314,6 +296,7 @@ abstract public class Absyn {
 	}
 
 	// WhileExp
+	// Expression should be printed on the same line
 	public static void showTree(WhileExp tree, int spaces){
 		indent(spaces);
 		System.out.println("WhileExp:");
