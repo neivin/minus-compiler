@@ -10,5 +10,5 @@ int fun(int fff)
 void main(void)
 {
   int x;
-  x = fun();
+  x = fun(x);
 }
