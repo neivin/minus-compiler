@@ -1,0 +1,7 @@
+/* Match 2 sides of an assignment */
+
+void main(void){
+  int x;
+  void y;
+  y = x;
+}

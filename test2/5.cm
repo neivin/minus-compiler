@@ -1,0 +1,8 @@
+/* Test condition must be an integer */
+
+void main (void) {
+  int x; void y;
+
+  if (x) x = 1;
+  if (y) x = 3;
+}
