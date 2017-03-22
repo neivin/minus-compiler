@@ -9,8 +9,8 @@
 
 \lstset{frame=tb,
   language=C,
-  aboveskip=3mm,
-  belowskip=3mm,
+  aboveskip=2mm,
+  belowskip=2mm,
   showstringspaces=false,
   columns=flexible,
   basicstyle={\small\ttfamily},
@@ -49,7 +49,7 @@ First, we improved upon our initial design from checkpoint one. We improved our 
 
 Next, we implemented an abstract structure for the symbol table that would be able to seamlessly create new scopes, add new symbols, retrieve symbols, and check for the existence of symbols in the program. Creating a logical layer of abstraction for the symbol table was imperative to the next step --- implementing type checking.
 
-Finally, we added type checking to the compiler. We used the powerful concepts of function overloading and type coercion to break down the checking of types. Each method would check its corresponding syntax tree structure for type validity.
+Finally, we added type checking to the compiler. We used the concepts of function overloading and type coercion to break down the checking of types. Each method would check its corresponding syntax tree structure for type validity.
  
 \subsection{Lessons Learned}
 In this checkpoint, we understood the importance of building the project incrementally, since it allowed us to break down a large problem into smaller ones. It also allowed us to pinpoint where our errors were, since we knew the project was building successfully before adding new features that did not work.
@@ -59,23 +59,35 @@ Using Git for version control and collaboration also taught us the importance of
 Additionally, we also realized how to divide work between the group effectively so as to complete the project implementation on time, while leaving adequate time for testing.
 
 \section{Assumptions and Limitations}
-A few assumptions were made while building the compiler. The project has a few limitations which are listed below:
+Some of the assumptions and limitations of the project are as follows:
 \begin{itemize}
 \item We assume that functions with \texttt{void} return types do not return anything. The function may have a \texttt{return} statement, but it cannot return an expression, even if it is declared to be \texttt{void}. 
 
 The following code sample will produce an error:
 \begin{lstlisting}
-	void main(void){
+	void void_function(void){
 		void v;
 		return v;
 	}
+\end{lstlisting}
+
+\item We assume that function parameters will not be defined as void. Our compiler will produce an error statement for void variables, as mentioned above but will still add void variables to new scopes. The following function signature would be invalid:
+\begin{lstlisting}
+	int my_function(void x, void y)
 \end{lstlisting}
 
 \item For function calls, the compiler does not have the ability to check if the arguments to the function call match the parameter types that were defined in the function definition. However, the compiler will check the validity of the types and try to perform a lookup in the symbol table for the arguments.
 \end{itemize}
 
 \section{Potential Improvements}
+Some possible improvements that could be made are as follows:
+\begin{itemize}
+\item The order of the function parameters should be checked and matched with the parameter types mentioned in the function signature.
+\item Variables that are defined as \texttt{void} must be dealt with more robustly. A possible solution is to disallow them altogether since they cannot actually contain anything, and are simply a byproduct of the grammar rules.
+\item Currently, error messages for semantic errors only offer primitive information about the error. Improving detection and providing more detailed error messages would enhance the functionality of the compiler.
+\end{itemize}
 
+\clearpage
 \section{Contributions}
 \subsection{Braydon Johnson}
 \begin{itemize}
@@ -87,10 +99,14 @@ The following code sample will produce an error:
 \subsection{Neivin Mathew}
 \begin{itemize}
 \setlength\itemsep{0em}
+\item Implmenting the Symbol table
 \item Implementing type checking functionality
 \item Writing documentation
 \end{itemize}
 
 \section{Acknowledgments}
+For the second checkpoint, we built upon our existing code from the first checkpoint.
+
+In Checkpoint One, we used the starter code provided by Professor Song in \texttt{java\_tiny.tgz} and also followed the recommended syntax tree structure for the C- language from the course slides.
 
 \end{document}
