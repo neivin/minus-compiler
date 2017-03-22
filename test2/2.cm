@@ -3,5 +3,7 @@
 void main(void){
   int x;
   void y;
-  y = x;
+  int bbb[10];
+
+  z = x;
 }

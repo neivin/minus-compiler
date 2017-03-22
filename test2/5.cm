@@ -1,9 +1,16 @@
 /* Test condition must be an integer */
+void fun(void)
+{
+  int x;
+  x = 2;
+  return x;
+}
 
 void main (void) {
   int x; void y;
   int d;
 
+  fun();
   if (x) x = 1;
   if (d=x) x = 3;
 }
