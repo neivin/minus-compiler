@@ -58,7 +58,7 @@ public class TypeChecker{
 	private void checkTypes(ExpList tree){
 		while (tree != null){
 			if (tree.head != null)
-				checkTypes(tree.head);
+				checkTypes(tree.head, false);
 			tree = tree.tail;
 		}
 	}
@@ -89,25 +89,25 @@ public class TypeChecker{
 	}
 
 
-	public void checkTypes(Exp tree){
+	public void checkTypes(Exp tree, boolean requiresInt){
 		if (tree instanceof VarExp)
-			checkTypes((VarExp) tree);
+			checkTypes((VarExp) tree, true);
 		else if (tree instanceof CallExp)
-			checkTypes((CallExp) tree);
+			checkTypes((CallExp) tree, requiresInt);
 		else if (tree instanceof OpExp)
-			checkTypes((OpExp) tree);
+			checkTypes((OpExp) tree, true);
 		else if (tree instanceof AssignExp)
-			checkTypes((AssignExp) tree);
+			checkTypes((AssignExp) tree, true);
 		else if (tree instanceof IfExp)
-			checkTypes((IfExp) tree);
+			checkTypes((IfExp) tree, false);
 		else if (tree instanceof WhileExp)
-			checkTypes((WhileExp) tree);
+			checkTypes((WhileExp) tree, false);
 		else if (tree instanceof ReturnExp)
-			checkTypes((ReturnExp) tree);
+			checkTypes((ReturnExp) tree, requiresInt);
 		else if (tree instanceof CompoundExp)
-			checkTypes((CompoundExp) tree);
+			checkTypes((CompoundExp) tree, requiresInt);
 		else if (tree instanceof IntExp)
-			checkTypes((IntExp) tree);
+			checkTypes((IntExp) tree, requiresInt);
 	}
 
 
@@ -190,7 +190,7 @@ public class TypeChecker{
 		}
 
 		// Check valdity of index
-		checkTypes(tree.index);
+		checkTypes(tree.index, true); // Must be int
 	}
 
 
@@ -252,38 +252,38 @@ public class TypeChecker{
 		symTable.exitScope();		
 	}
 
-	public void checkTypes(VarExp tree){
+	public void checkTypes(VarExp tree, boolean requiresInt){
 		checkTypes(tree.variable);	
 	}
 
-	public void checkTypes(OpExp tree){
-		checkTypes(tree.left);
-		checkTypes(tree.right);	
+	public void checkTypes(OpExp tree, boolean requiresInt){
+		checkTypes(tree.left, true);
+		checkTypes(tree.right, true);	
 	}
 
-	public void checkTypes(AssignExp tree){
+	public void checkTypes(AssignExp tree, boolean requiresInt){
 		checkTypes(tree.lhs);
-		checkTypes(tree.rhs);
+		checkTypes(tree.rhs, true);
 	}
 
-	public void checkTypes(IfExp tree){
+	public void checkTypes(IfExp tree, boolean requiresInt){
 		// Check test
-		checkTypes(tree.test);
+		checkTypes(tree.test, true); // Test must be int
 
 		// Check if part
-		checkTypes(tree.thenpart);
+		checkTypes(tree.thenpart, false);
 
 		// Check else part
 		if (tree.elsepart != null)
-			checkTypes(tree.elsepart);	
+			checkTypes(tree.elsepart, false);	
 	}
 
-	public void checkTypes(WhileExp tree){
-		checkTypes(tree.test);
-		checkTypes(tree.body);
+	public void checkTypes(WhileExp tree, boolean requiresInt){
+		checkTypes(tree.test, true);
+		checkTypes(tree.body, false);
 	}
 
-	public void checkTypes(ReturnExp tree){
+	public void checkTypes(ReturnExp tree, boolean requiresInt){
 		if (currentReturnType != Type.INT){
 			if (tree.exp != null){
 				System.err.println("Error: Void function returns an integer value on line " + tree.pos);
@@ -295,12 +295,12 @@ public class TypeChecker{
 				System.err.println("Error: Function defined as int returns nothing on line " + tree.pos);
 			}
 			else {
-				checkTypes(tree.exp);
+				checkTypes(tree.exp, true);
 			}
 		}
 	}
 
-	public void checkTypes(CallExp tree){
+	public void checkTypes(CallExp tree, boolean requiresInt){
 		String id = tree.func;
 		
 		// Check if function exists
@@ -313,6 +313,10 @@ public class TypeChecker{
 		if (!(symTable.getFunction(id) instanceof FunctionSymbol)){
 			System.err.println("Error: Symbol \'" + id +"\' defined as variable, but used as function on line " + tree.pos);
 			return;
+		}
+
+		if (symTable.getFunction(id).type != Type.INT && requiresInt){
+			System.err.println("Error: Function \'" + id + "\' expected to return int, but returns void on line " + tree.pos);
 		}
 
 		FunctionSymbol f = (FunctionSymbol) symTable.getFunction(id);
@@ -330,7 +334,7 @@ public class TypeChecker{
 			Exp e = funcArgs.head;
 
 			if (s instanceof VarSymbol){
-				checkTypes(e);
+				checkTypes(e, true);
 			}
 			else if (s instanceof ArraySymbol){
 				
@@ -342,7 +346,7 @@ public class TypeChecker{
 
 	}
 
-	public void checkTypes(CompoundExp tree){
+	public void checkTypes(CompoundExp tree, boolean requiresInt){
 		symTable.enterNewScope();
 
 		checkTypes(tree.decs);
@@ -351,7 +355,8 @@ public class TypeChecker{
 		symTable.exitScope();
 	}
 
-	public void checkTypes(IntExp tree){
+	
+	public void checkTypes(IntExp tree, boolean requiresInt){
 		
 	}
 }

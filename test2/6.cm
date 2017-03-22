@@ -6,3 +6,10 @@ void fun(void){
   x = 2;
   return y;
 }
+
+void ffun(void){
+  int x;
+  fun();
+}
+
+
