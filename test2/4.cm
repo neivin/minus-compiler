@@ -1,8 +1,14 @@
 /* Function declaration and return exp must match */
 
-void fun(void){
-  void y;
+int fun(int fff)
+{
+  int x; int y; void z;
+  x = x*2+1;
+  y = x + z;
+}
+
+void main(void)
+{
   int x;
-  x = 2;
-  return y;
+  x = fun(x);
 }

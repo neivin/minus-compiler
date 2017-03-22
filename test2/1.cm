@@ -1,9 +1,12 @@
-/* Array range must be an integer */
-
-void main(void){
-  int a[2]; int x; void y;
-
-  a[x] = 1;
-  a[y] = 2;
+int gcd(int u, int v)
+{
+  if(v == 0) return u;
+  else return gcd(v, u-u/v*v);
 }
 
+void main (void)
+{
+  int x; int y; int z;
+  x = 15; y = 10;
+  z = gcd(x, y);
+}
