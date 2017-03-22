@@ -1,4 +1,8 @@
-/* Match two operands */
+/* --------------------------------------------------------------------------
+This tests to ensure an array index must be an integer
+Errors:
+a[y] = 2; - y is of type VOID not INT
+ -------------------------------------------------------------------------- */
 
 void main(void)
 {

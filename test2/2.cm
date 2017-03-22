@@ -1,4 +1,11 @@
-/* Match 2 sides of an assignment */
+/* --------------------------------------------------------------------------
+This program is designed to test that variables (simple & array) are
+recognized correctly and that they are added to the symbol table. It also tests
+if a variable that is used without being declared produces an error
+Errors:
+void y; - void variables do not exist
+z = x; - using a variable without declaring it
+ -------------------------------------------------------------------------- */
 
 void main(void){
   int x;

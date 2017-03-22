@@ -1,4 +1,12 @@
-/* Function declaration and return exp must match */
+/* --------------------------------------------------------------------------
+This program tests whether two sides of an assignment have the same type and if
+two operands have the same type. As well as if the expression in a condition must
+be of type INT
+Errors:
+if(y) x = 3;
+y = x + z; - x and y are of type INT where z is of type VOID
+x = y; - x is of type INT and y is of type VOID
+ -------------------------------------------------------------------------- */
 
 int fun(int fff)
 {
@@ -9,6 +17,9 @@ int fun(int fff)
 
 void main(void)
 {
-  int x;
+  int x; void y;
+  if (x) x = 1;
+  if (y) x = 3;
+  x = y;
   x = fun(x);
 }

@@ -1,16 +1,38 @@
-/* Test condition must be an integer */
+/* --------------------------------------------------------------------------
+This program contains a variety of errors designed to test the robustness of
+our compiler
+Errors:
+return x; - returning a variable from a void function
+return fun(); - returning a VOID function call from an INT function
+return ; - returning nothing from an INT function
+void j; - declaration of a VOID type variable
+anotherFun(x, y); - passing a function too few parameters
+anotherFun(x, y, z, k) - passing a function too many parameters
+ -------------------------------------------------------------------------- */
 void fun(void)
 {
   int x;
-  x = 2;
+
   return x;
 }
 
+int anotherFun(int x, int y, int z)
+{
+  int k;
+  if (k == 1)
+  {
+    int x;
+    return fun();
+  }
+  else
+    return ;
+}
+
 void main (void) {
-  int x; void y;
-  int d;
+  int x; int y; int z;
+  void j;
 
   fun();
-  if (x) x = 1;
-  if (d=x) x = 3;
+  x = anotherFun(x, y);
+  x = anotherFun(x, y, z, k);
 }

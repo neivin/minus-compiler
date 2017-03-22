@@ -1,3 +1,10 @@
+/* --------------------------------------------------------------------------
+This is a program that contains no errors, it is designed to show that with
+proper spelling and syntax that all aspects of the C- language are properly
+identified and a symbol table will be constructed.
+It uses the gcd program provided in the C- spec file
+ -------------------------------------------------------------------------- */
+
 int gcd(int u, int v)
 {
   if(v == 0) return u;

@@ -1,15 +1,17 @@
-/* Function declaration and return exp must match */
+/* --------------------------------------------------------------------------
+This program tests whether the return type of a function and the type of the
+value being returned must match
+Errors:
+return x; - x is of type INT but the function is of type VOID
+ -------------------------------------------------------------------------- */
 
 void fun(void){
-  void y;
   int x;
   x = 2;
-  return y;
+  return x;
 }
 
 void ffun(void){
   int x;
   fun();
 }
-
-
