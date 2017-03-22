@@ -50,6 +50,14 @@ public class SymbolTable {
 		return -1;
 	}
 
+	public boolean functionExists(String symbol){
+		return table.get(0).containsKey(symbol);
+	}
+
+	public Symbol getFunction(String symbol){
+		return table.get(0).get(symbol);
+	}
+
 	/* Checks if the String symbol exists in the most recent scope
 	 * Returns true if it exists, false otherwise
 	 */
@@ -65,7 +73,7 @@ public class SymbolTable {
 	}
 
 	
-	public void getSymbol(String symbol){
+	public Symbol getSymbol(String symbol){
 		int curSize = table.size()-1;
 		
 		// Return the most recent scope where the symbol was found

@@ -6,6 +6,7 @@ public class TypeChecker{
 	private SymbolTable symTable;
 	private boolean showScopes;
 	private DecList program;
+	private int currentReturnType;
 
 	/* Create indentation */
 	private String indent(int scopeLevel){
@@ -171,15 +172,37 @@ public class TypeChecker{
 		symTable.addSymbol(id, s);
 	}
 
+	/* ---------- Var subclasses ---------- */
 
 	public void checkTypes(SimpleVar tree){
 
+		// If symbol exists
+		if(symbolExists(tree.name) != -1){
+			if(!(symTable.getSymbol(tree.name) instanceof VarSymbol)){
+				System.err.println("Error: Cannot convert array type \'"+tree.name+"\' to int on line " + tree.pos);
+			}
+		}
+		else {
+			System.err.println("Error: Undefined variale \'" + tree.name +"\' on line " + tree.pos);
+		}
 	}
 	
 
 	public void checkTypes(IndexVar tree){
-		
+		// If symbol exists
+		if(symbolExists(tree.name) != -1){
+			if(!(symTable.getSymbol(tree.name) instanceof ArraySymbol)){
+				System.err.println("Error: \'"+tree.name+"\' defined as int but referenced as array on line " + tree.pos);
+			}
+		}
+		else {
+			System.err.println("Error: Undefined array variale \'" + tree.name +"\' on line " + tree.pos);
+		}
+
+		// Check valdity of index
+		checkTypes(tree.index);
 	}
+
 
 	// Assume that params wont be declared as void (e.g. void xyz, void arr[])
 	public void checkTypes(FunctionDec tree){
@@ -202,6 +225,9 @@ public class TypeChecker{
 
 		Symbol s = new FunctionSymbol(ty, id, p);
 		symTable.addSymbol(id, s);
+
+		// Set return type for checker
+		currentReturnType = ty;
 
 		// Make new scope for function
 		symTable.enterNewScope();
@@ -238,5 +264,105 @@ public class TypeChecker{
 		symTable.exitScope();		
 	}
 
+	public void checkTypes(VarExp tree){
+		checkTypes(tree.name);	
+	}
 
+	public void checkTypes(OpExp tree){
+		checkTypes(tree.left);
+		checkTypes(tree.right);	
+	}
+
+	public void checkTypes(AssignExp tree){
+		checkTypes(tree.lhs);
+		checkTypes(tree.rhs);
+	}
+
+	public void checkTypes(IfExp tree){
+		// Check test
+		checkTypes(tree.test);
+
+		// Check if part
+		checkTypes(tree.thenpart);
+
+		// Check else part
+		if (tree.elsepart != null)
+			checkTypes(tree.elsepart);	
+	}
+
+	public void checkTypes(WhileExp tree){
+		checkTypes(tree.test);
+		checkTypes(tree.body);
+	}
+
+	public void checkTypes(ReturnExp tree){
+		if (currentReturnType != Type.INT){
+			if (tree.exp != null){
+				System.err.println("Error: Void function returns an integer value on line " + tree.pos);
+				return;
+			}
+		}
+		else {
+			if(tree.exp == null){
+				System.err.println("Error: Function defined as int returns nothing on line " + tree.pos);
+			}
+			else {
+				checkTypes(tree.exp);
+			}
+		}
+	}
+
+	public void checkTypes(CallExp tree){
+		String id = tree.func;
+		
+		// Check if function exists
+		if(!symTable.functionExists(id)){
+			System.err.println("Error: Undefined function \'" + id "\' on line " + tree.pos);
+			return;
+		}
+
+		// Check that the symbol is a function
+		if (!(symTable.getFunction(id) instanceof FunctionSymbol)){
+			System.err.println("Error: Symbol \'" + id "\' defined as variable, but used as function on line " + tree.pos);
+			return;
+		}
+
+		FunctionSymbol f = (FunctionSymbol) symTable.getFunction(id);
+
+		// Validate number of arguments from function definition
+		if (f.paramCount() != tree.argsCount()){
+			System.err.println("Error: Incorrect number of arguments to function \'" + id "\' on line " + tree.pos);
+			return;
+		}
+
+		// Compare arguments
+		ExpList funcArgs = tree.args;
+		for(int i =0; i < f.paramCount(); i ++){
+			Symbol s = f.parameters.get(i);
+			Exp e = funcArgs.head;
+
+			if (s instanceof VarSymbol){
+				checkTypes(e);
+			}
+			else if (s instanceof ArraySymbol){
+
+			}
+
+			funcArgs = funcArgs.tail;
+		}
+
+	}
+
+	public void checkTypes(CompoundExp tree){
+		symTable.enterNewScope();
+
+		checkTypes(tree.decs);
+		checkTypes(tree.exps);
+
+		symTable.exitScope();
+	}
+
+	public void checkTypes(IntExp){
+		
+	}
 }

@@ -7,4 +7,8 @@ public class FunctionSymbol extends Symbol {
 		this.id = id;
 		this.parameters = parameters;
 	}
+
+	public int paramCount(){
+		return parameters.size();
+	}
 }

@@ -10,4 +10,16 @@ public class CallExp extends Exp{
     this.args = args;
   }
 
+  public int argsCount(){
+  	int count = 0;
+  	ExpList argList = this.args;
+
+  	while(argList != null){
+  		argList = argList.tail;
+  		count++;
+  	}
+
+  	return count;
+  }
+  
 }
