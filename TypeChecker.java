@@ -337,8 +337,20 @@ public class TypeChecker{
 				checkTypes(e, true);
 			}
 			else if (s instanceof ArraySymbol){
-				
-				//if (e instanceof)
+				if ((e instanceof VarExp) && (((VarExp)e).variable instanceof SimpleVar){
+					String varName = ((SimpleVar)((VarExp)top).name).name;
+
+					if(symTable.symbolExists(varName)){
+						if (!(symTable.getSymbol(varName) instanceof ArraySymbol))
+							System.err.println("Error: Expected int array, but read something else on line " + tree.pos);
+					}
+					else {
+						System.err.println("Error: Undefined variable \'" + varName + "\' in function call on line " + tree.pos);
+					}
+				}
+				else {
+					System.err.println("Error: Expected int array, but read something else on line " + tree.pos);
+				}
 			}
 
 			funcArgs = funcArgs.tail;
