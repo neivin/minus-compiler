@@ -1,7 +1,33 @@
 \documentclass[12pt, letterpaper]{article}
+
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=C,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=false,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
 \linespread{1.5}
 
-\title{Compilers - Checkpoint Two}
+
+\title{\LARGE{\textbf{Compilers - Checkpoint Two}}}
 \author{Braydon Johnson, Neivin Mathew}
 \begin{document}
 \maketitle
@@ -17,14 +43,54 @@ Additionally, we also improved upon our initial design from Checkpoint One by fi
 
 \section{Design Process}
 \subsection{Implementation}
+The compiler for checkpoint two was built using an incremental process, similar to that which was used in checkpoint one.
+
+First, we improved upon our initial design from checkpoint one. We improved our error recovery system and enabled the compiler to catch more errors and gracefully resume parsing from that point.
+
+Next, we implemented an abstract structure for the symbol table that would be able to seamlessly create new scopes, add new symbols, retrieve symbols, and check for the existence of symbols in the program. Creating a logical layer of abstraction for the symbol table was imperative to the next step --- implementing type checking.
+
+Finally, we added type checking to the compiler. We used the powerful concepts of function overloading and type coercion to break down the checking of types. Each method would check its corresponding syntax tree structure for type validity.
+ 
 \subsection{Lessons Learned}
+In this checkpoint, we understood the importance of building the project incrementally, since it allowed us to break down a large problem into smaller ones. It also allowed us to pinpoint where our errors were, since we knew the project was building successfully before adding new features that did not work.
+
+Using Git for version control and collaboration also taught us the importance of version control, which gave us the ability to roll back mistakes we made and enabled group members to see what new parts had been added to the project since we last saw it.
+
+Additionally, we also realized how to divide work between the group effectively so as to complete the project implementation on time, while leaving adequate time for testing.
 
 \section{Assumptions and Limitations}
+A few assumptions were made while building the compiler. The project has a few limitations which are listed below:
+\begin{itemize}
+\item We assume that functions with \texttt{void} return types do not return anything. The function may have a \texttt{return} statement, but it cannot return an expression, even if it is declared to be \texttt{void}. 
+
+The following code sample will produce an error:
+\begin{lstlisting}
+	void main(void){
+		void v;
+		return v;
+	}
+\end{lstlisting}
+
+\item For function calls, the compiler does not have the ability to check if the arguments to the function call match the parameter types that were defined in the function definition. However, the compiler will check the validity of the types and try to perform a lookup in the symbol table for the arguments.
+\end{itemize}
 
 \section{Potential Improvements}
 
 \section{Contributions}
 \subsection{Braydon Johnson}
+\begin{itemize}
+\setlength\itemsep{0em}
+\item Refactoring grammar rules
+\item Improving error checking and recovery
+\item Writing tests and testing the compiler
+\end{itemize}
 \subsection{Neivin Mathew}
+\begin{itemize}
+\setlength\itemsep{0em}
+\item Implementing type checking functionality
+\item Writing documentation
+\end{itemize}
+
+\section{Acknowledgments}
 
 \end{document}
