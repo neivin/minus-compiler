@@ -78,7 +78,7 @@ non terminal Dec decl, fun_decl;
 non terminal VarDec param, var_decl;
 
 non terminal Exp compound_stmt, stmt, expr_stmt, selection_stmt, iteration_stmt, return_stmt;
-non terminal Exp expr, simple_expr, call;
+non terminal Exp expr, call;
 
 /* --------------- Precedence Rules --------------- */
 
@@ -129,6 +129,12 @@ var_decl    ::= type_specifier:t ID:i SEMI
                 {:  RESULT = new SimpleDec(tleft, t, i); :}
               | type_specifier:t ID:i LSQUARE NUM:n RSQUARE SEMI
                 {: RESULT = new ArrayDec(tleft,t, i, new IntExp(nleft, Integer.parseInt(n))); :}
+              | type_specifier:t ID:i LSQUARE error:e RSQUARE:r SEMI
+                {: parser.report_error("Invalid syntax in array declaration", e);
+                   RESULT = new ErrorVarDec(eleft); :}
+              | type_specifier:t error:e SEMI
+                {: parser.report_error("Invalid syntax in variable declaration", e);
+                   RESULT = new ErrorVarDec(eleft); :}
               ;
 
 
@@ -205,11 +211,6 @@ stmt_list   ::= stmt_list:l stmt:s
                 :}
               | stmt:s
                 {: RESULT = new ExpList(s, null); :}
-              | error:e
-                {:
-                  parser.report_error("Invalid syntax in statement list",e);
-                  RESULT = new ExpList(new ErrorExp(eleft), null);
-                :}
               ;
 
 stmt        ::= expr_stmt:e
@@ -228,6 +229,9 @@ expr_stmt   ::= expr:e  SEMI
                 {: RESULT = e; :}
               | SEMI:s
                 {: RESULT = new NilExp(sleft); :}
+              | error:e
+                {: parser.report_error("Syntax error in expression statement", e);
+                   RESULT = new ErrorExp(eleft); :}
               ;
 
 
@@ -260,38 +264,28 @@ return_stmt     ::= RETURN:r  SEMI
                   ;
 
 expr            ::= var:v EQ expr:e
-                    {: RESULT = new AssignExp(vleft, v, e); :}
-                  | simple_expr:s
-                    {: RESULT = s; :}
-                  ;
-
-var             ::= ID:i
-                    {: RESULT = new SimpleVar(ileft, i); :}
-                  | ID:i  LSQUARE expr:e RSQUARE
-                    {: RESULT = new IndexVar(ileft, i, e); :}
-                  ;
-
-simple_expr     ::= simple_expr:s1 PLUS simple_expr:s2
+                      {: RESULT = new AssignExp(vleft, v, e); :}
+                    | expr:s1 PLUS expr:s2
                       {: RESULT = new OpExp(s1left, s1, OpExp.PLUS, s2); :}
-                    | simple_expr:s1 MINUS simple_expr:s2
+                    | expr:s1 MINUS expr:s2
                          {: RESULT = new OpExp(s1left, s1, OpExp.MINUS, s2); :}
-                    | simple_expr:s1 MUL simple_expr:s2
+                    | expr:s1 MUL expr:s2
                          {: RESULT = new OpExp(s1left, s1, OpExp.MUL, s2); :}
-                    | simple_expr:s1 DIV simple_expr:s2
+                    | expr:s1 DIV expr:s2
                          {: RESULT = new OpExp(s1left, s1, OpExp.DIV, s2); :}
-                    | simple_expr:s1 EQUALEQUAL simple_expr:s2
+                    | expr:s1 EQUALEQUAL expr:s2
                          {: RESULT = new OpExp(s1left, s1, OpExp.EQUALEQUAL, s2); :}
-                    | simple_expr:s1 LESS simple_expr:s2
+                    | expr:s1 LESS expr:s2
                          {: RESULT = new OpExp(s1left, s1, OpExp.LT, s2); :}
-                    | simple_expr:s1 GREATER simple_expr:s2
+                    | expr:s1 GREATER expr:s2
                          {: RESULT = new OpExp(s1left, s1, OpExp.GT, s2); :}
-                    | simple_expr:s1 GEQUIV simple_expr:s2
+                    | expr:s1 GEQUIV expr:s2
                          {: RESULT = new OpExp(s1left, s1, OpExp.GE, s2); :}
-                    | simple_expr:s1 LEQUIV simple_expr:s2
+                    | expr:s1 LEQUIV expr:s2
                          {: RESULT = new OpExp(s1left, s1, OpExp.LE, s2); :}
-                    | simple_expr:s1 NEQUIV simple_expr:s2
+                    | expr:s1 NEQUIV expr:s2
                          {: RESULT = new OpExp(s1left, s1, OpExp.NE, s2); :}
-                    | LPAREN simple_expr:s1 RPAREN
+                    | LPAREN expr:s1 RPAREN
                          {: RESULT = s1; :}
                     | var:v
                          {: RESULT = new VarExp(vleft,v); :}
@@ -301,8 +295,20 @@ simple_expr     ::= simple_expr:s1 PLUS simple_expr:s2
                       {: RESULT = new IntExp(nleft, Integer.parseInt(n)); :}
                         ;
 
+var             ::= ID:i
+                    {: RESULT = new SimpleVar(ileft, i); :}
+                  | ID:i  LSQUARE expr:e RSQUARE
+                    {: RESULT = new IndexVar(ileft, i, e); :}
+                  | ID:i LSQUARE error:e RSQUARE
+                    {: parser.report_error("Invalid expression in Index Variable", e);
+                       RESULT = new IndexVar(ileft, i, new ErrorExp(eleft)); :}
+                  ;
+
 call            ::= ID:i  LPAREN  args:a  RPAREN
                     {:  RESULT = new CallExp(ileft, i, a);  :}
+                  | ID:i LPAREN error:e RPAREN
+                    {: parser.report_error("Invalid syntax in function call arguments", e);
+                       RESULT = new CallExp(ileft, i, null);:}
                   ;
 
 args            ::= arg_list:a
@@ -321,9 +327,4 @@ arg_list         ::=  arg_list:a  COMMA expr:e
                     :}
                   | expr:e
                     {:  RESULT = new ExpList(e, null);  :}
-                  | error:e
-                    {:
-                      parser.report_error("Invalid syntax in function call arguments", e);
-                      RESULT = new ExpList(new ErrorExp(eleft), null);
-                    :}
                   ;
