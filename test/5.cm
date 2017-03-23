@@ -1,58 +1,38 @@
 /* --------------------------------------------------------------------------
-This program contains an assortment of errors that test different parts of the
-grammar and lexical errors to see if the compiler is able to recover or at least
-fail gracefully
+This program contains a variety of errors designed to test the robustness of
+our compiler
+Errors:
+return x; - returning a variable from a void function
+return fun(); - returning a VOID function call from an INT function
+return ; - returning nothing from an INT function
+void j; - declaration of a VOID type variable
+anotherFun(x, y); - passing a function too few parameters
+anotherFun(x, y, z, k) - passing a function too many parameters
  -------------------------------------------------------------------------- */
-
-void main(void)
+void fun(void)
 {
-  int var;
-  void variable;
-  /* Identifiers only consist of letters */
-  int var2;
+  int x;
 
-  /* Lexer does not recognize floating point numbers, the '.' will result in an error*/
-  var = 3.3;
-  /* Tests recovery from improper if statement declaration */
-  if()
-  {
-    var = 10 - 6 * 8;
-  }
-
-  while(1)
-  {
-    int max;
-    /* Missing semi colon at the end of the stmt */
-    max = max + 1
-  }
-
-  2%2;
-  ~;
-
-  4 - - 3;
-
-  /* tests the use of function calls in a return stmt */
-  return paramsError(var, variable);
-
-}
-/* Function declaration with improper parameters */
-void paramsError(int a int b)
-{
-
+  return x;
 }
 
-/* If no parameters are given to a function then "void" must be inserted into
-the parameter list */
-void foo()
+int anotherFun(int x, int y, int z)
 {
-  int _variable;
+  int k;
+  if (k == 1)
+  {
+    int x;
+    return fun();
+  }
+  else
+    return ;
 }
 
-/* Function declaration with no type specifier */
-f(void)
-{
-  while
-  {
+void main (void) {
+  int x; int y; int z;
+  void j;
 
-  }
+  fun();
+  x = anotherFun(x, y);
+  x = anotherFun(x, y, z, k);
 }

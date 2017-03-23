@@ -1,56 +1,19 @@
 /* --------------------------------------------------------------------------
 This is a program that contains no errors, it is designed to show that with
 proper spelling and syntax that all aspects of the C- language are properly
-identified and an abstract syntax tree will be constructed.
-It will also test that the program can ignore comments properly.
+identified and a symbol table will be constructed.
+It uses the gcd program provided in the C- spec file
  -------------------------------------------------------------------------- */
 
-int x;
-void y;
-int arr[34];
-
-int add(int x, int b[])
+int gcd(int u, int v)
 {
-  x = 1;
-  return x;
-  if(z>2){
-    x = 3;
-  }
+  if(v == 0) return u;
+  else return gcd(v, u-u/v*v);
 }
 
-/* This is a function declaration comment */
-void main(void)
-{ /* Comment inside function */
-  int x;
-  int y;
-  int z;
-  int a; /* Comment at the end of a line */
-  int b[10];
-
-  /* Comment at the start of a line */x = 5;
-  y = 10;
-  z = y + x;
-  b[2] = 5;
-  while(x < z)
-  {
-    int ddd;
-    if(x == y)
-    {
-      x = x + 1;
-    }
-    else
-    {
-      y = y + 1;
-    }
-  }
-  a = add(x, b=5);
-  return;
+void main (void)
+{
+  int x; int y; int z;
+  x = 15; y = 10;
+  z = gcd(x, y);
 }
-
-/*
- * A multi 
- * line 
- * comment
-*/
-
-

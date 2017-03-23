@@ -1,23 +1,12 @@
 /* --------------------------------------------------------------------------
-This programs tests the compiler's ability to recover from simple lexical errors
-The errors include:
-in x; - Missing t on int type specifier
-while(1) - Missing a stmt section after while(1)
-esle  - Misspelled else statement after if statement
+This tests to ensure an array index must be an integer
+Errors:
+a[y] = 2; - y is of type VOID not INT
  -------------------------------------------------------------------------- */
 
 void main(void)
 {
-  int x;
-  x = 20
-
-  if( x < 30)
-  {
-    print(x);
-  }
-  esle
-  {
-    print(30);
-  }
-
+  int a[2]; int x; void y;
+  a[x] = 1;
+  a[y] = 2;
 }
