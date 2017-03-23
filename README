@@ -50,7 +50,9 @@ section on the test files.
 
 ---------- Acknowledgements ----------
 
-For this checkpoint, we used Professor Song's provided code in 'java_tiny'
+For this checkpoint, we built upon our work from Checkpoint One.
+
+For the first checkpoint we used Professor Song's provided code 
 as a starting point to build the project. We also followed the
 recommended syntax tree structures for the C- language from the course
 slides.
