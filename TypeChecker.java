@@ -337,10 +337,10 @@ public class TypeChecker{
 				checkTypes(e, true);
 			}
 			else if (s instanceof ArraySymbol){
-				if ((e instanceof VarExp) && (((VarExp)e).variable instanceof SimpleVar){
-					String varName = ((SimpleVar)((VarExp)top).name).name;
+				if ((e instanceof VarExp) && (((VarExp)e)).variable instanceof SimpleVar){
+					String varName = ((SimpleVar)((VarExp)e).variable).name;
 
-					if(symTable.symbolExists(varName)){
+					if(symTable.symbolExists(varName) != -1 ){
 						if (!(symTable.getSymbol(varName) instanceof ArraySymbol))
 							System.err.println("Error: Expected int array, but read something else on line " + tree.pos);
 					}
