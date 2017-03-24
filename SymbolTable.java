@@ -48,7 +48,42 @@ public class SymbolTable {
 				System.out.println(spaces + "Array: " + getType(s.type) + " " + key + "[" + as.size +"]");
 			}
 			else if (s instanceof FunctionSymbol){
-				System.out.println(spaces + "Function: " + getType(s.type) + " " + key + "()");
+				StringBuilder funcSig = new StringBuilder(spaces);
+				funcSig.append("Function: ");
+				funcSig.append(getType(s.type));
+				funcSig.append(' ');
+				funcSig.append(key);
+				funcSig.append(" (");
+
+				// Iterate through all the parameters
+				for (Symb sym : ((FunctionSymbol)s).parameters){
+					if (sym instanceof VarSymbol){
+						if (sym.type == Type.INT)
+							funcSig.append("INT");
+						else
+							funcSig.append("VOID");
+					}
+					else if (sym instanceof ArraySymbol){
+						if (sym.type == Type.INT)
+							funcSig.append("INT []");
+						else
+							funcSig.append("VOID []");
+					}
+
+					// Commas between args
+					funcSig.append(", ");
+				}
+
+				// Remove last comma and add closing parenthesis
+				// only if there are some parameters
+				if (((FunctionSymbol)s).parameters.size() > 0 ){
+					funcSig.deleteCharAt(funcSig.length()-1);
+					funcSig.deleteCharAt(funcSig.length()-1);
+				}
+
+				funcSig.append(")");
+
+				System.out.println(funcSig.toString());
 			}
 		}	
 	}
