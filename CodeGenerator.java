@@ -37,7 +37,7 @@ public class CodeGenerator {
     // Initialize Symbol Table
     // Enter new global scope
     symTable.enterNewScope();
-    
+
     // Add input function
     Symb inputFunction = new FunctionSymbol(Type.INT, "input", new ArrayList<Symb>(), IN_ADDR);
     symTable.addSymbol("input",  inputFunction);
@@ -55,7 +55,7 @@ public class CodeGenerator {
     emitRMAbs("LDA", FP, 0, GP, "Copy GP to FP");
     emitRM("ST", 0, 0, 0, "Clear location 0");
     int savedLoc = emitSkip(1);
-    
+
     /* Generate input function */
     emitComment("Jump around i/o functions");
     emitComment("Code for input routine");
@@ -100,13 +100,14 @@ public class CodeGenerator {
 
   /* ==== List Structures ====*/
   // Variable Declaration List
-  public static void cGen (VarDecList tree){
+  public static int cGen (VarDecList tree, int offset){
     while (tree != null){
       if (tree.head != null){
-        cGen(tree.head);
+        offset = cGen(tree.head);
       }
       tree = tree.tail;
     }
+    return offset;
   }
 
   // Expression List
@@ -142,12 +143,14 @@ public class CodeGenerator {
 
 
 // Variable Declaration
-  public static void cGen(VarDec tree){
+  public static int cGen(VarDec tree, int offset){
     if (tree instanceof SimpleDec){
-      cGen((SimpleDec) tree);
+      offset = cGen((SimpleDec) tree);
+      return offset;
     }
     else if (tree instanceof ArrayDec){
-      cGen((ArrayDec) tree);
+      offset = cGen((ArrayDec) tree);
+      return offset
     }
   }
 
@@ -197,7 +200,7 @@ public class CodeGenerator {
 
 // Dec subclasses : FunctionDec, VarDec (SimpleDec, ArrayDec)
 //FunctionDec
-  public static void cGen(FunctionDec tree){
+  public static void cGen(FunctionDec tree, int offset){
     emitComment("-> fundecl");
     emitComment(" processing function: " + tree.func);
     emitComment(" jump around functions body here");
@@ -207,8 +210,8 @@ public class CodeGenerator {
     /* Copy return address from AC to local memory */
     emitRM("ST", 0, -1, FP, "store return");
 
-    cGen(tree.params);
-    cGen(tree.body);
+    offset -= params.argsCount();
+    cGen(tree.body, offset);
 
     /* Generate jump around function body */
     int savedLoc2 = emitSkip(0);
@@ -218,13 +221,15 @@ public class CodeGenerator {
   }
 
 // SimpleDec
-  public static void cGen(SimpleDec tree){
+  public static int cGen(SimpleDec tree, int offset){
     emitComment("processing local var: " + tree.name);
+    return offset--;
   }
 
 // ArrayDec
-  public static void cGen(ArrayDec tree){
+  public static int cGen(ArrayDec tree){
     emitComment("Processing local var: " + tree.name);
+    return offset-=tree.size;
   }
 
 // Exp subclasses
@@ -235,6 +240,11 @@ public class CodeGenerator {
 
 // VarExp
   public static void cGen(VarExp tree){
+    emitComment("-> id");
+    emitComment("Looking up id: " + tree.variable.name);
+    emitRM("LD", AC, /* localOffset */, FP, "Load id value");
+    emitComment("<- id");
+    emitRMAbs("")
   }
 
 // IntExp
@@ -246,11 +256,11 @@ public class CodeGenerator {
   }
 
 // CallExp
-  public static void cGen(CallExp tree){
+  public static void cGen(CallExp tree, int offset){
   // Args
     emitComment("-> call");
     emitComment("call of function: " + tree.fun);
-    cGen(tree.args);
+    cGen(tree.args, offset);
     emitRM("ST", FP, /* Some offset */, FP, "push ofp");
     emitRM("LDA", FP, /* Some offset */, FP, "Push frame");
     emitRM("LDA", 0, 1, PC, "Load ac with ret ptr");
@@ -348,10 +358,10 @@ public class CodeGenerator {
   }
 
   // CompoundExp
-  public static void cGen(CompoundExp tree){
+  public static void cGen(CompoundExp tree, int offset){
     emitComment("-> compound statement");
-    cGen(tree.decs); // VarDecList
-    cGen(tree.exps); //ExpList
+    offset = cGen(tree.decs, offset); // VarDecList
+    cGen(tree.exps, offset); //ExpList
     emitComment("<- compound statement");
   }
 
