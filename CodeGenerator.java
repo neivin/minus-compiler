@@ -6,10 +6,12 @@ public class CodeGenerator {
   public static final int AC = 0;
   public static final int PC = 7;
   public static final int FP = 5;
+  public static int emitLoc = 0;
+  public static int highEmitLoc = 0;
 
-  public static void genCode()
+  public static void genCode(DecList tree)
   {
-    String content;
+    int globalOffset = 0;
     try{
       PrintWriter pw = new PrintWriter(FILENAME);
       pw.close();
@@ -26,130 +28,181 @@ public class CodeGenerator {
     emitComment("Jump around i/o functions");
     emitComment("Code for input routine");
     emitRM("ST", 0, -1, FP, "Store return");
-    /*("IN", 0, 0, "Input");*/
+    emitOp("IN", 0, 0, 0, "");
     emitRM("LD", PC, -1, FP, "Return caller");
 
     /* Generate output function */
     emitComment("Code for output routine");
     emitRM("ST", 0, -1, FP, "Store return");
     emitRM("LD", 0, -2, FP, "Load output value");
-    /*("OUT", 0, 0, "Output");*/
+    emitOp("OUT", 0, 0, 0, "");
     emitRM("LD", 7, -1, FP, "Return caller");
     int savedLoc2 = emitSkip(0);
+
+    /* Set emitLoc to previously stored value
+    Jujpm around I/O functions*/
     emitBackup(savedLoc);
     emitRMAbs("LDA", PC, savedLoc2, "");
     emitRestore();
-    /* Jump around I/O functions */
 
     /* Recursive code generation */
-
+    while (tree != null){
+			if (tree.head != null){
+				cGen(tree.head, globalOffset);
+			}
+			tree = tree.tail;
+		}
     /* Generate Finale */
+    emitRM("ST", FP, globalOffset, FP, "Push ofp");
+    emitRM("LDA", FP, globalOffset, FP, "Push frame");
+    emitRM("LDA", 0, 1, PC, "Load ac with ret ptr");
+    /* retrieve main function address from symbol table */
+    emitRMAbs("LDA", PC, funAddr, "Jump to main");
+    emitRM("LD", FP, 0, FP, "Pop frame");
+    emitOp("HALT", 0, 0, 0, "");
   }
+
+  /* ==== List Structures ====*/
+  // Variable Declaration List
+  public static void cGen (VarDecList tree){
+    while (tree != null){
+      if (tree.head != null){
+        cGen(tree.head);
+      }
+      tree = tree.tail;
+    }
+  }
+
+  // Expression List
+  public static void cGen (ExpList tree){
+    while (tree != null){
+      if (tree.head != null){
+        cGen(tree.head);
+      }
+      tree = tree.tail;
+    }
+  }
+
   /* ==== Abstract Classes ==== */
 // Variable
-  public static void genCode (Var tree){
+  public static void cGen (Var tree){
     if (tree instanceof SimpleVar){
-      genCode((SimpleVar) tree);
+      cGen((SimpleVar) tree);
     }
     else if (tree instanceof IndexVar){
-      genCode((IndexVar) tree);
+      cGen((IndexVar) tree);
     }
   }
 
 // Declaration
-  public static void genCode (Dec tree){
+  public static void cGen (Dec tree){
     if(tree instanceof FunctionDec){
-      genCode((FunctionDec) tree);
+      cGen((FunctionDec) tree);
     }
     else if (tree instanceof VarDec){
-      genCode((VarDec) tree);
+      cGen((VarDec) tree);
     }
   }
 
 
 // Variable Declaration
-  public static void genCode(VarDec tree){
+  public static void cGen(VarDec tree){
     if (tree instanceof SimpleDec){
-      genCode((SimpleDec) tree);
+      cGen((SimpleDec) tree);
     }
     else if (tree instanceof ArrayDec){
-      genCode((ArrayDec) tree);
+      cGen((ArrayDec) tree);
     }
   }
 
 // General Expression
-  public static void genCode (Exp tree){
+  public static void cGen (Exp tree){
     if (tree instanceof NilExp){
-      genCode((NilExp) tree);
+      cGen((NilExp) tree);
     }
     else if (tree instanceof VarExp){
-      genCode((VarExp) tree);
+      cGen((VarExp) tree);
     }
     else if (tree instanceof CallExp){
-      genCode((CallExp) tree);
+      cGen((CallExp) tree);
     }
     else if (tree instanceof OpExp){
-      genCode((OpExp) tree);
+      cGen((OpExp) tree);
     }
     else if (tree instanceof AssignExp){
-      genCode((AssignExp) tree);
+      cGen((AssignExp) tree);
     }
     else if (tree instanceof IfExp){
-      genCode((IfExp) tree);
+      cGen((IfExp) tree);
     }
     else if (tree instanceof WhileExp){
-      genCode((WhileExp) tree);
+      cGen((WhileExp) tree);
     }
     else if (tree instanceof ReturnExp){
-      genCode((ReturnExp) tree);
+      cGen((ReturnExp) tree);
     }
     else if (tree instanceof CompoundExp){
-      genCode((CompoundExp) tree);
+      cGen((CompoundExp) tree);
     }
     else if (tree instanceof IntExp){
-      genCode((IntExp) tree);
+      cGen((IntExp) tree);
     }
   }
 
   /* ==== Concrete Classes ==== */
 // Var subclasses
 // SimpleVar
-  public static void genCode(SimpleVar tree){
+  public static void cGen(SimpleVar tree){
   }
 
 // IndexVar
-  public static void genCode(IndexVar tree){
+  public static void cGen(IndexVar tree){
   }
 
 // Dec subclasses : FunctionDec, VarDec (SimpleDec, ArrayDec)
 //FunctionDec
-  public static void genCode(FunctionDec tree){
+  public static void cGen(FunctionDec tree){
+    emitComment("-> fundecl");
+    emitComment(" processing function: " + tree.func);
+    emitComment(" jump around functions body here");
 
+    /* Store value for backpatching */
+    int savedLoc = emitSkip(1);
+    /* Copy return address from AC to local memory */
+    emitRM("ST", 0, -1, FP, "store return");
+
+    cGen(tree.params);
+    cGen(tree.body);
+
+    /* Generate jump around function body */
+    int savedLoc2 = emitSkip(0);
+    emitBackup(savedLoc);
+    emitRMAbs("LDA", PC, savedLoc2, "Jump around function body");
+    emitComment("<- fundecl");
   }
 
 // SimpleDec
-  public static void genCode(SimpleDec tree){
-
+  public static void cGen(SimpleDec tree){
+    emitComment("processing local var: " + tree.name);
   }
 
 // ArrayDec
-  public static void genCode(ArrayDec tree){
-
+  public static void cGen(ArrayDec tree){
+    emitComment("Processing local var: " + tree.name);
   }
 
 // Exp subclasses
 // NilExp
-  public static void genCode(NilExp tree){
+  public static void cGen(NilExp tree){
 
   }
 
 // VarExp
-  public static void genCode(VarExp tree){
-
+  public static void cGen(VarExp tree){
   }
 
 // IntExp
-  public static void genCode(IntExp tree){
+  public static void cGen(IntExp tree){
   // Check if null for function declarations/calls of the form int x[]
     if (tree != null){
 
@@ -157,31 +210,40 @@ public class CodeGenerator {
   }
 
 // CallExp
-  public static void genCode(CallExp tree){
-
+  public static void cGen(CallExp tree){
   // Args
-    genCode(tree.args);
+    emitComment("-> call");
+    emitComment("call of function: " + tree.fun);
+    cGen(tree.args);
+    emitRM("ST", FP, /* Some offset */, FP, "push ofp");
+    emitRM("LDA", FP, /* Some offset */, FP, "Push frame");
+    emitRM("LDA", 0, 1, PC, "Load ac with ret ptr");
+    emitRMAbs("LDA", PC, funAddr, "jump to fun loc")
+    emitMR("LD", FP, 0, FP, "Pop frame");
+    emitComment("<- call");
   }
 
 // OpExp
-  public static void genCode(OpExp tree){
-
+  public static void cGen(OpExp tree){
+    emitComment("-> op");
+    cGen(tree.left);
+    cGen(tree.right);
   // Operator
     switch(tree.op){
       case OpExp.PLUS:
-
+      emitOp("ADD", AC, 1, AC, "");
       break;
       case OpExp.MINUS:
-
+      emitOp("SUB", AC, 1, AC, "");
       break;
       case OpExp.MUL:
-
+      emitOp("MUL", AC, 1, AC, "");
       break;
       case OpExp.DIV:
-
+      emitOp("DIV", AC, 1, AC, "");
       break;
       case OpExp.EQ:
-
+      emitOp("=", AC, 1, AC, "");
       break;
       case OpExp.EQUALEQUAL:
 
@@ -201,111 +263,128 @@ public class CodeGenerator {
       case OpExp.GE:
 
       break;
-      default:
-
-      break;
     }
+    emitComment("<- op");
   }
 
 // AssignExp
-  public static void genCode(AssignExp tree){
+  public static void cGen(AssignExp tree){
 
   // Var = left
-    genCode(tree.lhs);
+    cGen(tree.lhs);
 
   // Exp = right;
-    genCode(tree.rhs);
+    cGen(tree.rhs);
   }
 
-// IfExp
-// Expression should be printed on the same line
-  public static void genCode(IfExp tree){
-
-  genCode(tree.test); // Test Exp
-  genCode(tree.thenpart); // Then Exp
-  genCode(tree.elsepart); // Else Exp (NilExp)
-}
-
-// WhileExp
-// Expression should be printed on the same line
-public static void genCode(WhileExp tree){
-  genCode(tree.test); // While condition Exp
-  genCode(tree.body); // Loop body Exp
-}
-
-// ReturnExp
-public static void genCode(ReturnExp tree){
-
-  if(tree.exp != null){
-    genCode(tree.exp); // Return Exp
+  // IfExp
+  // Expression should be printed on the same line
+  public static void cGen(IfExp tree){
+    emitComment("-> if");
+    cGen(tree.test); // Test Exp
+    cGen(tree.thenpart); // Then Exp
+    cGen(tree.elsepart); // Else Exp (NilExp)
+    emitComment("<- if");
   }
-}
 
-// CompoundExp
-public static void genCode(CompoundExp tree){
-
-  genCode(tree.decs); // VarDecList
-  genCode(tree.exps); //ExpList
-}
-
-/* ==== Code Emiting Routines ==== */
-/* Returns current label value for backpatching then increases the label value*/
-int emitSkip(int distance){
-  int i = emitLoc;
-  emitLoc += distance;
-  if(highEmitLoc < emitLoc){
-    highEmitLoc = emitLoc;
+  // WhileExp
+  // Expression should be printed on the same line
+  public static void cGen(WhileExp tree){
+    emitComment("-> While");
+    emitCOmment("While: jump after body comes back here");
+    int savedLoc3 = emitSkip(1);
+    cGen(tree.test); // While condition Exp
+    int savedLoc = emitSkip(1);
+    cGen(tree.body); // Loop body Exp
+    int savedLoc2 = emitSkip(0);
+    emitBackup(savedLoc);
+    emitRMAbs("LDA", PC, savedLoc3, "While: absolute jmp to test");
+    emitRMAbs("JEQ", 0, savedLoc2, "While: jmp to end");
+    emitComment("<- While");
   }
-  return i;
-}
 
-void emitBackup(int loc){
-  if(loc > highEmitLoc){
-    emitComment("Bug in emmitBackup");
+  // ReturnExp
+  public static void cGen(ReturnExp tree){
+
+    if(tree.exp != null){
+      cGen(tree.exp); // Return Exp
+    }
   }
-  emitLoc = loc;
-}
 
-void emitRestore(){
-  emitLoc = highEmitLoc;
-}
-
-void emitRM(String op, int r, int offset, int r1, String comment){
-  Sting code = emitLoc + ": " + op + "  " + r + "," + offset + "(" + r1 + ")";
-  writeCode(code);
-  ++emitLoc;
-  /* if(TraceCode)  writeCode("\t" + comment); */
-  writeCode("\n");
-  if(highEmitLoc < emitLoc){
-    highEmitLoc = emitLoc;
+  // CompoundExp
+  public static void cGen(CompoundExp tree){
+    emitComment("-> compound statement");
+    cGen(tree.decs); // VarDecList
+    cGen(tree.exps); //ExpList
+    emitComment("<- compound statement");
   }
-}
 
-void emitRMAbs(String op, int r, int a, String comment){
-  String code = emitLoc + ":  " + op + "  " + r + "," + a-(emitLoc+1) + "(" + PC + ")";
-  ++emitLoc;
-  /* if (TraceCode) write("\n" + comment); */
-  write("\n");
-  if(highEmitLoc < emitLoc){
-    highEmitLoc = emitLoc;
+  /* ==== Code Emiting Routines ==== */
+  /* Returns current label value for backpatching then increases the label value*/
+  int emitSkip(int distance){
+    int i = emitLoc;
+    emitLoc += distance;
+    if(highEmitLoc < emitLoc){
+      highEmitLoc = emitLoc;
+    }
+    return i;
   }
-}
 
-void emitComment(String comment){
-  comment = "* " + comment;
-  writeCode(comment);
-}
-
-public static void writeCode(String content)
-{
-  PrintWriter outputStream = null;
-  try{
-    outputStream = new PrintWriter(new FileOutputStream(FILENAME, true));
-  }catch(FileNotFoundException e){
-    e.printStackTrace();
+  void emitBackup(int loc){
+    if(loc > highEmitLoc){
+      emitComment("Bug in emmitBackup");
+    }
+    emitLoc = loc;
   }
-  outputStream.printf(content);
-  outputStream.close();
-}
+
+  void emitRestore(){
+    emitLoc = highEmitLoc;
+  }
+
+  void emitRM(String op, int r, int offset, int r1, String comment){
+    Sting code = emitLoc + ": " + op + "  " + r + "," + offset + "(" + r1 + ")";
+    writeCode(code);
+    ++emitLoc;
+    /* if(TraceCode)  writeCode("\t" + comment); */
+    writeCode("\n");
+    if(highEmitLoc < emitLoc){
+      highEmitLoc = emitLoc;
+    }
+  }
+
+  void emitRMAbs(String op, int r, int a, String comment){
+    String code = emitLoc + ":  " + op + "  " + r + "," + a-(emitLoc+1) + "(" + PC + ")";
+    writeCode(code);
+    ++emitLoc;
+    /* if (TraceCode) write("\n" + comment); */
+    writeCode("\n");
+    if(highEmitLoc < emitLoc){
+      highEmitLoc = emitLoc;
+    }
+  }
+
+  void emitOp(String op, int destination, int r, int r1, String comment){
+    String code = emitloc + ": " + op + " " + destination + "," + r + "," + r1;
+    writeCode(code);
+    ++emitLoc;
+    /* if (TraceCode) write("\n" + comment); */
+    writeCode("\n");
+  }
+
+  void emitComment(String comment){
+    comment = "* " + comment + "\n";
+    writeCode(comment);
+  }
+
+  public static void writeCode(String content){
+    PrintWriter outputStream = null;
+    try{
+      outputStream = new PrintWriter(new FileOutputStream(FILENAME, true));
+    }catch(FileNotFoundException e){
+      e.printStackTrace();
+    }
+    outputStream.printf(content);
+    outputStream.close();
+  }
 
 }
