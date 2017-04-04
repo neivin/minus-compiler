@@ -55,6 +55,7 @@ public class CodeGenerator {
     emitRMAbs("LDA", FP, 0, GP, "Copy GP to FP");
     emitRM("ST", 0, 0, 0, "Clear location 0");
     int savedLoc = emitSkip(1);
+    
     /* Generate input function */
     emitComment("Jump around i/o functions");
     emitComment("Code for input routine");

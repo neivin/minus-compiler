@@ -5,9 +5,9 @@ CLASSPATH=-classpath /usr/share/java/cup.jar:.
 #CUP=$(JAVA) $(CLASSPATH) java_cup.Main <
 CUP=cup
 
-all: Main.class
+all: CM.class
 
-Main.class: absyn/*.java parser.java sym.java Lexer.java symbol/*.java SymbolTable.java TypeChecker.java Main.java
+CM.class: absyn/*.java parser.java sym.java Lexer.java symbol/*.java SymbolTable.java TypeChecker.java CM.java
 
 # -Xdiags:verbose
 %.class: %.java

@@ -29,16 +29,16 @@ To run the project, first build it by running 'make'.
 Then, run the following command, substituting the CUP classpath for
 the location of CUP on your machine:
 
-	java -classpath /usr/share/java/cup.jar:. Main input.cm
+	java -classpath /usr/share/java/cup.jar:. CM input.cm
 
 To print out the Abstract Syntax Tree, use the command line option -a:
 
-	java -classpath /usr/share/java/cup.jar:. Main -a input.cm
+	java -classpath /usr/share/java/cup.jar:. CM -a input.cm
 
 To print out the Symbol Table that is generated when parsing, use the
 command line option -s:
 
-	java -classpath /usr/share/java/cup.jar:. Main -s input.cm
+	java -classpath /usr/share/java/cup.jar:. CM -s input.cm
 
 
 ---------- Testing ----------

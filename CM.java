@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 
 
-class Main{
+class CM{
   public static void main(String [] argv){
     
     boolean astMode = false;
@@ -12,7 +12,7 @@ class Main{
     if (argv.length > 2 ){
     	System.err.println("Error: Invalid number of arguments");
     	System.err.println("The correct usage is:");
-    	System.err.println("\tjava Main <c-minus-file>.cm");
+    	System.err.println("\tjava CM <c-minus-file>.cm");
     	System.exit(0);
     }
 
