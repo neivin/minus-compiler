@@ -23,7 +23,6 @@ public class CM{
     }
 
     for (String arg : argv){
-      System.out.println(arg);
     	if (arg.equals("-a")){
     		showAST = true;
     	}

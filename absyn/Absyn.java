@@ -1,13 +1,18 @@
 package absyn;
 
+import java.io.PrintWriter;
+import java.io.FileNotFoundException;
+
 abstract public class Absyn {
 	public int pos;
 	public final static int SPACES = 4;
 	public static String outFileName;
 
+	private static PrintWriter writer;
+
 	private static void indent (int spaces) {
 		for(int i =0; i < spaces; i++)
-			System.out.print(" ");
+			writer.print(" ");
 	}
 
 	/* ==== List Structures ==== */
@@ -17,12 +22,27 @@ abstract public class Absyn {
 		// Set output file name
 		outFileName = filename + ".ast"; 
 
+		// Setup output stream
+		try{
+			writer = new PrintWriter(outFileName);
+			writer.println("---------- " + outFileName + ".cm Abstract Syntax Tree ----------");
+			writer.println();
+		}
+		catch (FileNotFoundException e){
+			System.err.println("Error: Could not create output file.");
+			e.printStackTrace();
+		}
+
+
 		while (tree != null){
 			if (tree.head != null){
 				showTree(tree.head, spaces);
 			}
 			tree = tree.tail;
 		}
+
+		// Close writer
+		writer.close();
 	}
 
 	// Variable Declaration List
@@ -67,7 +87,7 @@ abstract public class Absyn {
 		}
 		else {
 			indent(spaces);
-			System.out.println("(Dec) Illegal expression at line " + ((ErrorDec)tree).pos);
+			System.err.println("(Dec) Illegal expression at line " + ((ErrorDec)tree).pos);
 		}
 	}
 
@@ -81,7 +101,7 @@ abstract public class Absyn {
 		}
 		else {
 			indent(spaces);
-			System.out.println("(VarDec) Illegal expression at line " + ((ErrorVarDec)tree).pos);
+			System.err.println("(VarDec) Illegal expression at line " + ((ErrorVarDec)tree).pos);
 		}
 	}
 
@@ -122,7 +142,7 @@ abstract public class Absyn {
 		}
 		else {
 			indent(spaces);
-			System.out.println("(Exp) Illegal expression at line " + ((ErrorExp)tree).pos);
+			System.err.println("(Exp) Illegal expression at line " + ((ErrorExp)tree).pos);
 		}
 	}
 
@@ -143,13 +163,13 @@ abstract public class Absyn {
 	// SimpleVar
 	public static void showTree(SimpleVar tree, int spaces){
 		indent(spaces);
-		System.out.println("SimpleVar: " + tree.name);
+		writer.println("SimpleVar: " + tree.name);
 	}
 
 	// IndexVar
 	public static void showTree(IndexVar tree, int spaces){
 		indent(spaces);
-		System.out.println("IndexVar: " + tree.name);
+		writer.println("IndexVar: " + tree.name);
 
 		spaces+=SPACES;
 		showTree(tree.index, spaces); // index is Exp object
@@ -160,13 +180,13 @@ abstract public class Absyn {
 	//FunctionDec
 	public static void showTree(FunctionDec tree, int spaces){
 		indent(spaces);
-		System.out.println("FunctionDec: Name: " + tree.func + ", " + showTree(tree.result, spaces));
+		writer.println("FunctionDec: Name: " + tree.func + ", " + showTree(tree.result, spaces));
 
 		spaces+=SPACES;
 		indent(spaces);
 
 		// Parameters
-		System.out.println("Params:");
+		writer.println("Params:");
 		spaces+=SPACES;
 		showTree(tree.params, spaces);
 		spaces-=SPACES;
@@ -178,29 +198,29 @@ abstract public class Absyn {
 	// SimpleDec
 	public static void showTree (SimpleDec tree, int spaces){
 		indent(spaces);
-		System.out.println("SimpleDec: Name: " + tree.name + ", " + showTree(tree.type, spaces));
+		writer.println("SimpleDec: Name: " + tree.name + ", " + showTree(tree.type, spaces));
 	}
 
 	// ArrayDec
 	public static void showTree (ArrayDec tree, int spaces){
 		indent(spaces);
 		if(tree.size != null)
-			System.out.println("ArrayDec: Name: " + tree.name + ", " + showTree(tree.type, spaces) + ", Size: " + tree.size.value);
+			writer.println("ArrayDec: Name: " + tree.name + ", " + showTree(tree.type, spaces) + ", Size: " + tree.size.value);
 		else
-			System.out.println("ArrayDec: Name: " + tree.name + ", " + showTree(tree.type, spaces));
+			writer.println("ArrayDec: Name: " + tree.name + ", " + showTree(tree.type, spaces));
 	}
 
 	// Exp subclasses
 	// NilExp
 	public static void showTree(NilExp tree, int spaces){
 		indent(spaces);
-		System.out.println("NilExp");
+		writer.println("NilExp");
 	}
 
 	// VarExp
 	public static void showTree(VarExp tree, int spaces){
 		indent(spaces);
-		System.out.println("VarExp:");
+		writer.println("VarExp:");
 		spaces+=SPACES;
 		showTree(tree.variable, spaces);
 	}
@@ -210,14 +230,14 @@ abstract public class Absyn {
 		// Check if null for function declarations/calls of the form int x[]
 		if (tree != null){
 			indent(spaces);
-			System.out.println("IntExp:" + tree.value);
+			writer.println("IntExp:" + tree.value);
 		}
 	}
 
 	// CallExp
 	public static void showTree(CallExp tree, int spaces){
 		indent(spaces);
-		System.out.println("CallExp: " + tree.func);
+		writer.println("CallExp: " + tree.func);
 		spaces+=SPACES;
 
 		// Args
@@ -227,45 +247,45 @@ abstract public class Absyn {
 	// OpExp
 	public static void showTree(OpExp tree, int spaces){
 		indent(spaces);
-		System.out.print("OpExp: ");
+		writer.print("OpExp: ");
 
 		// Operator
 		switch(tree.op){
 			case OpExp.PLUS:
-				System.out.println("+");
+				writer.println("+");
 				break;
 			case OpExp.MINUS:
-				System.out.println("-");
+				writer.println("-");
 				break;
 			case OpExp.MUL:
-				System.out.println("*");
+				writer.println("*");
 				break;
 			case OpExp.DIV:
-				System.out.println("/");
+				writer.println("/");
 				break;
 			case OpExp.EQ:
-				System.out.println("=");
+				writer.println("=");
 				break;
 			case OpExp.EQUALEQUAL:
-				System.out.println("==");
+				writer.println("==");
 				break;
 			case OpExp.NE:
-				System.out.println("!=");
+				writer.println("!=");
 				break;
 			case OpExp.LT:
-				System.out.println("<");
+				writer.println("<");
 				break;
 			case OpExp.GT:
-				System.out.println(">");
+				writer.println(">");
 				break;
 			case OpExp.LE:
-				System.out.println("<=");
+				writer.println("<=");
 				break;
 			case OpExp.GE:
-				System.out.println(">=");
+				writer.println(">=");
 				break;
 			default:
-				System.out.println( "Unrecognized operator at line " + tree.pos);
+				System.err.println( "Unrecognized operator at line " + tree.pos);
 				break;
 		}
 
@@ -277,7 +297,7 @@ abstract public class Absyn {
 	// AssignExp
 	public static void showTree(AssignExp tree, int spaces){
 		indent(spaces);
-		System.out.println("AssignExp:");
+		writer.println("AssignExp:");
 		spaces+=SPACES;
 
 		// Var = left
@@ -291,7 +311,7 @@ abstract public class Absyn {
 	// Expression should be printed on the same line
 	public static void showTree(IfExp tree, int spaces){
 		indent(spaces);
-		System.out.println("IfExp:");
+		writer.println("IfExp:");
 		spaces+=SPACES;
 
 		showTree(tree.test, spaces); // Test Exp
@@ -303,7 +323,7 @@ abstract public class Absyn {
 	// Expression should be printed on the same line
 	public static void showTree(WhileExp tree, int spaces){
 		indent(spaces);
-		System.out.println("WhileExp:");
+		writer.println("WhileExp:");
 		spaces+=SPACES;
 
 		showTree(tree.test, spaces); // While condition Exp
@@ -313,7 +333,7 @@ abstract public class Absyn {
 	// ReturnExp
 	public static void showTree(ReturnExp tree, int spaces){
 		indent(spaces);
-		System.out.println("ReturnExp:");
+		writer.println("ReturnExp:");
 		spaces+=SPACES;
 		if(tree.exp != null){
 			showTree(tree.exp, spaces); // Return Exp
@@ -323,7 +343,7 @@ abstract public class Absyn {
 	// CompoundExp
 	public static void showTree(CompoundExp tree, int spaces){
 		indent(spaces);
-		System.out.println("CompoundExp:");
+		writer.println("CompoundExp:");
 		spaces+=SPACES;
 
 		showTree(tree.decs, spaces); // VarDecList
