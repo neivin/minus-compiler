@@ -38,6 +38,18 @@ public class TypeChecker{
 		// Enter new global scope
 		symTable.enterNewScope();
 		
+		// Add input function
+		Symb inputFunction = new FunctionSymbol(Type.INT, "input", new ArrayList<Symb>());
+		symTable.addSymbol("input",  inputFunction);
+
+		// Output function
+		ArrayList<Symb> parameters = new ArrayList<Symb>();
+		parameters.add(new VarSymbol(Type.INT, "value"));
+
+		Symb outputFunction = new FunctionSymbol(Type.VOID, "output", parameters);
+		symTable.addSymbol("output",  outputFunction);
+
+
 		while(tree != null){
 			if(tree.head != null)
 				checkTypes(tree.head);
