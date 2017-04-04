@@ -99,11 +99,12 @@ program     ::= decl_list:s
               {:  RESULT = s;
 
                   if (parser.showScopes){
-                    System.out.println("Program Scope Trace created in " + parser.filename + CM.EXT_SYM);
+                    System.out.println("Symbol Table created in " + parser.filename + CM.EXT_SYM);
                   }
 
                   TypeChecker checker = new TypeChecker(RESULT, parser.showScopes, parser.filename);
                   checker.init();
+                  checker.closeSymbolTableWriter();
 
 
                   if (parser.showAST){

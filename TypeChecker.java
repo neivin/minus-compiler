@@ -7,18 +7,18 @@ public class TypeChecker{
 	private DecList program;
 	private int currentReturnType;
 
-	private String outFileName;
-
-
 	public TypeChecker(DecList program, boolean showScopes, String filename){
-		symTable = new SymbolTable(showScopes);
+		symTable = new SymbolTable(showScopes, filename + CM.EXT_SYM);
 		this.program = program;
-		this.outFileName = filename + CM.EXT_SYM;
 	}
 
 	public void init(){
 		// Start type checking on the Declaration list
 		checkTypes(program); 
+	}
+
+	public void closeSymbolTableWriter(){
+		symTable.closeWriter();
 	}
 
 /** Symbol

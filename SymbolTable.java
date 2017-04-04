@@ -2,6 +2,10 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashMap;
 import java.lang.StringBuilder;
+import java.io.PrintWriter;
+import java.io.FileNotFoundException;
+
+
 import absyn.*;
 import symbol.*;
 
@@ -10,12 +14,31 @@ public class SymbolTable {
 	private ArrayList<HashMap<String, Symb>> table;
 	private boolean displayScopes;
 
-	public SymbolTable(boolean displayScopes){
+	private String outFileName;
+	private PrintWriter writer;
+
+
+	public SymbolTable(boolean displayScopes, String outFileName){
 		table = new ArrayList<HashMap<String,Symb>>(); 
 		this.displayScopes = displayScopes;
+		this.outFileName = outFileName;
+
+		try{
+			writer = new PrintWriter(outFileName);
+			writer.println("---------- " + this.outFileName + ".cm Symbol Table ----------");
+			writer.println();
+		}
+		catch (FileNotFoundException e){
+			System.err.println("Error: Could not create output file.");
+			e.printStackTrace();
+		}
 	}
 
 	
+	public void closeWriter(){
+		writer.close();
+	}
+
 		/* Create indentation */
 	private String indent(int scopeLevel){
 		StringBuilder spaces = new StringBuilder();
@@ -41,11 +64,11 @@ public class SymbolTable {
 			Symb s = table.get(table.size()-1).get(key);
 
 			if(s instanceof VarSymbol){
-				System.out.println(spaces + "Variable: " + getType(s.type) + " " + key);
+				writer.println(spaces + "Variable: " + getType(s.type) + " " + key);
 			}
 			else if (s instanceof ArraySymbol){
 				ArraySymbol as = (ArraySymbol) s;
-				System.out.println(spaces + "Array: " + getType(s.type) + " " + key + "[" + as.size +"]");
+				writer.println(spaces + "Array: " + getType(s.type) + " " + key + "[" + as.size +"]");
 			}
 			else if (s instanceof FunctionSymbol){
 				StringBuilder funcSig = new StringBuilder(spaces);
@@ -83,7 +106,7 @@ public class SymbolTable {
 
 				funcSig.append(")");
 
-				System.out.println(funcSig.toString());
+				writer.println(funcSig.toString());
 			}
 		}	
 	}
@@ -94,19 +117,18 @@ public class SymbolTable {
 	public void enterNewScope(){
 		table.add(new HashMap<String,Symb>());
 		if(displayScopes)
-			System.out.println(indent(table.size()-1) + "<< ENTER SCOPE " + (table.size()-1) + " >>");
+			writer.println(indent(table.size()-1) + "<< ENTER SCOPE " + (table.size()-1) + " >>");
 	}
 
 	/* Exits the most recent scope, and deletes 
 	 * everything in the current HashMap.
 	 */
 	public void exitScope(){
-		if(displayScopes)
+		if(displayScopes){
 			printScope();
+			writer.println(indent(table.size()-1) + "<< EXIT SCOPE " + (table.size()-1) + " >>");
+		}
 
-		if(displayScopes)
-			System.out.println(indent(table.size()-1) + "<< EXIT SCOPE " + (table.size()-1) + " >>");
-		
 		if(table.size()>0){
 			table.remove(table.size()-1);
 		}
