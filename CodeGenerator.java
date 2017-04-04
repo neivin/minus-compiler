@@ -2,12 +2,27 @@ import absyn.*;
 
 
 public class CodeGenerator {
+  public static final int IN_ADDR = 4;
+  public static final int OUT_ADDR = 7;
+
   public static final int GP = 6;
   public static final int AC = 0;
   public static final int PC = 7;
   public static final int FP = 5;
   public static int emitLoc = 0;
   public static int highEmitLoc = 0;
+
+  private DecList program;
+  private SymbolTable symTable;
+
+  public CodeGenerator(DecList program){
+    this.program = program;
+    symTable = new SymbolTable(false);
+  }
+
+  public void generate(){
+    genCode(this.program);
+  }
 
   public static void genCode(DecList tree)
   {
@@ -18,6 +33,22 @@ public class CodeGenerator {
     }catch(FileNotFoundException e){
       e.printStackTrace();
     }
+
+    // Initialize Symbol Table
+    // Enter new global scope
+    symTable.enterNewScope();
+    
+    // Add input function
+    Symb inputFunction = new FunctionSymbol(Type.INT, "input", new ArrayList<Symb>(), IN_ADDR);
+    symTable.addSymbol("input",  inputFunction);
+
+    // Output function
+    ArrayList<Symb> parameters = new ArrayList<Symb>();
+    parameters.add(new VarSymbol(Type.INT, "value"));
+
+    Symb outputFunction = new FunctionSymbol(Type.VOID, "output", parameters, OUT_ADDR);
+    symTable.addSymbol("output",  outputFunction);
+
 
     /* Generate standard prelude */
     emitRM("LD", GP, 0, AC, "Load GP with max address");
@@ -60,6 +91,10 @@ public class CodeGenerator {
     emitRMAbs("LDA", PC, funAddr, "Jump to main");
     emitRM("LD", FP, 0, FP, "Pop frame");
     emitOp("HALT", 0, 0, 0, "");
+
+    // Exit global scope
+    symTable.exitScope();
+
   }
 
   /* ==== List Structures ====*/
