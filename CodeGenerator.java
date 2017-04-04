@@ -15,8 +15,11 @@ public class CodeGenerator {
   private DecList program;
   private SymbolTable symTable;
 
-  public CodeGenerator(DecList program){
+  private String filename;
+
+  public CodeGenerator(DecList program, String filename){
     this.program = program;
+    this.filename = filename + CM.EXT_TM;
     symTable = new SymbolTable(false);
   }
 
@@ -27,8 +30,10 @@ public class CodeGenerator {
   public static void genCode(DecList tree)
   {
     int globalOffset = 0;
+    
+    // Clear file contents
     try{
-      PrintWriter pw = new PrintWriter(FILENAME);
+      PrintWriter pw = new PrintWriter(this.filename);
       pw.close();
     }catch(FileNotFoundException e){
       e.printStackTrace();
@@ -415,7 +420,7 @@ public class CodeGenerator {
   public static void writeCode(String content){
     PrintWriter outputStream = null;
     try{
-      outputStream = new PrintWriter(new FileOutputStream(FILENAME, true));
+      outputStream = new PrintWriter(new FileOutputStream(this.filename, true));
     }catch(FileNotFoundException e){
       e.printStackTrace();
     }

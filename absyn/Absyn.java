@@ -3,6 +3,7 @@ package absyn;
 abstract public class Absyn {
 	public int pos;
 	public final static int SPACES = 4;
+	public static String outFileName;
 
 	private static void indent (int spaces) {
 		for(int i =0; i < spaces; i++)
@@ -12,7 +13,10 @@ abstract public class Absyn {
 	/* ==== List Structures ==== */
 
 	// Declaration List
-	public static void showTree (DecList tree, int spaces){
+	public static void showTree (DecList tree, int spaces, String filename){
+		// Set output file name
+		outFileName = filename + ".ast"; 
+
 		while (tree != null){
 			if (tree.head != null){
 				showTree(tree.head, spaces);

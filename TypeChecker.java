@@ -7,10 +7,13 @@ public class TypeChecker{
 	private DecList program;
 	private int currentReturnType;
 
+	private String outFileName;
 
-	public TypeChecker(DecList program, boolean showScopes){
+
+	public TypeChecker(DecList program, boolean showScopes, String filename){
 		symTable = new SymbolTable(showScopes);
 		this.program = program;
+		this.outFileName = filename + CM.EXT_SYM;
 	}
 
 	public void init(){
