@@ -8,11 +8,21 @@ abstract public class Absyn {
 	public final static int SPACES = 4;
 	public static String outFileName;
 
+	private static boolean err = false;
+
 	private static PrintWriter writer;
 
 	private static void indent (int spaces) {
 		for(int i =0; i < spaces; i++)
 			writer.print(" ");
+	}
+
+	/*
+	  Returns true if there are no semantic errors found in the program
+	  and returns false otherwise.
+	*/
+	public static boolean noSyntaxErrors(){
+		return (!err);
 	}
 
 	/* ==== List Structures ==== */
@@ -88,6 +98,7 @@ abstract public class Absyn {
 		else {
 			indent(spaces);
 			System.err.println("(Dec) Illegal expression at line " + ((ErrorDec)tree).pos);
+			err = true;
 		}
 	}
 
@@ -102,6 +113,7 @@ abstract public class Absyn {
 		else {
 			indent(spaces);
 			System.err.println("(VarDec) Illegal expression at line " + ((ErrorVarDec)tree).pos);
+			err = true;
 		}
 	}
 
@@ -143,6 +155,7 @@ abstract public class Absyn {
 		else {
 			indent(spaces);
 			System.err.println("(Exp) Illegal expression at line " + ((ErrorExp)tree).pos);
+			err = true;
 		}
 	}
 
@@ -286,6 +299,7 @@ abstract public class Absyn {
 				break;
 			default:
 				System.err.println( "Unrecognized operator at line " + tree.pos);
+				err = true;
 				break;
 		}
 

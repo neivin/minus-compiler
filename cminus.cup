@@ -11,11 +11,16 @@ parser code {:
     public static boolean genCode;
     public static String filename = "";
 
+    public static boolean noErrors = true;
+
     /* Change the method report_error so it will display the line and
        column of where the error occurred in the input as well as the
        reason for the error which is passed into the method in the
        String 'message'. */
     public void report_error(String message, Object info) {
+
+        /* Set error flag to true*/
+        noErrors = false;
 
         /* Create a StringBuffer called 'm' with the string 'Error' in it. */
         StringBuffer m = new StringBuffer("Error");
@@ -45,7 +50,7 @@ parser code {:
 
         /* Add to the end of the StringBuffer error message created in
            this method the message that was passed into this method. */
-        m.append(" : "+message);
+        m.append(": "+message);
 
         /* Print the contents of the StringBuffer 'm', which contains
            an error message, out on a line. */
@@ -112,10 +117,18 @@ program     ::= decl_list:s
                      Absyn.showTree(RESULT, 0, parser.filename);
                   }
 
-                  if (parser.genCode && checker.noSemanticErrors()) {
-                    System.out.println("TM Code generated in " + parser.filename + CM.EXT_TM);
-                    //CodeGenerator gen = new CodeGenerator(RESULT, filename);
-                    //gen.generate();
+                  // Check code generation flag
+                  if (parser.genCode) {
+                    // Check for syntax and semantic errors
+                    if (parser.noErrors && Absyn.noSyntaxErrors() && checker.noSemanticErrors()){
+                      System.out.println("TM Code generated in " + parser.filename + CM.EXT_TM);
+                      //CodeGenerator gen = new CodeGenerator(RESULT, filename);
+                      //gen.generate();
+                    }
+                    else {
+                      System.err.println("Error: Cannot generate TM code since due to syntax/semantic errors");
+                    }
+                    
                   }
               :}
             ;
