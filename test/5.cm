@@ -14,35 +14,23 @@ anotherFun(x, y, z, k) - passing a function too many parameters
   Author: Braydon Johnson & Neivin Mathew
   
   Description:
-  This program contains a function that finds the smallest value
-  out of the variables that are passed in to it. The main method
-  outputs the smallest variable.
+  This program displays various syntax and semantic errors
+  - It declares a void variable which is effectively useless
+  - It declares a function without any parameters
+  - It uses an undefined variable
 */
 
-void fun(void)
+int x;
+void y; /* Warning for void variable declaration */
+
+void fun() /* Error for  wrong function signature */
 {
   int x;
-
   return x;
 }
 
-int anotherFun(int x, int y, int z)
-{
-  int k;
-  if (k == 1)
-  {
-    int x;
-    return fun();
-  }
-  else
-    return ;
-}
-
 void main (void) {
-  int x; int y; int z;
-  void j;
+  int x; int y;
 
-  fun();
-  x = anotherFun(x, y);
-  x = anotherFun(x, y, z, k);
+  z = 5; /* Undefined variable */
 }
