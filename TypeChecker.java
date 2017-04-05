@@ -7,12 +7,21 @@ public class TypeChecker{
 	private DecList program;
 	private int currentReturnType;
 
+	// Check for existence of main function and ensure that it occurs last
+	private boolean mainExists;
+	private boolean mainIsLast;
+
 	private boolean err;
+
+
 
 	public TypeChecker(DecList program, boolean showScopes, String filename){
 		symTable = new SymbolTable(showScopes, filename + CM.EXT_SYM);
 		this.err = false;
 		this.program = program;
+		
+		this.mainExists = false;
+		this.mainIsLast = false;
 	}
 
 	public void init(){
@@ -63,13 +72,25 @@ public class TypeChecker{
 		Symb outputFunction = new FunctionSymbol(Type.VOID, "output", parameters);
 		symTable.addSymbol("output",  outputFunction);
 
-
 		while(tree != null){
 			if(tree.head != null)
 				checkTypes(tree.head);
 			tree = tree.tail;
 		}
 
+		// Check that main function exists and is the last function in declared
+		if (this.mainExists){
+			if(!this.mainIsLast){
+				System.err.println("Error: The main() function must be declared last");
+				this.err = true;
+			}
+		}
+		else {
+			System.err.println("Error: The program does not contain a main() function");
+			this.err = true;
+		}
+
+		// Leave global scope
 		symTable.exitScope();
 	}
 
@@ -248,6 +269,20 @@ public class TypeChecker{
 		
 			p = p.tail;
 		}
+
+		// Check for main function
+		if (id.equals("main")){
+			this.mainExists = true;
+			this.mainIsLast = true;
+		}
+
+		// Check that main is last
+		// If we have already seen main and then enter another function
+		// declaration, we infer that main is not last
+		if (this.mainExists){
+			this.mainIsLast = false;
+		}
+
 
 		Symb s = new FunctionSymbol(ty, id, parameters);
 		symTable.addSymbol(id, s);
