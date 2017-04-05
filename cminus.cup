@@ -181,6 +181,12 @@ fun_decl    ::= type_specifier:t  ID:i  LPAREN param_list:p RPAREN  compound_stm
                 {: RESULT = new FunctionDec(tleft, t, i, p, c); :}
               | type_specifier:t  ID:i  LPAREN VOID RPAREN  compound_stmt:c
                 {: RESULT = new FunctionDec(tleft, t, i, null, c); :}
+              | error:e  ID:i  LPAREN param_list:p RPAREN  compound_stmt:c
+                {: parser.report_error("Invalid syntax in function declaration", e);
+                   RESULT = new FunctionDec(eleft, new Type(eleft, Type.VOID), i, p, c); :}
+              | error:e  ID:i  LPAREN VOID RPAREN  compound_stmt:c
+                {: parser.report_error("Invalid syntax in function declaration", e);
+                   RESULT = new FunctionDec(eleft, new Type(eleft, Type.VOID), i, null, c); :}
               ;
 
 param_list  ::= param_list:l  COMMA  param:p
