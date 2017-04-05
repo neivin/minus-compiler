@@ -16,8 +16,9 @@ CM.class: absyn/*.java parser.java sym.java Lexer.java symbol/*.java SymbolTable
 Lexer.java: cminus.flex
 	$(JFLEX) cminus.flex
 
+# -dump
 parser.java: cminus.cup
-	$(CUP) -dump -expect 3 cminus.cup
+	$(CUP) -expect 3 cminus.cup
 
 clean:
 	rm -f parser.java Lexer.java sym.java *.class absyn/*.class symbol/*.class *~
