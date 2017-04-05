@@ -1,14 +1,3 @@
-/* --------------------------------------------------------------------------
-This program contains a variety of errors designed to test the robustness of
-our compiler
-Errors:
-return x; - returning a variable from a void function
-return fun(); - returning a VOID function call from an INT function
-return ; - returning nothing from an INT function
-void j; - declaration of a VOID type variable
-anotherFun(x, y); - passing a function too few parameters
-anotherFun(x, y, z, k) - passing a function too many parameters
- -------------------------------------------------------------------------- */
 /*
   File: 5.cm
   Author: Braydon Johnson & Neivin Mathew
