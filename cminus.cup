@@ -92,10 +92,11 @@ non terminal Exp expr, call;
 
 /* --------------- Precedence Rules --------------- */
 
+precedence right EQ;
 precedence nonassoc LESS, GREATER, LEQUIV,GEQUIV, EQUALEQUAL, NEQUIV;
 precedence left PLUS, MINUS;
 precedence left DIV, MUL;
-precedence right EQ, ELSE;
+precedence left ELSE;
 
 /* --------------- Grammar Section --------------- */
 
@@ -187,6 +188,12 @@ fun_decl    ::= type_specifier:t  ID:i  LPAREN param_list:p RPAREN  compound_stm
               | error:e  ID:i  LPAREN VOID RPAREN  compound_stmt:c
                 {: parser.report_error("Invalid syntax in function declaration", e);
                    RESULT = new FunctionDec(eleft, new Type(eleft, Type.VOID), i, null, c); :}
+              | type_specifier:t  ID:i  LPAREN VOID RPAREN  error:e
+                {: parser.report_error("Invalid syntax in function declaration", e);
+                   RESULT = new FunctionDec(tleft, t, i, null, new CompoundExp(eleft, null, null)); :}
+              | type_specifier:t  ID:i  LPAREN param_list:p RPAREN  error:e
+                {: parser.report_error("Invalid syntax in function declaration", e);
+                   RESULT = new FunctionDec(tleft, t, i, p, new CompoundExp(eleft, null, null)); :}
               ;
 
 param_list  ::= param_list:l  COMMA  param:p
