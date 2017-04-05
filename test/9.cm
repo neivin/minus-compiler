@@ -1,9 +1,35 @@
 /*
+  CIS*4650 - Compilers Checkpoint 3
   File: 9.cm
   Author: Braydon Johnson & Neivin Mathew
   
   Description:
-  This program contains a function that finds the smallest value
-  out of the variables that are passed in to it. The main method
-  outputs the smallest variable.
+  This program contains various syntax errors that prevent
+  the program from being compiled.
+  - Bad function declararions
+  - Misspelled reserved words
+  - Invalid expressions
+  - Unrecognized characters
 */
+
+void paramError(int a int b){ /* Bad parameters in declaration */
+	int xyz;
+}
+
+void main(void){
+	int x;
+	x = 20;
+
+	if (x < 3.3){ /* Invalid token since floating point is unrecognized */
+		output(x);
+	}
+	esle{ /* Misspelled else */
+
+	}
+
+	~; /* Unrecognized character */
+
+	4 - - 3; /* Invalid expression */
+
+	if (); /* Invalid if statement */
+}

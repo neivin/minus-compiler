@@ -1,9 +1,43 @@
 /*
+  CIS*4650 - Compilers Checkpoint 3
   File: 0.cm
   Author: Braydon Johnson & Neivin Mathew
   
   Description:
-  This program contains a function that finds the smallest value
-  out of the variables that are passed in to it. The main method
-  outputs the smallest variable.
+  This program contains various syntax errors.
+  - It uses an unrecognized character %
+  - It declares a function without a type specifier
+  - It creates invalid variable names
+  - It misses the parenthesis for function declarations
+
+  It also tests nesting of compound expressions.
 */
+int r;
+int s;
+
+void func(void){
+    int x;
+    x = 5;
+    r = 25;
+    if (r%2 == 0) { /* Unrecognized operator */
+        int x;
+        x = 2;
+        output(somefunc() + x);
+    } else {
+        output(r);
+    }
+}
+
+notype(void){ /* function with no type specifier */
+
+}
+
+void main(void) {
+	int var1234; /* Variable has numbers in name */
+  	func();
+  	{{{{{}}}}} /* Test nesting of compound expression */
+}
+
+int somefunc{ /* Missing parenthesis */
+    return 5;
+}

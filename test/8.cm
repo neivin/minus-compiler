@@ -1,9 +1,30 @@
 /*
+  CIS*4650 - Compilers Checkpoint 3
   File: 8.cm
   Author: Braydon Johnson & Neivin Mathew
   
   Description:
-  This program contains a function that finds the smallest value
-  out of the variables that are passed in to it. The main method
-  outputs the smallest variable.
+  This program contains various syntax and semantic errors.
+  - If expression test does not evaluate to int
+    While expression test does not evaluate to int
+  - Array index does not evaluate to int
+  - Return type mismatch
 */
+
+void main(void){
+	int x[4];
+	int y;
+	void z;
+
+	y = 1;
+
+	if (x < y) /* If expression's test does not evaluate to INT */
+		output(x); /* Invalid argument type to output()*/
+	
+	while(y <= x) /* While loop test does not evaluate to INT */
+		output(y);
+
+	x[z] = 4; /* Array index is not int */
+
+	return y;
+}
