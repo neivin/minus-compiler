@@ -165,13 +165,13 @@ public class TypeChecker{
 		int ty = tree.type.type;
 
 		if(symTable.symbolExistsInCurrentScope(id)){
-			System.err.println("Error: Redeclaration of variable \'" + id + "\' on line " + tree.pos);
+			System.err.println("Error: Redeclaration of variable \'" + id + "\' on line " + (tree.pos + 1));
 			this.err = true;
 			return;
 		}
 
 		if(ty != Type.INT){
-			System.err.println("Error: Variable \'" + id +"\' declared as void on line " + tree.pos);
+			System.err.println("Error: Variable \'" + id +"\' declared as void on line " + (tree.pos + 1));
 			this.err = true;	
 		}
 
@@ -191,13 +191,13 @@ public class TypeChecker{
 			arraySize = -1;
 
 		if(symTable.symbolExistsInCurrentScope(id)){
-			System.err.println("Error: Redeclaration of variable \'" + id + "\' on line " + tree.pos);
+			System.err.println("Error: Redeclaration of variable \'" + id + "\' on line " + (tree.pos + 1));
 			this.err = true;
 			return;
 		}
 
 		if(ty != Type.INT){
-			System.err.println("Error: Variable \'" + id +"\' declared as void on line " + tree.pos);
+			System.err.println("Error: Variable \'" + id +"\' declared as void on line " + (tree.pos + 1));
 			this.err = true;	
 			return;
 		}
@@ -216,18 +216,18 @@ public class TypeChecker{
 			if(symTable.getSymbol(tree.name) instanceof VarSymbol){
 				// Check that all variables used are ints and not void
 				if (symTable.getSymbol(tree.name).type != Type.INT){
-					System.err.println("Error: Use of void variable \'" + tree.name + "\' when integer expected on line " + tree.pos);
+					System.err.println("Error: Use of void variable \'" + tree.name + "\' when integer expected on line " + (tree.pos + 1));
 					this.err = true;
 				}
 			}
 			else {
-				System.err.println("Error: Cannot convert array type \'"+tree.name+"\' to int on line " + tree.pos);
+				System.err.println("Error: Cannot convert array type \'"+tree.name+"\' to int on line " + (tree.pos + 1));
 				this.err = true;
 			}
 
 		}
 		else {
-			System.err.println("Error: Undefined variable \'" + tree.name +"\' on line " + tree.pos);
+			System.err.println("Error: Undefined variable \'" + tree.name +"\' on line " + (tree.pos + 1));
 			this.err = true;
 		}
 	}
@@ -237,12 +237,12 @@ public class TypeChecker{
 		// If symbol exists
 		if(symTable.symbolExists(tree.name) != -1){
 			if(!(symTable.getSymbol(tree.name) instanceof ArraySymbol)){
-				System.err.println("Error: \'"+tree.name+"\' defined as int but referenced as array on line " + tree.pos);
+				System.err.println("Error: \'"+tree.name+"\' defined as int but referenced as array on line " + (tree.pos + 1));
 				this.err = true;
 			}
 		}
 		else {
-			System.err.println("Error: Undefined array variable \'" + tree.name +"\' on line " + tree.pos);
+			System.err.println("Error: Undefined array variable \'" + tree.name +"\' on line " + (tree.pos + 1));
 			this.err = true;
 		}
 
@@ -270,11 +270,6 @@ public class TypeChecker{
 			p = p.tail;
 		}
 
-		// Check for main function
-		if (id.equals("main")){
-			this.mainExists = true;
-			this.mainIsLast = true;
-		}
 
 		// Check that main is last
 		// If we have already seen main and then enter another function
@@ -282,6 +277,14 @@ public class TypeChecker{
 		if (this.mainExists){
 			this.mainIsLast = false;
 		}
+
+		// Check for main function
+		if (id.equals("main")){
+			this.mainExists = true;
+			this.mainIsLast = true;
+		}
+
+		
 
 
 		Symb s = new FunctionSymbol(ty, id, parameters);
@@ -357,14 +360,14 @@ public class TypeChecker{
 	public void checkTypes(ReturnExp tree, boolean requiresInt){
 		if (currentReturnType != Type.INT){
 			if (tree.exp != null){
-				System.err.println("Error: Void function returns an integer value on line " + tree.pos);
+				System.err.println("Error: Void function returns an integer value on line " + (tree.pos + 1));
 				this.err = true;
 				return;
 			}
 		}
 		else {
 			if(tree.exp == null){
-				System.err.println("Error: Function defined as int returns nothing on line " + tree.pos);
+				System.err.println("Error: Function defined as int returns nothing on line " + (tree.pos + 1));
 				this.err = true;
 			}
 			else {
@@ -378,20 +381,20 @@ public class TypeChecker{
 		
 		// Check if function exists
 		if(!symTable.functionExists(id)){
-			System.err.println("Error: Undefined function \'" + id + "\' on line " + tree.pos);
+			System.err.println("Error: Undefined function \'" + id + "\' on line " + (tree.pos + 1));
 			this.err = true;
 			return;
 		}
 
 		// Check that the symbol is a function
 		if (!(symTable.getFunction(id) instanceof FunctionSymbol)){
-			System.err.println("Error: Symbol \'" + id +"\' defined as variable, but used as function on line " + tree.pos);
+			System.err.println("Error: Symbol \'" + id +"\' defined as variable, but used as function on line " + (tree.pos + 1));
 			this.err = true;
 			return;
 		}
 
 		if (symTable.getFunction(id).type != Type.INT && requiresInt){
-			System.err.println("Error: Function \'" + id + "\' expected to return int, but returns void on line " + tree.pos);
+			System.err.println("Error: Function \'" + id + "\' expected to return int, but returns void on line " + (tree.pos + 1));
 			this.err = true;
 		}
 
@@ -399,7 +402,7 @@ public class TypeChecker{
 
 		// Validate number of arguments from function definition
 		if (f.paramCount() != tree.argsCount()) {
-			System.err.println("Error: Incorrect number of arguments to function \'" + id + "\' on line " + tree.pos);
+			System.err.println("Error: Incorrect number of arguments to function \'" + id + "\' on line " + (tree.pos + 1));
 			this.err = true;
 			return;
 		}
@@ -419,17 +422,17 @@ public class TypeChecker{
 
 					if(symTable.symbolExists(varName) != -1 ){
 						if (!(symTable.getSymbol(varName) instanceof ArraySymbol)){
-							System.err.println("Error: Expected int array, but read something else on line " + tree.pos);
+							System.err.println("Error: Expected int array, but read something else on line " + (tree.pos + 1));
 							this.err = true;
 						}
 					}
 					else {
-						System.err.println("Error: Undefined variable \'" + varName + "\' in function call on line " + tree.pos);
+						System.err.println("Error: Undefined variable \'" + varName + "\' in function call on line " + (tree.pos + 1));
 						this.err = true;
 					}
 				}
 				else {
-					System.err.println("Error: Expected int array, but read something else on line " + tree.pos);
+					System.err.println("Error: Expected int array, but read something else on line " + (tree.pos + 1));
 					this.err = true;
 				}
 			}
