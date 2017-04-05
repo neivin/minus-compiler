@@ -112,7 +112,7 @@ program     ::= decl_list:s
                      Absyn.showTree(RESULT, 0, parser.filename);
                   }
 
-                  if (parser.genCode){
+                  if (parser.genCode && checker.noSemanticErrors()) {
                     System.out.println("TM Code generated in " + parser.filename + CM.EXT_TM);
                     //CodeGenerator gen = new CodeGenerator(RESULT, filename);
                     //gen.generate();
