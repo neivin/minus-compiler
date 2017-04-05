@@ -1,26 +1,23 @@
-/* --------------------------------------------------------------------------
-This program is designed to test that variables (simple & array) are
-recognized correctly and that they are added to the symbol table. It also tests
-if a variable that is used without being declared produces an error
-Errors:
-void y; - void variables do not exist
-z = x; - using a variable without declaring it
- -------------------------------------------------------------------------- */
 /*
   File: 2.cm
   Author: Braydon Johnson & Neivin Mathew
   
   Description:
-  This program contains a function that finds the smallest value
-  out of the variables that are passed in to it. The main method
-  outputs the smallest variable.
+  This program simply reads an array size from input and
+  prints out all the numbers from 1 to that number. 
+
+  This program intends to demonstrate loop functionality.
 */
 
-
 void main(void){
+  int i;
   int x;
-  void y;
-  int bbb[10];
 
-  z = x;
+  x = input();
+  i = 1;
+
+  while(i <= x){
+  	output(i);
+  	i = i + 1;
+  }
 }

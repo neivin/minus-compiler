@@ -6,6 +6,9 @@
   This program contains a function that finds the smallest value
   out of the variables that are passed in to it. The main method
   outputs the smallest variable.
+
+  This program demonstrates function calls and conditional
+  expressions.
 */
 
 int getSmallest(int a, int b, int c){

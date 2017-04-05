@@ -1,21 +1,49 @@
-/* --------------------------------------------------------------------------
-This tests to ensure an array index must be an integer
-Errors:
-a[y] = 2; - y is of type VOID not INT
- -------------------------------------------------------------------------- */
 /*
   File: 3.cm
   Author: Braydon Johnson & Neivin Mathew
   
   Description:
-  This program contains a function that finds the smallest value
-  out of the variables that are passed in to it. The main method
-  outputs the smallest variable.
+  This program operates on arrays. It initializes it to
+  zero and then assigns values at its various indices.
+  It outputs these values to confirm that they are assigned.
+  
+  This program intends to demonstrate array operations and
+  evaluation of expressions for indices. This program also
+  shows that comments are ignored within the code.
 */
+
+int array[10];
+
+void initializeToZero(void){
+	int i;
+	i = 0;
+
+	while (i < 10){
+		array[i] = 0;
+		i = i + 1;
+	}
+}
+
+void printArray(void){
+	int i;
+	i = 0;
+
+	while (i < 10){
+		output(array[i]);
+	}
+}
 
 void main(void)
 {
-  int a[2]; int x; void y;
-  a[x] = 1;
-  a[y] = 2;
+	int expression;
+
+	/* Set array values to zero */
+	initializeToZero();
+
+	expression = (5 * 4) / 10; /* evaluates to 2 */
+	array[expression] = expression; /* array[2] = 2 */
+	array[4*4*4/16] = 100 / 50 - 2 + 8 * 2;  /* array[4] = 16 */
+
+	/* Print out array */
+	printArray();
 }

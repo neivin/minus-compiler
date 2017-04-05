@@ -1,33 +1,26 @@
-/* --------------------------------------------------------------------------
-This program tests whether two sides of an assignment have the same type and if
-two operands have the same type. As well as if the expression in a condition must
-be of type INT
-Errors:
-if(y) x = 3;
-y = x + z; - x and y are of type INT where z is of type VOID
-x = y; - x is of type INT and y is of type VOID
- -------------------------------------------------------------------------- */
 /*
   File: 4.cm
   Author: Braydon Johnson & Neivin Mathew
   
   Description:
-  This program contains a function that finds the smallest value
-  out of the variables that are passed in to it. The main method
-  outputs the smallest variable.
+  This program creates an array and passes it in to a
+  function for modification. It will then output the
+  value at the index that was modified.
+
+  The program intends to demonstrate the passing of
+  arguments to functions.
 */
-int fun(int fff)
-{
-  int x; int y; void z;
-  x = x*2+1;
-  y = x + z;
+
+void modifyIndex(int array[]){
+  array[1] = 100;
 }
 
 void main(void)
 {
-  int x; void y;
-  if (x) x = 1;
-  if (y) x = 3;
-  x = y;
-  x = fun(x);
+  int array[5];
+  
+  array[1] = 50;
+  modifyIndex(array);
+
+  output(array[1]);
 }
