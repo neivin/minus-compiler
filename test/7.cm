@@ -3,7 +3,35 @@
   Author: Braydon Johnson & Neivin Mathew
   
   Description:
-  This program contains a function that finds the smallest value
-  out of the variables that are passed in to it. The main method
-  outputs the smallest variable.
+  This program contains various syntax and semantic errors.
+  - It calls functions with incorrect number of args
+  - It does not have main as its last method.
+  	This leads to undefined function calls for those defined after main.
+  - Syntax errors caused by invalid syntax and characters
 */
+
+int returnFive(int x){
+	int retval;
+	retval = x * 5;
+	retval = retval / x;
+
+	return retval;
+}
+
+void main(void){
+	int goodCall;
+	int badCall;
+	void voidVar;
+
+	goodCall = returnFive(2);
+
+	badCall = returnFive(goodCall, goodCall); /* Incorrect number of arguments for function */
+	badCall = someFunctionAfterMain(); /* Undefined function */
+
+	/* Lexical error due to unrecognized tokens */
+	voizzzd =-=--90_
+}
+
+int someFunctionAfterMain(void){ /* Main is not the last function */
+	return 4;
+}

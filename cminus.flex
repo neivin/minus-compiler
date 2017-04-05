@@ -68,4 +68,5 @@ comment = \/\*[^*]*[*]+([^/*][^*]*[*]+)*\/
 {id}					{ return symbol(sym.ID, yytext()); }
 {whitespace}			{ /* Do Nothing */ }
 {comment}				{ /* Do Nothing */ }
-.						{ System.err.println("ERROR: Unrecognized character \'" + yytext() +"\' on line " + yyline); }
+.						{ System.err.println("ERROR: Unrecognized character \'" + yytext() +"\' on line " + yyline);
+						  return symbol(sym.error); }
