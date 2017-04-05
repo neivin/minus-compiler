@@ -1,26 +1,24 @@
-/* --------------------------------------------------------------------------
-This program tests whether the return type of a function and the type of the
-value being returned must match
-Errors:
-return x; - x is of type INT but the function is of type VOID
- -------------------------------------------------------------------------- */
 /*
   File: 6.cm
   Author: Braydon Johnson & Neivin Mathew
   
   Description:
-  This program contains a function that finds the smallest value
-  out of the variables that are passed in to it. The main method
-  outputs the smallest variable.
+  This program contains various syntax and semantic errors.
+  - It contains an error in the function declaration's type
+  - It redefines a variable as a different type
+  - It contains no main method
+  
 */
 
-void fun(void){
-  int x;
+voidoooooo fun(void){ /* Syntax error in function type */
+  int x[5];
+  int x; /* Redefinition of variable and type mismatch */
   x = 2;
-  return x;
+
+  return x; /* Return error since bad declarations result in void type functions */
 }
 
-void ffun(void){
+void notMain(void){ /* No main() function */
   int x;
   fun();
 }
