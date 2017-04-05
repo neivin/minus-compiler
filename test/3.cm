@@ -3,6 +3,15 @@ This tests to ensure an array index must be an integer
 Errors:
 a[y] = 2; - y is of type VOID not INT
  -------------------------------------------------------------------------- */
+/*
+  File: 3.cm
+  Author: Braydon Johnson & Neivin Mathew
+  
+  Description:
+  This program contains a function that finds the smallest value
+  out of the variables that are passed in to it. The main method
+  outputs the smallest variable.
+*/
 
 void main(void)
 {

@@ -7,7 +7,15 @@ if(y) x = 3;
 y = x + z; - x and y are of type INT where z is of type VOID
 x = y; - x is of type INT and y is of type VOID
  -------------------------------------------------------------------------- */
-
+/*
+  File: 4.cm
+  Author: Braydon Johnson & Neivin Mathew
+  
+  Description:
+  This program contains a function that finds the smallest value
+  out of the variables that are passed in to it. The main method
+  outputs the smallest variable.
+*/
 int fun(int fff)
 {
   int x; int y; void z;

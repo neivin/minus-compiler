@@ -6,6 +6,16 @@ Errors:
 void y; - void variables do not exist
 z = x; - using a variable without declaring it
  -------------------------------------------------------------------------- */
+/*
+  File: 2.cm
+  Author: Braydon Johnson & Neivin Mathew
+  
+  Description:
+  This program contains a function that finds the smallest value
+  out of the variables that are passed in to it. The main method
+  outputs the smallest variable.
+*/
+
 
 void main(void){
   int x;

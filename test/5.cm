@@ -9,6 +9,16 @@ void j; - declaration of a VOID type variable
 anotherFun(x, y); - passing a function too few parameters
 anotherFun(x, y, z, k) - passing a function too many parameters
  -------------------------------------------------------------------------- */
+/*
+  File: 5.cm
+  Author: Braydon Johnson & Neivin Mathew
+  
+  Description:
+  This program contains a function that finds the smallest value
+  out of the variables that are passed in to it. The main method
+  outputs the smallest variable.
+*/
+
 void fun(void)
 {
   int x;

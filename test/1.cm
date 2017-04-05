@@ -1,19 +1,32 @@
-/* --------------------------------------------------------------------------
-This is a program that contains no errors, it is designed to show that with
-proper spelling and syntax that all aspects of the C- language are properly
-identified and a symbol table will be constructed.
-It uses the gcd program provided in the C- spec file
- -------------------------------------------------------------------------- */
+/*
+  File: 1.cm
+  Author: Braydon Johnson & Neivin Mathew
+  
+  Description:
+  This program contains a function that finds the smallest value
+  out of the variables that are passed in to it. The main method
+  outputs the smallest variable.
+*/
 
-int gcd(int u, int v)
-{
-  if(v == 0) return u;
-  else return gcd(v, u-u/v*v);
+int getSmallest(int a, int b, int c){
+	int smallest;
+	smallest = a;
+
+	if (b < smallest)
+		smallest = b;
+
+	if (c < smallest)
+		smallest = c;
+
+	return smallest;
 }
 
 void main (void)
 {
   int x; int y; int z;
-  x = 15; y = 10;
-  z = gcd(x, y);
+  x = 10;
+  y = 6;
+  z = 12;
+
+  output(getSmallest(x, y,z));
 }

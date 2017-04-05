@@ -4,6 +4,15 @@ value being returned must match
 Errors:
 return x; - x is of type INT but the function is of type VOID
  -------------------------------------------------------------------------- */
+/*
+  File: 6.cm
+  Author: Braydon Johnson & Neivin Mathew
+  
+  Description:
+  This program contains a function that finds the smallest value
+  out of the variables that are passed in to it. The main method
+  outputs the smallest variable.
+*/
 
 void fun(void){
   int x;
