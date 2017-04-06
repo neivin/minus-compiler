@@ -325,7 +325,6 @@ public class CodeGenerator {
   public void cGen(VarExp tree, int offset, boolean isAddress){
     if(tree.variable instanceof SimpleVar){
       SimpleVar e = (SimpleVar)tree.variable;
-      System.out.println(e.name);
       VarSymbol v = (VarSymbol) symTable.getSymbol(e.name);
       emitComment("-> id");
       emitComment("looking up id: " + e.name);
