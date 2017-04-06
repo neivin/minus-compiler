@@ -2,7 +2,7 @@ package symbol;
 
 public class VarSymbol extends Symb {
 
-	int offset;
+	public int offset;
 
 	public VarSymbol(int type, String id){
 		this.type = type;

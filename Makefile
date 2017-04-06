@@ -7,7 +7,7 @@ CUP=cup
 
 all: CM.class
 
-CM.class: absyn/*.java parser.java sym.java Lexer.java symbol/*.java SymbolTable.java TypeChecker.java CM.java
+CM.class: absyn/*.java parser.java sym.java Lexer.java symbol/*.java SymbolTable.java TypeChecker.java CodeGenerator.java CM.java
 
 # -Xdiags:verbose
 %.class: %.java

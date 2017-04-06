@@ -1,5 +1,7 @@
 import absyn.*;
-
+import symbol.*;
+import java.io.*;
+import java.util.ArrayList;
 
 public class CodeGenerator {
   public static final int IN_ADDR = 4;
@@ -9,29 +11,26 @@ public class CodeGenerator {
   public static final int AC = 0;
   public static final int PC = 7;
   public static final int FP = 5;
-  public static int emitLoc = 0;
-  public static int highEmitLoc = 0;
+  public int emitLoc = 0;
+  public int highEmitLoc = 0;
+  public int globalOffset = 0;
+  public String filename;
 
   private DecList program;
   private SymbolTable symTable;
 
-  private String filename;
-
   public CodeGenerator(DecList program, String filename){
     this.program = program;
     this.filename = filename + CM.EXT_TM;
-    symTable = new SymbolTable(false);
+    symTable = new SymbolTable(false, "");
   }
 
   public void generate(){
     genCode(this.program);
   }
 
-  public static void genCode(DecList tree)
+  public void genCode(DecList tree)
   {
-    int globalOffset = 0;
-    
-    // Clear file contents
     try{
       PrintWriter pw = new PrintWriter(this.filename);
       pw.close();
@@ -57,12 +56,12 @@ public class CodeGenerator {
 
     /* Generate standard prelude */
     emitRM("LD", GP, 0, AC, "Load GP with max address");
-    emitRMAbs("LDA", FP, 0, GP, "Copy GP to FP");
+    emitRM("LDA", FP, 0, GP, "Copy GP to FP");
     emitRM("ST", 0, 0, 0, "Clear location 0");
     int savedLoc = emitSkip(1);
 
     /* Generate input function */
-    emitComment("Jump around i/o functions");
+    emitComment("Jump around I/O functions here");
     emitComment("Code for input routine");
     emitRM("ST", 0, -1, FP, "Store return");
     emitOp("IN", 0, 0, 0, "");
@@ -77,24 +76,24 @@ public class CodeGenerator {
     int savedLoc2 = emitSkip(0);
 
     /* Set emitLoc to previously stored value
-    Jujpm around I/O functions*/
+    Jump around I/O functions*/
     emitBackup(savedLoc);
-    emitRMAbs("LDA", PC, savedLoc2, "");
+    emitRMAbs("LDA", PC, savedLoc2, "Jump around I/O functions");
     emitRestore();
-
+    emitComment("End of standard prelude");
     /* Recursive code generation */
     while (tree != null){
 			if (tree.head != null){
-				cGen(tree.head, globalOffset);
+				cGen(tree.head);
 			}
 			tree = tree.tail;
 		}
     /* Generate Finale */
-    emitRM("ST", FP, globalOffset, FP, "Push ofp");
+    emitRM("ST", FP, globalOffset, FP, "Push old frame pointer");
     emitRM("LDA", FP, globalOffset, FP, "Push frame");
     emitRM("LDA", 0, 1, PC, "Load ac with ret ptr");
     /* retrieve main function address from symbol table */
-    emitRMAbs("LDA", PC, funAddr, "Jump to main");
+    //emitRMAbs("LDA", PC, symTable.getFunction("main").address, "Jump to main");
     emitRM("LD", FP, 0, FP, "Pop frame");
     emitOp("HALT", 0, 0, 0, "");
 
@@ -105,10 +104,10 @@ public class CodeGenerator {
 
   /* ==== List Structures ====*/
   // Variable Declaration List
-  public static int cGen (VarDecList tree, int offset){
+  public int cGen (VarDecList tree, int offset, boolean isParameter){
     while (tree != null){
       if (tree.head != null){
-        offset = cGen(tree.head);
+        offset = cGen(tree.head, offset, isParameter);
       }
       tree = tree.tail;
     }
@@ -116,10 +115,10 @@ public class CodeGenerator {
   }
 
   // Expression List
-  public static void cGen (ExpList tree){
+  public void cGen (ExpList tree, int offset){
     while (tree != null){
       if (tree.head != null){
-        cGen(tree.head);
+        cGen(tree.head, offset, false);
       }
       tree = tree.tail;
     }
@@ -127,252 +126,480 @@ public class CodeGenerator {
 
   /* ==== Abstract Classes ==== */
 // Variable
-  public static void cGen (Var tree){
+  /*public static void cGen (Var tree){
     if (tree instanceof SimpleVar){
       cGen((SimpleVar) tree);
     }
     else if (tree instanceof IndexVar){
       cGen((IndexVar) tree);
     }
-  }
+  }*/
 
 // Declaration
-  public static void cGen (Dec tree){
+  public void cGen (Dec tree){
     if(tree instanceof FunctionDec){
       cGen((FunctionDec) tree);
     }
     else if (tree instanceof VarDec){
-      cGen((VarDec) tree);
+      VarDec var = (VarDec)tree;
+      if(var instanceof SimpleDec){
+        SimpleDec sVar = (SimpleDec)var;
+        VarSymbol s = new VarSymbol(Type.INT, sVar.name, globalOffset);
+        symTable.addSymbol(sVar.name, s);
+        emitComment("Allocating global var: " + sVar.name);
+        emitComment("<- vardecl");
+        globalOffset--;
+      }
+      else if(var instanceof ArrayDec){
+        ArrayDec aVar = (ArrayDec)var;
+        ArraySymbol s = new ArraySymbol(Type.INT, aVar.name, aVar.size.value, globalOffset-(aVar.size.value-1));
+        symTable.addSymbol(aVar.name, s);
+        emitComment("Allocating global var: " + aVar.name);
+        emitComment("<- vardecl");
+        globalOffset = globalOffset - aVar.size.value;
+      }
     }
   }
 
 
-// Variable Declaration
-  public static int cGen(VarDec tree, int offset){
-    if (tree instanceof SimpleDec){
-      offset = cGen((SimpleDec) tree);
-      return offset;
+// Variable/Parameter Declaration
+  public int cGen(VarDec tree, int offset, boolean isParameter){
+    if(isParameter == true){
+      if (tree instanceof SimpleDec){
+      SimpleDec d = (SimpleDec)tree;
+      VarSymbol s = new VarSymbol(Type.INT, d.name, offset);
+      offset--;
+      symTable.addSymbol(d.name, s);
+
+      }
+      else if (tree instanceof ArrayDec){
+        ArrayDec d = (ArrayDec)tree;
+        offset = offset - (d.size.value+1);
+        ArraySymbol s = new ArraySymbol(Type.INT, d.name, d.size.value, offset--);
+        symTable.addSymbol(d.name, s);
+      }
     }
-    else if (tree instanceof ArrayDec){
-      offset = cGen((ArrayDec) tree);
-      return offset
+    else{
+      if (tree instanceof SimpleDec){
+      SimpleDec d = (SimpleDec)tree;
+      VarSymbol s = new VarSymbol(Type.INT, d.name, offset);
+      offset--;
+      symTable.addSymbol(d.name, s);
+      emitComment("processing local var: " + d.name);
+      }
+      else if (tree instanceof ArrayDec){
+        ArrayDec d = (ArrayDec)tree;
+        offset = offset - (d.size.value-1);
+        ArraySymbol s = new ArraySymbol(Type.INT, d.name, d.size.value, offset);
+        offset--;
+        symTable.addSymbol(d.name, s);
+        emitComment("processing local var: " + d.name);
+      }
     }
+    return offset;
   }
 
 // General Expression
-  public static void cGen (Exp tree){
+  public int cGen (Exp tree, int offset, boolean isAddress){
     if (tree instanceof NilExp){
-      cGen((NilExp) tree);
+      //cGen((NilExp) tree);
     }
     else if (tree instanceof VarExp){
-      cGen((VarExp) tree);
+      cGen((VarExp) tree, offset, isAddress);
     }
     else if (tree instanceof CallExp){
-      cGen((CallExp) tree);
+      cGen((CallExp) tree, offset);
     }
     else if (tree instanceof OpExp){
-      cGen((OpExp) tree);
+      cGen((OpExp) tree, offset);
     }
     else if (tree instanceof AssignExp){
-      cGen((AssignExp) tree);
+      cGen((AssignExp) tree, offset);
     }
     else if (tree instanceof IfExp){
-      cGen((IfExp) tree);
+      cGen((IfExp) tree, offset);
     }
     else if (tree instanceof WhileExp){
-      cGen((WhileExp) tree);
+      cGen((WhileExp) tree, offset);
     }
     else if (tree instanceof ReturnExp){
-      cGen((ReturnExp) tree);
+      cGen((ReturnExp) tree, offset);
     }
     else if (tree instanceof CompoundExp){
-      cGen((CompoundExp) tree);
+      offset = cGen((CompoundExp) tree, offset);
     }
     else if (tree instanceof IntExp){
       cGen((IntExp) tree);
     }
+    return offset;
   }
 
   /* ==== Concrete Classes ==== */
 // Var subclasses
 // SimpleVar
-  public static void cGen(SimpleVar tree){
+  public void cGen(SimpleVar tree, int offset, boolean isAddress){
+    SimpleVar e = (SimpleVar)tree;
+    VarSymbol v = (VarSymbol) symTable.getSymbol(e.name);
+    emitComment("-> id");
+    emitComment("looking up id: " + e.name);
+    if(symTable.symbolExists(e.name) == 0){
+      if(isAddress == true)
+        emitRM("LDA", 0, v.offset, GP, "load id address");
+      else
+        emitRM("LD", 0, v.offset, GP, "load id value");
+    }
+    else{
+      if(isAddress == true)
+      emitRM("LDA", 0, v.offset, FP, "load id address");
+      else
+        emitRM("LD", 0, v.offset, FP, "load id value");
+    }
+    emitComment("<- id");
   }
 
 // IndexVar
-  public static void cGen(IndexVar tree){
+  public void cGen(IndexVar tree, int offset, boolean isAddress){
+    IndexVar e = (IndexVar)tree;
+    ArraySymbol v = (ArraySymbol)symTable.getSymbol(e.name);
+    emitComment("-> subs");
+    if(symTable.symbolExists(e.name) == 0){
+      emitRM("LD", AC, v.offset, GP, "load id value");
+      emitRM("ST", AC, offset--, GP, "store array addr");
+      cGen(e.index, offset, false);
+      emitComment("<- subs");
+    }
+    else{
+      emitRM("LD", AC, v.offset, FP, "load id value");
+      emitRM("ST", AC, offset--, FP, "store array addr");
+      cGen(e.index, offset, false);
+      emitComment("<- subs");
+    }
   }
 
 // Dec subclasses : FunctionDec, VarDec (SimpleDec, ArrayDec)
 //FunctionDec
-  public static void cGen(FunctionDec tree, int offset){
+    public void cGen(FunctionDec tree){
+    int offset = -2;
+    FunctionSymbol fun = new FunctionSymbol(Type.INT, tree.func, null, emitLoc);
+    symTable.addSymbol(tree.func, fun);
+    symTable.enterNewScope();
     emitComment("-> fundecl");
     emitComment(" processing function: " + tree.func);
     emitComment(" jump around functions body here");
 
-    /* Store value for backpatching */
+
     int savedLoc = emitSkip(1);
-    /* Copy return address from AC to local memory */
     emitRM("ST", 0, -1, FP, "store return");
-
-    offset -= params.argsCount();
-    cGen(tree.body, offset);
-
-    /* Generate jump around function body */
+    offset = cGen(tree.params, offset,  true); //VarDecList
+    offset = cGen(tree.body, offset, false); //CompoundExp
     int savedLoc2 = emitSkip(0);
     emitBackup(savedLoc);
     emitRMAbs("LDA", PC, savedLoc2, "Jump around function body");
+    emitRestore();
     emitComment("<- fundecl");
+    symTable.exitScope();
   }
 
 // SimpleDec
-  public static int cGen(SimpleDec tree, int offset){
+  /*public int cGen(SimpleDec tree, int offset){
     emitComment("processing local var: " + tree.name);
+    symTable.getSymbol(tree.name).offset = offset;
     return offset--;
   }
 
 // ArrayDec
-  public static int cGen(ArrayDec tree){
+  public int cGen(ArrayDec tree, int offset){
     emitComment("Processing local var: " + tree.name);
+    symTable.getSymbol(tree.name).offset = offset-(tree.size-1);
     return offset-=tree.size;
   }
 
 // Exp subclasses
 // NilExp
-  public static void cGen(NilExp tree){
+  public void cGen(NilExp tree){
 
   }
 
-// VarExp
-  public static void cGen(VarExp tree){
-    emitComment("-> id");
-    emitComment("Looking up id: " + tree.variable.name);
-    emitRM("LD", AC, /* localOffset */, FP, "Load id value");
-    emitComment("<- id");
-    emitRMAbs("")
-  }
-
-// IntExp
-  public static void cGen(IntExp tree){
-  // Check if null for function declarations/calls of the form int x[]
-    if (tree != null){
-
+*/// VarExp
+  public void cGen(VarExp tree, int offset, boolean isAddress){
+    if(tree.variable instanceof SimpleVar){
+      SimpleVar e = (SimpleVar)tree.variable;
+      VarSymbol v = (VarSymbol) symTable.getSymbol(e.name);
+      emitComment("-> id");
+      emitComment("looking up id: " + e.name);
+      if(symTable.symbolExists(e.name) == 0){
+        if(isAddress == true){
+          emitRM("LDA", 0, v.offset, GP, "load id address");
+        }
+        else{
+          emitRM("LD", 0, v.offset, GP, "load id value");
+        }
+      }
+      else{
+        if(isAddress == true)
+          emitRM("LDA", 0, v.offset, FP, "load id address");
+        else
+          emitRM("LD", 0, v.offset, FP, "load id value");
+      }
+      emitComment("<- id");
+    }
+    else if (tree.variable instanceof IndexVar){
+      IndexVar e = (IndexVar)tree.variable;
+      ArraySymbol v = (ArraySymbol)symTable.getSymbol(e.name);
+      emitComment("-> subs");
+      if(symTable.symbolExists(e.name) == 0){
+        emitRM("LD", AC, v.offset, GP, "load id value");
+        emitRM("ST", AC, offset--, GP, "store array addr");
+        cGen(e.index, offset, false);
+        emitComment("<- subs");
+      }
+      else{
+        emitRM("LD", AC, v.offset, FP, "load id value");
+        emitRM("ST", AC, offset--, FP, "store array addr");
+        cGen(e.index, offset, false);
+        emitComment("<- subs");
+      }
     }
   }
 
+// IntExp
+  public void cGen(IntExp tree){
+    emitComment("-> constant");
+    emitRM("LDC", AC, tree.value, 0, "load const");
+    emitComment("<- constant");
+  }
+
 // CallExp
-  public static void cGen(CallExp tree, int offset){
+  public void cGen(CallExp tree, int offset){
   // Args
+    FunctionSymbol f = (FunctionSymbol)symTable.getFunction(tree.func);
     emitComment("-> call");
-    emitComment("call of function: " + tree.fun);
-    cGen(tree.args, offset);
-    emitRM("ST", FP, /* Some offset */, FP, "push ofp");
-    emitRM("LDA", FP, /* Some offset */, FP, "Push frame");
+    emitComment("call of function: " + tree.func);
+    //cGen(tree.args, offset, true);
+
+    while (tree.args != null){
+      if (tree.args.head != null){
+        cGen(tree.args.head, offset, false);
+        if(tree.args.head instanceof VarExp){
+          VarExp e = (VarExp)tree.args.head;
+          if(e.variable instanceof SimpleVar){
+            SimpleVar s = (SimpleVar)e.variable;
+            VarSymbol v = (VarSymbol)symTable.getSymbol(s.name);
+            emitRM("ST", AC, (offset+v.offset), FP, "op: push left");
+          }
+        }
+      }
+      tree.args = tree.args.tail;
+    }
+
+    emitRM("ST", FP, offset, FP, "push ofp");
+    emitRM("LDA", FP, offset, FP, "Push frame");
     emitRM("LDA", 0, 1, PC, "Load ac with ret ptr");
-    emitRMAbs("LDA", PC, funAddr, "jump to fun loc")
-    emitMR("LD", FP, 0, FP, "Pop frame");
+    emitRMAbs("LDA", PC, f.address, "jump to fun loc");
+    emitRM("LD", FP, 0, FP, "Pop frame");
     emitComment("<- call");
   }
 
 // OpExp
-  public static void cGen(OpExp tree){
+  public void cGen(OpExp tree, int offset){
     emitComment("-> op");
-    cGen(tree.left);
-    cGen(tree.right);
+    if(tree.left instanceof IntExp){
+      cGen(tree.left, offset, false);
+      emitRM("ST", AC, offset--, FP, "op: push left");
+    }
+    else if(tree.left instanceof VarExp){
+      VarExp e = (VarExp)tree.left;
+
+      if(e.variable instanceof SimpleVar){
+          cGen(e, offset, false);
+          emitRM("ST", AC, offset--, FP, "op: push left");
+      }
+      else{
+        /* Note: the boolean value for Index expression does nothing */
+        cGen(e, offset--, true);
+      }
+    }
+    else if(tree.left instanceof CallExp){
+
+    }
+
+    if(tree.right instanceof IntExp){
+      cGen(tree.right, offset, false);
+
+    }
+    else if(tree.right instanceof VarExp){
+      VarExp e = (VarExp)tree.right;
+
+      if(e.variable instanceof SimpleVar){
+        cGen(e, offset--, false);
+      }
+      else{
+        /* Note: the boolean value for Index expression does nothing */
+        cGen(e, offset--, true);
+      }
+    }
+    else if(tree.right instanceof CallExp){
+
+    }
+    else if(tree.right instanceof OpExp){
+      cGen(tree.right, offset, false);
+    }
+
+    emitRM("LD", 1, ++offset, FP, "op: load left");
+
   // Operator
     switch(tree.op){
       case OpExp.PLUS:
-      emitOp("ADD", AC, 1, AC, "");
-      break;
+        emitOp("ADD", AC, 1, AC, "op +");
+        break;
       case OpExp.MINUS:
-      emitOp("SUB", AC, 1, AC, "");
-      break;
+        emitOp("SUB", AC, 1, AC, "op -");
+        break;
       case OpExp.MUL:
-      emitOp("MUL", AC, 1, AC, "");
-      break;
+        emitOp("MUL", AC, 1, AC, "op *");
+        break;
       case OpExp.DIV:
-      emitOp("DIV", AC, 1, AC, "");
-      break;
+        emitOp("DIV", AC, 1, AC, "op /");
+        break;
       case OpExp.EQ:
-      emitOp("=", AC, 1, AC, "");
-      break;
+        emitOp("EQU", AC, 1, AC, "op =");
+        break;
       case OpExp.EQUALEQUAL:
-
-      break;
+        emitOp("SUB", AC, 1, AC, "op ==");
+        emitRM("JEQ", AC, 2, PC, "");
+        emitRM("LDC", AC, 0, 0, "false case");
+        emitRM("LDA", PC, 1, PC, "unconditional jump");
+        emitRM("LDC", AC, 1, 0, "true case");
+        break;
       case OpExp.NE:
-
-      break;
+        emitOp("SUB", AC, 1, AC, "op !=");
+        emitRM("JNE", AC, 2, PC, "");
+        emitRM("LDC", AC, 0, 0, "false case");
+        emitRM("LDA", PC, 1, PC, "unconditional jump");
+        emitRM("LDC", AC, 1, 0, "true case");
+        break;
       case OpExp.LT:
-
-      break;
+        emitOp("SUB", AC, 1, AC, "op <");
+        emitRM("JLT", AC, 2, PC, "");
+        emitRM("LDC", AC, 0, 0, "false case");
+        emitRM("LDA", PC, 1, PC, "unconditional jump");
+        emitRM("LDC", AC, 1, 0, "true case");
+        break;
       case OpExp.GT:
-
-      break;
+        emitOp("SUB", AC, 1, AC, "op >");
+        emitRM("JGT", AC, 2, PC, "");
+        emitRM("LDC", AC, 0, 0, "false case");
+        emitRM("LDA", PC, 1, PC, "unconditional jump");
+        emitRM("LDC", AC, 1, 0, "true case");
+        break;
       case OpExp.LE:
-
-      break;
+        emitOp("SUB", AC, 1, AC, "op <=");
+        emitRM("JLE", AC, 2, PC, "");
+        emitRM("LDC", AC, 0, 0, "false case");
+        emitRM("LDA", PC, 1, PC, "unconditional jump");
+        emitRM("LDC", AC, 1, 0, "true case");
+        break;
       case OpExp.GE:
-
-      break;
+        emitOp("SUB", AC, 1, AC, "op >=");
+        emitRM("JGE", AC, 2, PC, "");
+        emitRM("LDC", AC, 0, 0, "false case");
+        emitRM("LDA", PC, 1, PC, "unconditional jump");
+        emitRM("LDC", AC, 1, 0, "true case");
+        break;
     }
     emitComment("<- op");
   }
 
 // AssignExp
-  public static void cGen(AssignExp tree){
+  public void cGen(AssignExp tree, int offset){
+      emitComment("-> op");
+    // Standard variable on left hand side
+    if(tree.lhs instanceof SimpleVar){
+      cGen((SimpleVar)tree.lhs, offset, true);
+      emitRM("ST", AC, offset--, FP, "op: push left");
+    }
+    // Array on left hand side
+    else if(tree.lhs instanceof IndexVar){
+      cGen((IndexVar)tree.lhs, offset--, false);
+    }
 
-  // Var = left
-    cGen(tree.lhs);
+    if(tree.rhs instanceof IntExp){
+      cGen(tree.rhs, offset, false);
+    }
+    else if(tree.rhs instanceof VarExp){
+      cGen(tree.rhs, offset, false);
+    }
+    else if(tree.rhs instanceof CallExp){
 
-  // Exp = right;
-    cGen(tree.rhs);
+    }
+    else if(tree.rhs instanceof OpExp){
+      cGen(tree.rhs, offset, false);
+    }
+
+    emitRM("LD", 1, ++offset, FP, "op: load left");
+
+    /* store value in r0 in left operand (mem address stored in r1) */
+    emitRM("ST", AC, 0, 1, "assign: store value");
+    emitComment("<- op");
   }
 
   // IfExp
   // Expression should be printed on the same line
-  public static void cGen(IfExp tree){
+  public void cGen(IfExp tree, int offset){
+    symTable.enterNewScope();
     emitComment("-> if");
-    cGen(tree.test); // Test Exp
-    cGen(tree.thenpart); // Then Exp
-    cGen(tree.elsepart); // Else Exp (NilExp)
+    cGen(tree.test, offset, false); // Test Exp
+    int savedLoc = emitSkip(1);
+    emitRM("LDA", PC, 1, PC, "if: true part");
+    cGen(tree.thenpart, offset, false); // Then Exp
+    int savedLoc2 = emitSkip(0);
+    emitBackup(savedLoc);
+    emitRMAbs("LDA", PC, savedLoc2, "if: jump to else part");
+    emitRestore();
+    cGen(tree.elsepart, offset, false); // Else Exp (NilExp)
     emitComment("<- if");
+    symTable.exitScope();
   }
 
   // WhileExp
   // Expression should be printed on the same line
-  public static void cGen(WhileExp tree){
+  public void cGen(WhileExp tree, int offset){
+    symTable.enterNewScope();
     emitComment("-> While");
-    emitCOmment("While: jump after body comes back here");
-    int savedLoc3 = emitSkip(1);
-    cGen(tree.test); // While condition Exp
+    emitComment("While: jump after body comes back here");
+    int savedLoc3 = emitSkip(0);
+    cGen(tree.test, offset, false); // While condition Exp
     int savedLoc = emitSkip(1);
-    cGen(tree.body); // Loop body Exp
+    cGen(tree.body, offset, false); // Loop body Exp
     int savedLoc2 = emitSkip(0);
     emitBackup(savedLoc);
     emitRMAbs("LDA", PC, savedLoc3, "While: absolute jmp to test");
     emitRMAbs("JEQ", 0, savedLoc2, "While: jmp to end");
+    emitRestore();
     emitComment("<- While");
+    symTable.exitScope();
   }
 
   // ReturnExp
-  public static void cGen(ReturnExp tree){
-
-    if(tree.exp != null){
-      cGen(tree.exp); // Return Exp
-    }
+  public void cGen(ReturnExp tree, int offset){
+    emitComment("-> return");
+    cGen(tree.exp, offset, false);
+    emitRM("LD", PC, -1, FP, "return to caller");
+    emitComment("<- return");
   }
 
   // CompoundExp
-  public static void cGen(CompoundExp tree, int offset){
+  public int cGen(CompoundExp tree, int offset){
     emitComment("-> compound statement");
-    offset = cGen(tree.decs, offset); // VarDecList
+    offset = cGen(tree.decs, offset, false); // VarDecList
     cGen(tree.exps, offset); //ExpList
     emitComment("<- compound statement");
+    return offset;
   }
 
   /* ==== Code Emiting Routines ==== */
   /* Returns current label value for backpatching then increases the label value*/
-  int emitSkip(int distance){
+  public int emitSkip(int distance){
     int i = emitLoc;
     emitLoc += distance;
     if(highEmitLoc < emitLoc){
@@ -381,53 +608,53 @@ public class CodeGenerator {
     return i;
   }
 
-  void emitBackup(int loc){
+  public void emitBackup(int loc){
     if(loc > highEmitLoc){
       emitComment("Bug in emmitBackup");
     }
     emitLoc = loc;
   }
 
-  void emitRestore(){
+  public void emitRestore(){
     emitLoc = highEmitLoc;
   }
 
-  void emitRM(String op, int r, int offset, int r1, String comment){
-    Sting code = emitLoc + ": " + op + "  " + r + "," + offset + "(" + r1 + ")";
+  public void emitRM(String op, int r, int offset, int r1, String comment){
+    String code = emitLoc + ":  " + op + "  " + r + "," + offset + "(" + r1 + ")";
     writeCode(code);
     ++emitLoc;
-    /* if(TraceCode)  writeCode("\t" + comment); */
+    writeCode("\t" + comment);
     writeCode("\n");
     if(highEmitLoc < emitLoc){
       highEmitLoc = emitLoc;
     }
   }
 
-  void emitRMAbs(String op, int r, int a, String comment){
-    String code = emitLoc + ":  " + op + "  " + r + "," + a-(emitLoc+1) + "(" + PC + ")";
+  public void emitRMAbs(String op, int r, int a, String comment){
+    String code = emitLoc + ":  " + op + "  " + r + "," + (a-(emitLoc+1)) + "(" + PC + ")";
     writeCode(code);
     ++emitLoc;
-    /* if (TraceCode) write("\n" + comment); */
+    writeCode("\t" + comment);
     writeCode("\n");
     if(highEmitLoc < emitLoc){
       highEmitLoc = emitLoc;
     }
   }
 
-  void emitOp(String op, int destination, int r, int r1, String comment){
-    String code = emitloc + ": " + op + " " + destination + "," + r + "," + r1;
+  public void emitOp(String op, int destination, int r, int r1, String comment){
+    String code = emitLoc + ":  " + op + " " + destination + "," + r + "," + r1;
     writeCode(code);
     ++emitLoc;
-    /* if (TraceCode) write("\n" + comment); */
+    writeCode("\t" + comment);
     writeCode("\n");
   }
 
-  void emitComment(String comment){
+  public void emitComment(String comment){
     comment = "* " + comment + "\n";
     writeCode(comment);
   }
 
-  public static void writeCode(String content){
+  public void writeCode(String content){
     PrintWriter outputStream = null;
     try{
       outputStream = new PrintWriter(new FileOutputStream(this.filename, true));

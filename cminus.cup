@@ -123,8 +123,8 @@ program     ::= decl_list:s
                     // Check for syntax and semantic errors
                     if (parser.noErrors && Absyn.noSyntaxErrors() && checker.noSemanticErrors()){
                       System.out.println("TM Code generated in " + parser.filename + CM.EXT_TM);
-                      //CodeGenerator gen = new CodeGenerator(RESULT, filename);
-                      //gen.generate();
+                      CodeGenerator gen = new CodeGenerator(RESULT, parser.filename);
+                      gen.generate();
                     }
                     else {
                       System.err.println("\nError: Cannot generate TM code due to syntax/semantic errors");
