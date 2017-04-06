@@ -6,7 +6,6 @@ import java.util.ArrayList;
 public class CodeGenerator {
   public static final int IN_ADDR = 4;
   public static final int OUT_ADDR = 7;
-  public static final String FILENAME = "./test.tm";
 
   public static final int GP = 6;
   public static final int AC = 0;
@@ -15,12 +14,14 @@ public class CodeGenerator {
   public static int emitLoc = 0;
   public static int highEmitLoc = 0;
   public static int globalOffset = 0;
+  public static String Filename;
 
   private DecList program;
   private static SymbolTable symTable;
 
-  public CodeGenerator(DecList program){
+  public CodeGenerator(DecList program, String Filename){
     this.program = program;
+    this.Filename = Filename + CM.EXT_TM;
     symTable = new SymbolTable(false);
   }
 
