@@ -1,7 +1,7 @@
 University of Guelph
 CIS 4650 - Compilers
-Checkpoint Two 
-March 22, 2017
+Checkpoint Three
+April 5, 2017
 
 
 ---------- Authors ----------
@@ -40,17 +40,27 @@ command line option -s:
 
 	java -classpath /usr/share/java/cup.jar:. CM -s input.cm
 
+To generate the Assembly code, use the command line option -c:
+	
+	java -classpath /usr/share/java/cup.jar:. CM -c input.cm
+
 
 ---------- Testing ----------
 
-Five test files: [12345].cm are included in the 'test' directory.
+Ten test files: [1234567890].cm are included in the 'test' directory.
+[1234].cm will compile properly without errors and can generate 
+assembly code.
+
+[567890].cm contain multiple syntax and semantic errors and will
+not generate assembly code.
+
 They can be executed by running the above commands from the previous
 section on the test files.
 
 
 ---------- Acknowledgements ----------
 
-For this checkpoint, we built upon our work from Checkpoint One.
+For this checkpoint, we built upon our work from Checkpoint One and Two.
 
 For the first checkpoint we used Professor Song's provided code 
 as a starting point to build the project. We also followed the

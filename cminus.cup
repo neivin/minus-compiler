@@ -127,7 +127,7 @@ program     ::= decl_list:s
                       //gen.generate();
                     }
                     else {
-                      System.err.println("Error: Cannot generate TM code since due to syntax/semantic errors");
+                      System.err.println("\nError: Cannot generate TM code due to syntax/semantic errors");
                     }
                     
                   }

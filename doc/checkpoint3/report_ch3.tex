@@ -26,7 +26,10 @@
   tabsize=4
 }
 
-
+%%
+%your submission should include a document describing the entire compiler construction process.  In addition to what has been done, the overall design, lessons gained in the implementation process, assumptions and limitations as well as possible improvements, and the contributions of 
+%each member if relevant, you can outline any major changes in structure or design that took place over time (i.e. identify significant changes from previous checkpoints in the modules that were implemented earlier). Some of the things you might want to talk about include issues you encountered in translating abstract syntax into assembly code, error handling, problems encountered during design and implementationand their solutions, source language issues, attempted repair of detected errors if implemented, and the like
+%
 
 \title{\LARGE{\textbf{Compilers - Checkpoint Three}}}
 \author{Braydon Johnson, Neivin Mathew}
@@ -34,26 +37,67 @@
 \maketitle
 
 \section{Summary}
-For the second checkpoint, we implemented type checking for programs written in the C- language.
+Over the course of three checkpoints, a compiler for the C- language was constructed.
 
-At this point, the compiler can recognize different scopes in C- programs and can build a symbol table for the entire program, along with recognizing symbols in more specific scopes. The symbol table enables the compiler to recognize when variables are used without declaration and if they are redefined within the same scope. Additionally, the compiler can display the different variable scopes in a program.
+The compiler can read a C- program, build an abstract syntax tree, perform semantic analysis on the program and then finally convert it into intermediate assembly code targeted at the Tiny Machine architecture.
 
-The compiler can also check types of expressions in C- programs. It has the ability to ensure that array ranges are integers, assignments and other operations are valid, and checking function return types.
+\section{Compiler Construction Process}
+\subsection{Initial Steps}
+To begin the project, we decided to use version control to keep track of our code and coordinate work between the group. Using a private repository on Github allowed us to collaborate effectively.
 
-Additionally, we also improved upon our initial design from Checkpoint One by fixing various bugs, and enhancing the error recovery of the parser. We also simplified some of our grammar rules by using the precedence and associativity directives defined in CUP.
+We also agreed to use Java as our language of choice for building the compiler. Using the powerful JFlex and CUP libraries, as well as the concepts of function overloading and class inheritance allowed us to focus more on the process of building the syntax tree, performing semantic analysis and generating intermediate code.
 
-\section{Design Process}
-\subsection{Implementation}
-The compiler for checkpoint two was built using an incremental process, similar to that which was used in checkpoint one.
+To begin the project, we used professor Fei Song's provided code as a starting point from \texttt{java\_tiny.tgz}
+
+\subsection{Abstract Syntax Tree}
+Checkpoint One was built using an incremental process as suggested in the design document.
+
+To build the scanning and parsing portions of the compiler, we began by analyzing
+the C- specification document. First, we built the scanner to recognize tokens for the
+language, and wrote all the grammar rules without simplifying them into ambiguous
+grammars.
+
+Next, we followed the recommended syntax tree structures for the C- language to
+create the necessary classes required to represent the syntax tree. After writing all the
+required classes, we defined the methods to display the elements of the syntax tree.
+
+With the structure of the tree completed, we added the embedded code into the parser
+to actually build the syntax tree. After the program was able to build the syntax tree successfully, we introduced new classes that would consume errors for their corresponding
+types. These enabled the parser to recover from syntax errors gracefully.
+
+Finally, we simplified some of the grammar rules by using the CUP directives for
+precedence and associativities of mathematical operations.
+
+\subsection{Symbol Table and Semantic Analysis}
+The framework for semantic analysis was also built using an incremental process, similar to that which was used in checkpoint one.
 
 First, we improved upon our initial design from checkpoint one. We improved our error recovery system and enabled the compiler to catch more errors and gracefully resume parsing from that point.
 
 Next, we implemented an abstract structure for the symbol table that would be able to seamlessly create new scopes, add new symbols, retrieve symbols, and check for the existence of symbols in the program. Creating a logical layer of abstraction for the symbol table was imperative to the next step --- implementing type checking.
 
 Finally, we added type checking to the compiler. We used the concepts of function overloading and type coercion to break down the checking of types. Each method would check its corresponding syntax tree structure for type validity.
- 
+
+\subsection{Code Generation}
+Code generation was also done using an incremental process.
+
+First, we took some time to understand the TM Simulator instructions by reading and testing the sample assembly code and the corresponding C- code. This enabled us to learn how to translate C- code into assembly code by hand. 
+
+After understanding the TM Simulator instructions, we were able to recognize what actions the standard prelude, predefined input/output routines, and the finale were supposed to perform. This enabled us to generate the assembly code for the various structures of the syntax tree.
+
+We began by generating the assembly code for expressions only. We then began to generate code for array accesses and and function calls. After this, we converted the control structures like conditionals, while loops and function calls into linear calling sequences.
+
+\subsection{Modifications to Old Code}
+For the final project, we improved a number of mistakes that were made in previous checkpoints.
+
+Firstly, initially our program would simply print everything out to \texttt{stdout}, but now outputs the results to the proper files.
+
+For the first checkpoint, we improved our syntax tree display, fixed minor token errors, some precedence errors and also greatly improved our error recovery for the compiler.
+
+For the second checkpoint, we improved the printing of the symbol table and included the input and output functions that we had previously missed. Additionally, we adapted the symbol table to also store the offsets from the frame pointer and the addresses for the declared functions. 
+
+\section{Retrospective}
 \subsection{Lessons Learned}
-In this checkpoint, we understood the importance of building the project incrementally, since it allowed us to break down a large problem into smaller ones. It also allowed us to pinpoint where our errors were, since we knew the project was building successfully before adding new features that did not work.
+Over the course of the project, we understood the importance of building the project incrementally, since it allowed us to break down a large problem into smaller ones. It also allowed us to pinpoint where our errors were, since we knew the project was building successfully before adding new features that did not work.
 
 Using Git for version control and collaboration also taught us the importance of version control, which gave us the ability to roll back mistakes we made and enabled group members to see what new parts had been added to the project since we last saw it.
 
@@ -77,10 +121,19 @@ The following code sample will produce an error:
 	int my_function(void x, void y)
 \end{lstlisting}
 
-\item For function calls, the compiler does not have the ability to check if the arguments to the function call match the parameter types that were defined in the function definition. However, the compiler will check the validity of the types and try to perform a lookup in the symbol table for the arguments.
+\item If a function is declared with an invalid return type, it is assigned a void return type so as to recover from the syntax error gracefully. The following invalid function declaration: 
+\begin{lstlisting}
+	invalidtypehere function(void x, void y)
+\end{lstlisting}
+
+will result in:
+\begin{lstlisting}
+	void function(void x, void y)
+\end{lstlisting}
+
 \end{itemize}
 
-\section{Potential Improvements}
+\subsection{Improvements}
 Some possible improvements that could be made are as follows:
 \begin{itemize}
 \item The order of the function parameters should be checked and matched with the parameter types mentioned in the function signature.
@@ -88,25 +141,21 @@ Some possible improvements that could be made are as follows:
 \item Currently, error messages for semantic errors only offer primitive information about the error. Improving detection and providing more detailed error messages would enhance the functionality of the compiler.
 \end{itemize}
 
-\clearpage
 \section{Contributions}
 \subsection{Braydon Johnson}
 \begin{itemize}
 \setlength\itemsep{0em}
-\item Re-factoring grammar rules
-\item Improving error checking and recovery
-\item Writing tests and testing the compiler
+\item Implementing code generation
 \end{itemize}
 \subsection{Neivin Mathew}
 \begin{itemize}
 \setlength\itemsep{0em}
-\item Implementing the Symbol table
-\item Implementing type checking functionality
-\item Writing documentation
+\item Improving and adapting code from previous checkpoints
+\item Testing and documentation
 \end{itemize}
 
 \section{Acknowledgments}
-For the second checkpoint, we built upon our existing code from the first checkpoint.
+For the third checkpoint, we built upon our existing code from the first and second checkpoint.
 
 In Checkpoint One, we used the starter code provided by Professor Song in \texttt{java\_tiny.tgz} and also followed the recommended syntax tree structure for the C- language from the course slides.
 
