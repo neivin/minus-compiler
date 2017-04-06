@@ -7,7 +7,15 @@ public class CM{
   public static final String EXT_SYM = ".sym";
   public static final String EXT_TM = ".tm";
 
-  public static void main(String [] argv){
+
+  public static void displayUsage(){
+    System.out.println("Usage: java CM [-a] [-s] [-c] [file.cm]");
+    System.out.println("       -a: show abstract syntax tree");
+    System.out.println("       -s: show symbol tables and scopes");
+    System.out.println("       -c: generate assembly code");
+  }
+
+  public static void main(String [] args){
     
     boolean showAST = false;
     boolean showScopes = false;
@@ -15,14 +23,13 @@ public class CM{
 
     String file = "";
 
-    if (argv.length > 4 ){
-    	System.err.println("Error: Invalid number of arguments");
-    	System.err.println("The correct usage is:");
-    	System.err.println("\tjava CM <c-minus-file>.cm");
+    if (args.length > 4 || args.length < 1){
+      System.err.println("Error: Invalid number of arguments");
+    	displayUsage();
     	System.exit(0);
     }
 
-    for (String arg : argv){
+    for (String arg : args){
     	if (arg.equals("-a")){
     		showAST = true;
     	}
@@ -31,9 +38,13 @@ public class CM{
       }
       else if (arg.equals("-c"))
         genCode = true;
-    	else{
+    	else if (arg.endsWith(".cm"){
     		file = arg;
     	}
+      else {
+        System.err.println("Error: Invalid argument encountered. See correct usage.");
+        displayUsage();
+      }
     }
 
     try {
