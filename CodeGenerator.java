@@ -293,6 +293,7 @@ public class CodeGenerator {
     emitRM("ST", 0, -1, FP, "store return");
     offset = cGen(tree.params, offset,  true); //VarDecList
     offset = cGen(tree.body, offset, false); //CompoundExp
+    emitRM("LD", PC, -1, FP, "return caller");
     int savedLoc2 = emitSkip(0);
     emitBackup(savedLoc);
     emitRMAbs("LDA", PC, savedLoc2, "Jump around function body");
@@ -582,9 +583,9 @@ public class CodeGenerator {
     cGen(tree.test, offset, false); // While condition Exp
     int savedLoc = emitSkip(1);
     cGen(tree.body, offset, false); // Loop body Exp
+    emitRMAbs("LDA", PC, savedLoc3, "While: absolute jmp to test");
     int savedLoc2 = emitSkip(0);
     emitBackup(savedLoc);
-    emitRMAbs("LDA", PC, savedLoc3, "While: absolute jmp to test");
     emitRMAbs("JEQ", 0, savedLoc2, "While: jmp to end");
     emitRestore();
     emitComment("<- While");
@@ -604,7 +605,6 @@ public class CodeGenerator {
     emitComment("-> compound statement");
     offset = cGen(tree.decs, offset, false); // VarDecList
     cGen(tree.exps, offset); //ExpList
-    emitRM("LD", PC, -1, FP, "return caller");
     emitComment("<- compound statement");
     return offset;
   }
