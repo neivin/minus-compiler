@@ -175,8 +175,7 @@ public class CodeGenerator {
       }
       else if (tree instanceof ArrayDec){
         ArrayDec d = (ArrayDec)tree;
-        offset = offset - (d.size.value+1);
-        ArraySymbol s = new ArraySymbol(Type.INT, d.name, d.size.value, offset--);
+        ArraySymbol s = new ArraySymbol(Type.INT, d.name, 1, offset--);
         symTable.addSymbol(d.name, s);
       }
     }
@@ -326,6 +325,7 @@ public class CodeGenerator {
   public void cGen(VarExp tree, int offset, boolean isAddress){
     if(tree.variable instanceof SimpleVar){
       SimpleVar e = (SimpleVar)tree.variable;
+      System.out.println(e.name);
       VarSymbol v = (VarSymbol) symTable.getSymbol(e.name);
       emitComment("-> id");
       emitComment("looking up id: " + e.name);
@@ -383,17 +383,6 @@ public class CodeGenerator {
     while (tree.args != null){
       if (tree.args.head != null){
         cGen(tree.args.head, offset, false);
-        /*if(tree.args.head instanceof VarExp){
-          VarExp e = (VarExp)tree.args.head;
-          if(e.variable instanceof SimpleVar){
-            SimpleVar s = (SimpleVar)e.variable;
-            VarSymbol v = (VarSymbol)symTable.getSymbol(s.name);
-            emitRM("ST", AC, (offset+i), FP, "op: push left");
-          }
-        }
-        else if(tree.args.head instanceof CallExp){
-          emitRM("ST", AC, offset+i, FP, "op: push left");
-        }*/
         emitRM("ST", AC, offset+i, FP, "op: push left");
         i--;
       }
