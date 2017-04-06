@@ -38,7 +38,7 @@ public class CM{
       }
       else if (arg.equals("-c"))
         genCode = true;
-    	else if (arg.endsWith(".cm"){
+    	else if (arg.endsWith(".cm")){
     		file = arg;
     	}
       else {

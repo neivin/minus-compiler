@@ -22,21 +22,25 @@ public class SymbolTable {
 		table = new ArrayList<HashMap<String,Symb>>(); 
 		this.displayScopes = displayScopes;
 		this.outFileName = outFileName;
+		this.writer = null;
 
-		try{
-			writer = new PrintWriter(outFileName);
-			writer.println("---------- " + this.outFileName + ".cm Symbol Table ----------");
-			writer.println();
-		}
-		catch (FileNotFoundException e){
-			System.err.println("Error: Could not create output file.");
-			e.printStackTrace();
+		if (this.displayScopes){
+			try{
+				writer = new PrintWriter(outFileName);
+				writer.println("---------- " + this.outFileName + ".cm Symbol Table ----------");
+				writer.println();
+			}
+			catch (FileNotFoundException e){
+				System.err.println("Error: Could not create output file.");
+				e.printStackTrace();
+			}
 		}
 	}
 
 	
 	public void closeWriter(){
-		writer.close();
+		if(writer != null)
+			writer.close();
 	}
 
 		/* Create indentation */
